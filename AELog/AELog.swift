@@ -15,6 +15,11 @@ public func aelog(message: String = "", filePath: String = __FILE__, line: Int =
 
 public class AELog {
     
+    private struct Key {
+        static let ClassName = NSStringFromClass(AELog).componentsSeparatedByString(".").last!
+        static let Enabled = "Enabled"
+    }
+    
     // MARK: - Singleton
     
     public static let sharedInstance = AELog()
@@ -41,24 +46,30 @@ public class AELog {
     
     private var logSettings: [String : AnyObject]? {
         if let path = settingsPath {
-            guard let settings = NSDictionary(contentsOfFile: path) as? [String : AnyObject] else { return nil }
-            return settings
-        } else if let path = NSBundle.mainBundle().pathForResource("AELog", ofType: "plist") {
-            guard let settings = NSDictionary(contentsOfFile: path) as? [String : AnyObject] else { return nil }
-            return settings
+            return settingsForPath(path)
+        } else if let path = NSBundle.mainBundle().pathForResource(Key.ClassName, ofType: "plist") {
+            return settingsForPath(path)
         } else {
             guard let
                 info = infoPlist,
-                settings = info["AELog"] as? [String : AnyObject]
+                settings = info[Key.ClassName] as? [String : AnyObject]
             else { return nil }
             return settings
         }
     }
     
+    private func settingsForPath(path: String?) -> [String : AnyObject]? {
+        guard let
+            path = path,
+            settings = NSDictionary(contentsOfFile: path) as? [String : AnyObject]
+        else { return nil }
+        return settings
+    }
+    
     private var logEnabled: Bool {
         guard let
             settings = logSettings,
-            enabled = settings["Enabled"] as? Bool
+            enabled = settings[Key.Enabled] as? Bool
         else { return false }
         return enabled
     }
