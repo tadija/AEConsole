@@ -31,7 +31,18 @@ public class AELog {
     
     // MARK: - Properties
     
-    public weak var delegate: AELogDelegate?
+    public weak var delegate: AELogDelegate? {
+        didSet {
+            guard let
+                app = delegate as? AppDelegate,
+                window = app.window
+            else { return }
+
+            textView.frame = window.bounds
+            window.addSubview(textView)
+        }
+    }
+    
     public var settingsPath: String?
     
     // MARK: - Helpers
@@ -74,6 +85,16 @@ public class AELog {
         return enabled
     }
     
+    // MARK: - UI
+    
+    lazy var textView: UITextView = {
+        let textView = UITextView()
+        textView.userInteractionEnabled = false
+        textView.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.7)
+        textView.textColor = UIColor.whiteColor()
+        return textView
+    }()
+    
     // MARK: - Actions
     
     private func log(message: String = "", filePath: String = __FILE__, line: Int = __LINE__, function: String = __FUNCTION__) {
@@ -104,15 +125,17 @@ public protocol AELogDelegate: class {
 extension AELogDelegate where Self: AppDelegate {
     
     func didLog(message: String) {
-        if let window = self.window {
-            let textView = UITextView()
-            textView.frame = window.bounds
-            textView.userInteractionEnabled = false
-            textView.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.5)
-            textView.textColor = UIColor.whiteColor()
-            textView.text = message
-            window.addSubview(textView)
-        }
+        guard let window = self.window else { return }
+        let textView = AELog.sharedInstance.textView
+        window.bringSubviewToFront(textView)
+        textView.text = message
     }
     
 }
+
+
+
+
+
+
+
