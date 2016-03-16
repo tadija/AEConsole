@@ -45,6 +45,12 @@ public class AELog {
     
     public var settingsPath: String?
     
+    private var text = "" {
+        didSet {
+            textView.text = text
+        }
+    }
+    
     // MARK: - Helpers
     
     private var infoPlist: NSDictionary? {
@@ -89,6 +95,7 @@ public class AELog {
     
     lazy var textView: UITextView = {
         let textView = UITextView()
+        textView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
         textView.userInteractionEnabled = false
         textView.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.7)
         textView.textColor = UIColor.whiteColor()
@@ -128,7 +135,7 @@ extension AELogDelegate where Self: AppDelegate {
         guard let window = self.window else { return }
         let textView = AELog.sharedInstance.textView
         window.bringSubviewToFront(textView)
-        textView.text = message
+        AELog.sharedInstance.text += "\n\(message)"
     }
     
 }
