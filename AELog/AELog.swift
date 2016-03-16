@@ -17,24 +17,21 @@ public class AELog {
     
     // MARK: - Singleton
     
-    static let sharedInstance = AELog()
+    public static let sharedInstance = AELog()
     
     // MARK: - Properties
     
-    weak var delegate: AELogDelegate?
+    public weak var delegate: AELogDelegate?
     
-    var infoPlist: NSDictionary? {
-        if let _ = delegate {
-            let bundle = NSBundle(forClass: delegate!.dynamicType)
-            let path = bundle.pathForResource("Info", ofType: "plist")!
-            let dict = NSDictionary(contentsOfFile: path)
-            return dict
-        } else {
-            return nil
-        }
+    private var infoPlist: NSDictionary? {
+        guard let
+            path = NSBundle.mainBundle().pathForResource("Info", ofType: "plist"),
+            info = NSDictionary(contentsOfFile: path)
+        else { return nil }
+        return info
     }
     
-    var logSettings: [String : AnyObject]? {
+    private var logSettings: [String : AnyObject]? {
         guard let
             info = infoPlist,
             settings = info["AELog"] as? [String : AnyObject]
@@ -42,18 +39,17 @@ public class AELog {
         return settings
     }
     
-    var logEnabled: Bool {
+    private var logEnabled: Bool {
         guard let
             settings = logSettings,
             enabled = settings["Enabled"] as? Bool
-            else { return false }
-        
+        else { return false }
         return enabled
     }
     
     // MARK: - Actions
     
-    func log(message: String = "", filePath: String = __FILE__, line: Int = __LINE__, function: String = __FUNCTION__) {
+    private func log(message: String = "", filePath: String = __FILE__, line: Int = __LINE__, function: String = __FUNCTION__) {
         if logEnabled {
             var threadName = ""
             threadName = NSThread.currentThread().isMainThread ? "MAIN THREAD" : (NSThread.currentThread().name ?? "UNKNOWN THREAD")
