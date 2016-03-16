@@ -13,6 +13,7 @@
 		8BBD391E1C9A0071007FE800 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8BBD391D1C9A0071007FE800 /* Assets.xcassets */; };
 		8BBD39211C9A0071007FE800 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8BBD391F1C9A0071007FE800 /* LaunchScreen.storyboard */; };
 		8BBD39291C9A007D007FE800 /* AELog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBD39281C9A007D007FE800 /* AELog.swift */; };
+		8BBD392B1C9A19CF007FE800 /* AELog.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8BBD392A1C9A19CF007FE800 /* AELog.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		8BBD39201C9A0071007FE800 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8BBD39221C9A0071007FE800 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8BBD39281C9A007D007FE800 /* AELog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AELog.swift; sourceTree = "<group>"; };
+		8BBD392A1C9A19CF007FE800 /* AELog.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = AELog.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +61,7 @@
 				8BBD39161C9A0071007FE800 /* AppDelegate.swift */,
 				8BBD39181C9A0071007FE800 /* ViewController.swift */,
 				8BBD39281C9A007D007FE800 /* AELog.swift */,
+				8BBD392A1C9A19CF007FE800 /* AELog.plist */,
 				8BBD391A1C9A0071007FE800 /* Main.storyboard */,
 				8BBD391D1C9A0071007FE800 /* Assets.xcassets */,
 				8BBD391F1C9A0071007FE800 /* LaunchScreen.storyboard */,
@@ -126,6 +129,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8BBD39211C9A0071007FE800 /* LaunchScreen.storyboard in Resources */,
+				8BBD392B1C9A19CF007FE800 /* AELog.plist in Resources */,
 				8BBD391E1C9A0071007FE800 /* Assets.xcassets in Resources */,
 				8BBD391C1C9A0071007FE800 /* Main.storyboard in Resources */,
 			);

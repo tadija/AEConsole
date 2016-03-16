@@ -19,9 +19,17 @@ public class AELog {
     
     public static let sharedInstance = AELog()
     
+    public class func launchWithDelegate(delegate: AELogDelegate, settingsPath: String? = nil) {
+        AELog.sharedInstance.delegate = delegate
+        AELog.sharedInstance.settingsPath = settingsPath
+    }
+    
     // MARK: - Properties
     
     public weak var delegate: AELogDelegate?
+    public var settingsPath: String?
+    
+    // MARK: - Helpers
     
     private var infoPlist: NSDictionary? {
         guard let
@@ -32,11 +40,19 @@ public class AELog {
     }
     
     private var logSettings: [String : AnyObject]? {
-        guard let
-            info = infoPlist,
-            settings = info["AELog"] as? [String : AnyObject]
+        if let path = settingsPath {
+            guard let settings = NSDictionary(contentsOfFile: path) as? [String : AnyObject] else { return nil }
+            return settings
+        } else if let path = NSBundle.mainBundle().pathForResource("AELog", ofType: "plist") {
+            guard let settings = NSDictionary(contentsOfFile: path) as? [String : AnyObject] else { return nil }
+            return settings
+        } else {
+            guard let
+                info = infoPlist,
+                settings = info["AELog"] as? [String : AnyObject]
             else { return nil }
-        return settings
+            return settings
+        }
     }
     
     private var logEnabled: Bool {

@@ -16,7 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AELogDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
 
-        AELog.sharedInstance.delegate = self
+        AELog.launchWithDelegate(self)
         
         aelog("hello 1")
         
