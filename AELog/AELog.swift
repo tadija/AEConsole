@@ -61,6 +61,7 @@ extension AELogDelegate {
             textView.textColor = UIColor.whiteColor()
             textView.text = message
             textView.frame = app.window!.bounds
+            textView.userInteractionEnabled = false
             
             app.window?.addSubview(textView)
         }
