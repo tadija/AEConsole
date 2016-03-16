@@ -9,12 +9,8 @@
 import Foundation
 import UIKit
 
-func aelog(message: String = "", filePath: String = __FILE__, line: Int = __LINE__, function: String = __FUNCTION__) {
+public func aelog(message: String = "", filePath: String = __FILE__, line: Int = __LINE__, function: String = __FUNCTION__) {
     AELog.sharedInstance.log(message, filePath: filePath, line: line, function: function)
-}
-
-public protocol AELogDelegate: class {
-    func didLog(message: String)
 }
 
 public class AELog {
@@ -48,22 +44,21 @@ public class AELog {
     
 }
 
-extension AELogDelegate {
+public protocol AELogDelegate: class {
+    func didLog(message: String)
+}
+
+extension AELogDelegate where Self: AppDelegate {
     
     func didLog(message: String) {
-        print("didLog: \(message)")
-        
-        if let app = self as? AppDelegate {
-            print("I'm app delegate")
-            
+        if let window = self.window {
             let textView = UITextView()
+            textView.frame = window.bounds
+            textView.userInteractionEnabled = false
             textView.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.5)
             textView.textColor = UIColor.whiteColor()
             textView.text = message
-            textView.frame = app.window!.bounds
-            textView.userInteractionEnabled = false
-            
-            app.window?.addSubview(textView)
+            window.addSubview(textView)
         }
     }
     
