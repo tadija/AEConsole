@@ -26,8 +26,9 @@ extension AELogDelegate where Self: AppDelegate {
     func didLog(message: String) {
         guard let window = self.window else { return }
         let logView = AELog.sharedInstance.logView
-        window.bringSubviewToFront(logView)
         logView.text += "\n\(message)"
+        window.bringSubviewToFront(logView)
+        logView.becomeFirstResponder()
     }
     
 }
@@ -183,6 +184,18 @@ class LogView: UIView {
         return hitView
     }
     
+    override func canBecomeFirstResponder() -> Bool {
+        return true
+    }
+    
+    override func motionEnded(motion: UIEventSubtype, withEvent event: UIEvent?) {
+        if motion == .MotionShake {
+            UIView.transitionWithView(self, duration: 0.3, options: .TransitionCrossDissolve, animations: { () -> Void in
+                self.hidden = !self.hidden
+                }, completion: nil)
+        }
+    }
+    
     // MARK: - Actions
     
     func switchValueChanged(sender: UISwitch) {
@@ -198,6 +211,7 @@ class LogView: UIView {
     
     private func configureOutlets() {
         textView.editable = false
+        textView.selectable = false
         textView.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.7)
         textView.textColor = UIColor.whiteColor()
         
