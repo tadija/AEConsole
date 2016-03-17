@@ -118,21 +118,30 @@ public class AELog {
     
     private func log(message: String = "", path: String = __FILE__, line: Int = __LINE__, function: String = __FUNCTION__) {
         if logEnabled {
-            var threadName = ""
-            threadName = NSThread.currentThread().isMainThread ? "MAIN THREAD" : (NSThread.currentThread().name ?? "UNKNOWN THREAD")
-            threadName = "[" + threadName + "] "
-            
-            let fileName = NSURL(fileURLWithPath: path).URLByDeletingPathExtension?.lastPathComponent ?? "???"
-            
-            var msg = ""
-            if message != "" {
-                msg = " - \(message)"
-            }
-            
-            NSLog("-- " + threadName + fileName + "(\(line))" + " -> " + function + msg)
-            
-            delegate?.didLog(message)
+            let logString = generateLogString(message: message, path: path, line: line, function: function)
+            NSLog(logString)
+            delegate?.didLog(logString)
         }
+    }
+    
+    private func generateLogString(message message: String, path: String, line: Int, function: String) -> String {
+        let fileName = fileNameForPath(path)
+        let logMessage = message == "" ? "" : " - \(message)"
+        let logString = "-- [\(threadName)] \(fileName) (\(line)) -> \(function)\(logMessage)"
+        return logString
+    }
+    
+    private var threadName: String {
+        let thread = NSThread.currentThread()
+        let name = thread.isMainThread ? "Main" : (thread.name ?? "Unknown")
+        return name
+    }
+    
+    private func fileNameForPath(path: String) -> String {
+        guard let
+            fileName = NSURL(fileURLWithPath: path).URLByDeletingPathExtension?.lastPathComponent
+        else { return "Unknown" }
+        return fileName
     }
     
 }
