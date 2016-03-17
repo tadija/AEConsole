@@ -26,7 +26,7 @@ extension AELogDelegate where Self: AppDelegate {
     func didLog(message: String) {
         guard let window = self.window else { return }
         let logView = AELog.sharedInstance.logView
-        logView.text += "\n\(message)"
+        logView.text += "\(message)\n"
         window.bringSubviewToFront(logView)
         logView.becomeFirstResponder()
     }
@@ -154,16 +154,27 @@ class LogView: UIView {
     
     private let textView = UITextView()
     private let `switch` = UISwitch()
+    private let clearButton = UIButton()
     
     // MARK: - Properties
     
     var text = "" {
         didSet {
             textView.text = text
+            scrollToBottom()
         }
     }
     
-    private var shouldForwardTouches = true
+    private func scrollToBottom() {
+        let contentHeight = textView.contentSize.height
+        let shouldScroll = contentHeight > bounds.height
+        if shouldScroll {
+            let bottomOffset = CGPoint(x: 0, y: contentHeight)
+            textView.setContentOffset(bottomOffset, animated: false)
+        }
+    }
+    
+    private var shouldForwardTouches = false
     
     // MARK: - Init
     
@@ -179,6 +190,95 @@ class LogView: UIView {
     
     private func commonInit() {
         configureUI()
+    }
+    
+    private func configureUI() {
+        configureOutlets()
+        configureLayout()
+    }
+    
+    private func configureOutlets() {
+        textView.editable = false
+        textView.selectable = false
+        textView.alwaysBounceVertical = true
+        textView.textContainer.lineFragmentPadding = 0
+        textView.textContainerInset = UIEdgeInsets(top: 8, left: 4, bottom: 0, right: 0)
+        textView.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.7)
+        textView.textColor = UIColor.whiteColor().colorWithAlphaComponent(0.7)
+        
+        `switch`.on = true
+        `switch`.addTarget(self, action: Selector("switchValueChanged:"), forControlEvents: .ValueChanged)
+        
+        clearButton.setTitle("Clear", forState: .Normal)
+        clearButton.addTarget(self, action: Selector("clearButtonTapped:"), forControlEvents: .TouchUpInside)
+    }
+    
+    // MARK: - Actions
+    
+    func switchValueChanged(sender: UISwitch) {
+        shouldForwardTouches = !sender.on
+        clearButton.hidden = !sender.on
+    }
+    
+    func clearButtonTapped(sender: UIButton) {
+        text = ""
+    }
+    
+    // MARK: - Layout
+    
+    private func configureLayout() {
+        addSubview(textView)
+        addSubview(`switch`)
+        addSubview(clearButton)
+        
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        `switch`.translatesAutoresizingMaskIntoConstraints = false
+        clearButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        configureTextViewConstraints()
+        configureSwitchConstraints()
+        configureClearButtonConstraints()
+    }
+    
+    private func configureTextViewConstraints() {
+        guard let textViewConstraints = textViewConstraints else { return }
+        NSLayoutConstraint.activateConstraints(textViewConstraints)
+    }
+    
+    private func configureSwitchConstraints() {
+        guard let switchConstraints = switchConstraints else { return }
+        NSLayoutConstraint.activateConstraints(switchConstraints)
+    }
+    
+    private func configureClearButtonConstraints() {
+        guard let clearButtonConstraints = clearButtonConstraints else { return }
+        NSLayoutConstraint.activateConstraints(clearButtonConstraints)
+    }
+    
+    private var textViewConstraints: [NSLayoutConstraint]? {
+        guard let
+            leading = textView.leadingAnchor.constraintEqualToAnchor(leadingAnchor),
+            trailing = textView.trailingAnchor.constraintEqualToAnchor(trailingAnchor),
+            top = textView.topAnchor.constraintEqualToAnchor(topAnchor),
+            bottom = textView.bottomAnchor.constraintEqualToAnchor(bottomAnchor)
+            else { return nil }
+        return [leading, trailing, top, bottom]
+    }
+    
+    private var switchConstraints: [NSLayoutConstraint]? {
+        guard let
+            centerX = `switch`.centerXAnchor.constraintEqualToAnchor(centerXAnchor),
+            centerY = `switch`.centerYAnchor.constraintEqualToAnchor(centerYAnchor)
+            else { return nil }
+        return [centerX, centerY]
+    }
+    
+    private var clearButtonConstraints: [NSLayoutConstraint]? {
+        guard let
+            centerX = clearButton.centerXAnchor.constraintEqualToAnchor(centerXAnchor, constant: 100.0),
+            centerY = clearButton.centerYAnchor.constraintEqualToAnchor(centerYAnchor)
+            else { return nil }
+        return [centerX, centerY]
     }
     
     // MARK: - Override
@@ -205,81 +305,4 @@ class LogView: UIView {
         }
     }
     
-    // MARK: - Actions
-    
-    func switchValueChanged(sender: UISwitch) {
-        shouldForwardTouches = !sender.on
-    }
-    
-    // MARK: - Helpers
-    
-    private func configureUI() {
-        configureOutlets()
-        configureLayout()
-    }
-    
-    private func configureOutlets() {
-        textView.editable = false
-        textView.selectable = false
-        textView.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.7)
-        textView.textColor = UIColor.whiteColor()
-        
-        `switch`.addTarget(self, action: Selector("switchValueChanged:"), forControlEvents: .ValueChanged)
-    }
-    
-    private func configureLayout() {
-        addSubview(textView)
-        addSubview(`switch`)
-        
-        textView.translatesAutoresizingMaskIntoConstraints = false
-        `switch`.translatesAutoresizingMaskIntoConstraints = false
-        
-        configureTextViewConstraints()
-        configureSwitchConstraints()
-    }
-    
-    private func configureTextViewConstraints() {
-        guard let textViewConstraints = textViewConstraints else { return }
-        NSLayoutConstraint.activateConstraints(textViewConstraints)
-    }
-    
-    private func configureSwitchConstraints() {
-        guard let switchConstraints = switchConstraints else { return }
-        NSLayoutConstraint.activateConstraints(switchConstraints)
-    }
-    
-    private var textViewConstraints: [NSLayoutConstraint]? {
-        guard let
-            leading = textView.leadingAnchor.constraintEqualToAnchor(leadingAnchor),
-            trailing = textView.trailingAnchor.constraintEqualToAnchor(trailingAnchor),
-            top = textView.topAnchor.constraintEqualToAnchor(topAnchor),
-            bottom = textView.bottomAnchor.constraintEqualToAnchor(bottomAnchor)
-        else { return nil }
-        return [leading, trailing, top, bottom]
-    }
-    
-    private var switchConstraints: [NSLayoutConstraint]? {
-        guard let
-            centerX = `switch`.centerXAnchor.constraintEqualToAnchor(centerXAnchor),
-            centerY = `switch`.centerYAnchor.constraintEqualToAnchor(centerYAnchor)
-        else { return nil }
-        return [centerX, centerY]
-    }
-    
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
