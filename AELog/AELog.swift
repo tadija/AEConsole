@@ -9,9 +9,30 @@
 import Foundation
 import UIKit
 
-public func aelog(message: String = "", filePath: String = __FILE__, line: Int = __LINE__, function: String = __FUNCTION__) {
-    AELog.sharedInstance.log(message, filePath: filePath, line: line, function: function)
+// MARK: - Top Level
+
+public func log(message: String = "", path: String = __FILE__, line: Int = __LINE__, function: String = __FUNCTION__) {
+    AELog.sharedInstance.log(message, path: path, line: line, function: function)
 }
+
+// MARK: - AELogDelegate
+
+public protocol AELogDelegate: class {
+    func didLog(message: String)
+}
+
+extension AELogDelegate where Self: AppDelegate {
+    
+    func didLog(message: String) {
+        guard let window = self.window else { return }
+        let logView = AELog.sharedInstance.logView
+        window.bringSubviewToFront(logView)
+        logView.text += "\n\(message)"
+    }
+    
+}
+
+// MARK: - AELog
 
 public class AELog {
     
@@ -31,27 +52,28 @@ public class AELog {
     
     // MARK: - Properties
     
+    private let logView = LogView()
+    
     public weak var delegate: AELogDelegate? {
         didSet {
-            guard let
-                app = delegate as? AppDelegate,
-                window = app.window
-            else { return }
-
-            textView.frame = window.bounds
-            window.addSubview(textView)
+            addLogViewToAppWindow()
         }
     }
     
     public var settingsPath: String?
     
-    private var text = "" {
-        didSet {
-            textView.text = text
-        }
-    }
-    
     // MARK: - Helpers
+    
+    private func addLogViewToAppWindow() {
+        guard let
+            app = delegate as? AppDelegate,
+            window = app.window
+        else { return }
+        
+        logView.frame = window.bounds
+        logView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+        window.addSubview(logView)
+    }
     
     private var infoPlist: NSDictionary? {
         guard let
@@ -91,26 +113,15 @@ public class AELog {
         return enabled
     }
     
-    // MARK: - UI
-    
-    lazy var textView: UITextView = {
-        let textView = UITextView()
-        textView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
-        textView.userInteractionEnabled = false
-        textView.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.7)
-        textView.textColor = UIColor.whiteColor()
-        return textView
-    }()
-    
     // MARK: - Actions
     
-    private func log(message: String = "", filePath: String = __FILE__, line: Int = __LINE__, function: String = __FUNCTION__) {
+    private func log(message: String = "", path: String = __FILE__, line: Int = __LINE__, function: String = __FUNCTION__) {
         if logEnabled {
             var threadName = ""
             threadName = NSThread.currentThread().isMainThread ? "MAIN THREAD" : (NSThread.currentThread().name ?? "UNKNOWN THREAD")
             threadName = "[" + threadName + "] "
             
-            let fileName = NSURL(fileURLWithPath: filePath).URLByDeletingPathExtension?.lastPathComponent ?? "???"
+            let fileName = NSURL(fileURLWithPath: path).URLByDeletingPathExtension?.lastPathComponent ?? "???"
             
             var msg = ""
             if message != "" {
@@ -125,20 +136,123 @@ public class AELog {
     
 }
 
-public protocol AELogDelegate: class {
-    func didLog(message: String)
-}
+// MARK: - LogView
 
-extension AELogDelegate where Self: AppDelegate {
+class LogView: UIView {
     
-    func didLog(message: String) {
-        guard let window = self.window else { return }
-        let textView = AELog.sharedInstance.textView
-        window.bringSubviewToFront(textView)
-        AELog.sharedInstance.text += "\n\(message)"
+    // MARK: - Outlets
+    
+    private let textView = UITextView()
+    private let `switch` = UISwitch()
+    
+    // MARK: - Properties
+    
+    var text = "" {
+        didSet {
+            textView.text = text
+        }
+    }
+    
+    private var shouldForwardTouches = true
+    
+    // MARK: - Init
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        commonInit()
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        commonInit()
+    }
+    
+    private func commonInit() {
+        configureUI()
+    }
+    
+    // MARK: - Override
+    
+    override func hitTest(point: CGPoint, withEvent event: UIEvent?) -> UIView? {
+        let hitView = super.hitTest(point, withEvent: event)
+        
+        if hitView == textView && shouldForwardTouches {
+            return nil
+        }
+        
+        return hitView
+    }
+    
+    // MARK: - Actions
+    
+    func switchValueChanged(sender: UISwitch) {
+        shouldForwardTouches = !sender.on
+    }
+    
+    // MARK: - Helpers
+    
+    private func configureUI() {
+        configureOutlets()
+        configureLayout()
+    }
+    
+    private func configureOutlets() {
+        textView.editable = false
+        textView.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.7)
+        textView.textColor = UIColor.whiteColor()
+        
+        `switch`.addTarget(self, action: Selector("switchValueChanged:"), forControlEvents: .ValueChanged)
+    }
+    
+    private func configureLayout() {
+        addSubview(textView)
+        addSubview(`switch`)
+        
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        `switch`.translatesAutoresizingMaskIntoConstraints = false
+        
+        configureTextViewConstraints()
+        configureSwitchConstraints()
+    }
+    
+    private func configureTextViewConstraints() {
+        guard let textViewConstraints = textViewConstraints else { return }
+        NSLayoutConstraint.activateConstraints(textViewConstraints)
+    }
+    
+    private func configureSwitchConstraints() {
+        guard let switchConstraints = switchConstraints else { return }
+        NSLayoutConstraint.activateConstraints(switchConstraints)
+    }
+    
+    private var textViewConstraints: [NSLayoutConstraint]? {
+        guard let
+            leading = textView.leadingAnchor.constraintEqualToAnchor(leadingAnchor),
+            trailing = textView.trailingAnchor.constraintEqualToAnchor(trailingAnchor),
+            top = textView.topAnchor.constraintEqualToAnchor(topAnchor),
+            bottom = textView.bottomAnchor.constraintEqualToAnchor(bottomAnchor)
+        else { return nil }
+        return [leading, trailing, top, bottom]
+    }
+    
+    private var switchConstraints: [NSLayoutConstraint]? {
+        guard let
+            centerX = `switch`.centerXAnchor.constraintEqualToAnchor(centerXAnchor),
+            centerY = `switch`.centerYAnchor.constraintEqualToAnchor(centerYAnchor)
+        else { return nil }
+        return [centerX, centerY]
     }
     
 }
+
+
+
+
+
+
+
+
+
 
 
 

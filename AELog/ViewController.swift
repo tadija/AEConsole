@@ -12,16 +12,22 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+
+        for i in 0...100 {
+            log("test log \(i)")
+        }
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    @IBAction func buttonTopTapped(sender: AnyObject) {
+        log("top button is tapped")
     }
-
-    @IBAction func buttonTapped(sender: AnyObject) {
-        aelog("button is tapped")
+    
+    @IBAction func buttonCenterTapped(sender: AnyObject) {
+        log("center button is tapped")
+    }
+    
+    @IBAction func buttonBottomTapped(sender: AnyObject) {
+        log("bottom button is tapped")
     }
 
 }
