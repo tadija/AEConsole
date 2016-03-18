@@ -23,11 +23,11 @@ class ViewController: UIViewController {
     }
     
     @IBAction func buttonCenterTapped(sender: AnyObject) {
-        log("center button is tapped")
+        log("center button is tapped - it has even longer longer much longer very longer text")
     }
     
     @IBAction func buttonBottomTapped(sender: AnyObject) {
-        log("bottom button is tapped")
+        log("bottom button is tapped - it has longer log text")
     }
 
 }

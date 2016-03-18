@@ -38,7 +38,7 @@ extension AELogDelegate where Self: AppDelegate {
 public class AELog {
     
     private struct Key {
-        static let ClassName = NSStringFromClass(AELog).componentsSeparatedByString(".").last!
+        static let Name = NSStringFromClass(AELog).componentsSeparatedByString(".").last!
         static let Enabled = "Enabled"
     }
     
@@ -87,12 +87,12 @@ public class AELog {
     private var logSettings: [String : AnyObject]? {
         if let path = settingsPath {
             return settingsForPath(path)
-        } else if let path = NSBundle.mainBundle().pathForResource(Key.ClassName, ofType: "plist") {
+        } else if let path = NSBundle.mainBundle().pathForResource(Key.Name, ofType: "plist") {
             return settingsForPath(path)
         } else {
             guard let
                 info = infoPlist,
-                settings = info[Key.ClassName] as? [String : AnyObject]
+                settings = info[Key.Name] as? [String : AnyObject]
             else { return nil }
             return settings
         }
@@ -126,7 +126,7 @@ public class AELog {
     
     private func generateLogString(message message: String, path: String, line: Int, function: String) -> String {
         let fileName = fileNameForPath(path)
-        let logMessage = message == "" ? "" : " - \(message)"
+        let logMessage = message == "" ? "" : " | \"\(message)\""
         let logString = "-- [\(threadName)] \(fileName) (\(line)) -> \(function)\(logMessage)"
         return logString
     }
@@ -152,6 +152,7 @@ class LogView: UIView {
     
     // MARK: - Outlets
     
+    private let scrollView = UIScrollView()
     private let textView = UITextView()
     private let `switch` = UISwitch()
     private let clearButton = UIButton()
@@ -161,16 +162,23 @@ class LogView: UIView {
     var text = "" {
         didSet {
             textView.text = text
+            updateContentSize()
             scrollToBottom()
         }
     }
     
+    private func updateContentSize() {
+        let size = (text as NSString).sizeWithAttributes([NSFontAttributeName: textView.font!])
+        let frame = CGRect(x: 0, y: 0, width: size.width + 20, height: size.height)
+        textView.frame = frame
+        scrollView.contentSize = textView.bounds.size
+    }
+    
     private func scrollToBottom() {
-        let contentHeight = textView.contentSize.height
-        let shouldScroll = contentHeight > bounds.height
-        if shouldScroll {
-            let bottomOffset = CGPoint(x: 0, y: contentHeight)
-            textView.setContentOffset(bottomOffset, animated: false)
+        let diff = scrollView.contentSize.height - scrollView.bounds.size.height
+        if diff > 0 {
+            let bottomOffset = CGPoint(x: 0, y: diff)
+            scrollView.setContentOffset(bottomOffset, animated: false)
         }
     }
     
@@ -198,12 +206,15 @@ class LogView: UIView {
     }
     
     private func configureOutlets() {
+        scrollView.alwaysBounceVertical = true
+        scrollView.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.7)
+        
         textView.editable = false
         textView.selectable = false
-        textView.alwaysBounceVertical = true
+        textView.scrollEnabled = false
         textView.textContainer.lineFragmentPadding = 0
         textView.textContainerInset = UIEdgeInsets(top: 8, left: 4, bottom: 0, right: 0)
-        textView.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.7)
+        textView.backgroundColor = UIColor.clearColor()
         textView.textColor = UIColor.whiteColor().colorWithAlphaComponent(0.7)
         
         `switch`.on = true
@@ -227,22 +238,23 @@ class LogView: UIView {
     // MARK: - Layout
     
     private func configureLayout() {
-        addSubview(textView)
+        addSubview(scrollView)
+        scrollView.addSubview(textView)
         addSubview(`switch`)
         addSubview(clearButton)
         
-        textView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
         `switch`.translatesAutoresizingMaskIntoConstraints = false
         clearButton.translatesAutoresizingMaskIntoConstraints = false
         
-        configureTextViewConstraints()
+        configureScrollViewConstraints()
         configureSwitchConstraints()
         configureClearButtonConstraints()
     }
     
-    private func configureTextViewConstraints() {
-        guard let textViewConstraints = textViewConstraints else { return }
-        NSLayoutConstraint.activateConstraints(textViewConstraints)
+    private func configureScrollViewConstraints() {
+        guard let scrollViewConstraints = scrollViewConstraints else { return }
+        NSLayoutConstraint.activateConstraints(scrollViewConstraints)
     }
     
     private func configureSwitchConstraints() {
@@ -255,12 +267,12 @@ class LogView: UIView {
         NSLayoutConstraint.activateConstraints(clearButtonConstraints)
     }
     
-    private var textViewConstraints: [NSLayoutConstraint]? {
+    private var scrollViewConstraints: [NSLayoutConstraint]? {
         guard let
-            leading = textView.leadingAnchor.constraintEqualToAnchor(leadingAnchor),
-            trailing = textView.trailingAnchor.constraintEqualToAnchor(trailingAnchor),
-            top = textView.topAnchor.constraintEqualToAnchor(topAnchor),
-            bottom = textView.bottomAnchor.constraintEqualToAnchor(bottomAnchor)
+            leading = scrollView.leadingAnchor.constraintEqualToAnchor(leadingAnchor),
+            trailing = scrollView.trailingAnchor.constraintEqualToAnchor(trailingAnchor),
+            top = scrollView.topAnchor.constraintEqualToAnchor(topAnchor),
+            bottom = scrollView.bottomAnchor.constraintEqualToAnchor(bottomAnchor)
             else { return nil }
         return [leading, trailing, top, bottom]
     }
@@ -286,7 +298,7 @@ class LogView: UIView {
     override func hitTest(point: CGPoint, withEvent event: UIEvent?) -> UIView? {
         let hitView = super.hitTest(point, withEvent: event)
         
-        if hitView == textView && shouldForwardTouches {
+        if (hitView == scrollView || hitView == textView) && shouldForwardTouches {
             return nil
         }
         
