@@ -172,6 +172,7 @@ class LogView: UIView {
     private let followButton = UIButton()
     private let clearButton = UIButton()
     
+    private let opacityGesture = UIPanGestureRecognizer()
     private let closeGesture = UITapGestureRecognizer()
     
     // MARK: - Properties
@@ -226,11 +227,24 @@ class LogView: UIView {
         text = ""
     }
     
+    func opacityGestureRecognized(sender: UIPanGestureRecognizer) {
+        if sender.state == .Ended {
+            let location = sender.locationInView(toolbar)
+            alpha = opacityForLocation(location)
+        }
+    }
+    
     func closeGestureRecognized(sender: UITapGestureRecognizer) {
         toggleUI()
     }
     
     // MARK: - Helpers
+    
+    private func opacityForLocation(point: CGPoint) -> CGFloat {
+        let calculatedOpacity = ((point.x * 1.0) / 300)
+        let opacity = max(0.1, calculatedOpacity)
+        return opacity
+    }
     
     private func updateContentSize() {
         let size = (text as NSString).sizeWithAttributes([NSFontAttributeName: textView.font!])
@@ -272,7 +286,8 @@ class LogView: UIView {
     private func configureOutlets() {
         configureScrollingTextView()
         configureToolbar()
-        configureToolbarControls()
+        configureToolbarButtons()
+        configureOpacityGesture()
         configureCloseGesture()
     }
     
@@ -298,7 +313,7 @@ class LogView: UIView {
         toolbarStack.distribution = .FillEqually
     }
     
-    private func configureToolbarControls() {
+    private func configureToolbarButtons() {
         settingsButton.setTitle("☀️", forState: .Normal)
         touchButton.setTitle("✨", forState: .Normal)
         touchButton.setTitle("⚡️", forState: .Selected)
@@ -313,6 +328,11 @@ class LogView: UIView {
         touchButton.addTarget(self, action: Selector("touchButtonTapped:"), forControlEvents: .TouchUpInside)
         followButton.addTarget(self, action: Selector("followButtonTapped:"), forControlEvents: .TouchUpInside)
         clearButton.addTarget(self, action: Selector("clearButtonTapped:"), forControlEvents: .TouchUpInside)
+    }
+    
+    private func configureOpacityGesture() {
+        opacityGesture.addTarget(self, action: "opacityGestureRecognized:")
+        toolbar.addGestureRecognizer(opacityGesture)
     }
     
     private func configureCloseGesture() {
