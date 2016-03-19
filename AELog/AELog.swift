@@ -156,8 +156,12 @@ class LogView: UIView {
     private let textView = UITextView()
     
     private let toolbar = UIView()
+    private let toolbarStack = UIStackView()
+    private var toolbarLeadingConstraint: NSLayoutConstraint!
+    
     private let settingsButton = UIButton()
-    private let `switch` = UISwitch()
+    private let touchButton = UIButton()
+    private let followButton = UIButton()
     private let clearButton = UIButton()
     
     private let closeGesture = UITapGestureRecognizer()
@@ -167,29 +171,16 @@ class LogView: UIView {
     var text = "" {
         didSet {
             textView.text = text
+            
             updateContentSize()
-            scrollToBottom()
-        }
-    }
-    
-    private func updateContentSize() {
-        let size = (text as NSString).sizeWithAttributes([NSFontAttributeName: textView.font!])
-        let width = size.width + bounds.width + 10
-        let frame = CGRect(x: 0, y: 0, width: width, height: size.height)
-        textView.frame = frame
-        scrollView.contentSize = textView.bounds.size
-    }
-    
-    private func scrollToBottom() {
-        let diff = scrollView.contentSize.height - scrollView.bounds.size.height
-        if diff > 0 {
-            let bottomOffset = CGPoint(x: scrollView.contentOffset.x, y: diff)
-            scrollView.setContentOffset(bottomOffset, animated: false)
+            if autoFollow {
+                scrollToBottom()
+            }
         }
     }
     
     private var shouldForwardTouches = false
-    private var toolbarLeadingConstraint: NSLayoutConstraint!
+    private var autoFollow = true
     
     // MARK: - Init
     
@@ -209,25 +200,52 @@ class LogView: UIView {
     
     // MARK: - Actions
     
-    func switchValueChanged(sender: UISwitch) {
-        shouldForwardTouches = !sender.on
-        clearButton.hidden = !sender.on
+    func settingsButtonTapped(sender: UIButton) {
+        toggleToolbar()
+    }
+    
+    func touchButtonTapped(sender: UIButton) {
+        touchButton.selected = !touchButton.selected
+        shouldForwardTouches = !shouldForwardTouches
+    }
+    
+    func followButtonTapped(sender: UIButton) {
+        followButton.selected = !followButton.selected
+        autoFollow = !autoFollow
     }
     
     func clearButtonTapped(sender: UIButton) {
         text = ""
     }
     
-    func settingsButtonTapped(sender: UIButton) {
-        let collapsed = toolbarLeadingConstraint.constant == -100
-        toolbarLeadingConstraint.constant = collapsed ? -300 : -100
-        UIView.animateWithDuration(0.3) {
-            self.toolbar.layoutIfNeeded()
+    func closeGestureRecognized(sender: UITapGestureRecognizer) {
+        toggleUI()
+    }
+    
+    // MARK: - Helpers
+    
+    private func updateContentSize() {
+        let size = (text as NSString).sizeWithAttributes([NSFontAttributeName: textView.font!])
+        let width = size.width + bounds.width + 10
+        let frame = CGRect(x: 0, y: 0, width: width, height: size.height)
+        textView.frame = frame
+        scrollView.contentSize = textView.bounds.size
+    }
+    
+    private func scrollToBottom() {
+        let diff = scrollView.contentSize.height - scrollView.bounds.size.height
+        if diff > 0 {
+            let bottomOffset = CGPoint(x: scrollView.contentOffset.x, y: diff)
+            scrollView.setContentOffset(bottomOffset, animated: false)
         }
     }
     
-    func closeGestureRecognized(sender: UITapGestureRecognizer) {
-        toggleUI()
+    private func toggleToolbar() {
+        let collapsed = toolbarLeadingConstraint.constant == -75
+        toolbarLeadingConstraint.constant = collapsed ? -300 : -75
+        UIView.animateWithDuration(0.3) {
+            self.toolbar.layoutIfNeeded()
+        }
     }
     
     private func toggleUI() {
@@ -244,6 +262,13 @@ class LogView: UIView {
     }
     
     private func configureOutlets() {
+        configureScrollingTextView()
+        configureToolbar()
+        configureToolbarControls()
+        configureCloseGesture()
+    }
+    
+    private func configureScrollingTextView() {
         scrollView.alwaysBounceVertical = true
         scrollView.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.7)
         
@@ -254,19 +279,35 @@ class LogView: UIView {
         textView.textContainerInset = UIEdgeInsets(top: 8, left: 4, bottom: 0, right: 0)
         textView.backgroundColor = UIColor.clearColor()
         textView.textColor = UIColor.whiteColor().colorWithAlphaComponent(0.7)
-        
+    }
+    
+    private func configureToolbar() {
         toolbar.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.3)
         toolbar.layer.cornerRadius = 12
         
-        settingsButton.setTitle("Settings", forState: .Normal)
+        toolbarStack.axis = .Horizontal
+        toolbarStack.alignment = .Fill
+        toolbarStack.distribution = .FillEqually
+    }
+    
+    private func configureToolbarControls() {
+        settingsButton.setTitle("☀️", forState: .Normal)
+        touchButton.setTitle("✨", forState: .Normal)
+        touchButton.setTitle("⚡️", forState: .Selected)
+        followButton.setTitle("🌟", forState: .Normal)
+        followButton.setTitle("💫", forState: .Selected)
+        clearButton.setTitle("🔥", forState: .Normal)
+        
+        touchButton.selected = true
+        followButton.selected = true
+        
         settingsButton.addTarget(self, action: Selector("settingsButtonTapped:"), forControlEvents: .TouchUpInside)
-        
-        `switch`.on = true
-        `switch`.addTarget(self, action: Selector("switchValueChanged:"), forControlEvents: .ValueChanged)
-        
-        clearButton.setTitle("Clear", forState: .Normal)
+        touchButton.addTarget(self, action: Selector("touchButtonTapped:"), forControlEvents: .TouchUpInside)
+        followButton.addTarget(self, action: Selector("followButtonTapped:"), forControlEvents: .TouchUpInside)
         clearButton.addTarget(self, action: Selector("clearButtonTapped:"), forControlEvents: .TouchUpInside)
-        
+    }
+    
+    private func configureCloseGesture() {
         closeGesture.numberOfTouchesRequired = 2
         closeGesture.numberOfTapsRequired = 2
         closeGesture.addTarget(self, action: Selector("closeGestureRecognized:"))
@@ -274,27 +315,23 @@ class LogView: UIView {
     }
     
     private func configureLayout() {
-        addSubview(scrollView)
         scrollView.addSubview(textView)
-        
+        addSubview(scrollView)
+
+        toolbarStack.addArrangedSubview(settingsButton)
+        toolbarStack.addArrangedSubview(touchButton)
+        toolbarStack.addArrangedSubview(followButton)
+        toolbarStack.addArrangedSubview(clearButton)
+        toolbar.addSubview(toolbarStack)
         addSubview(toolbar)
-        toolbar.addSubview(settingsButton)
-        toolbar.addSubview(`switch`)
-        toolbar.addSubview(clearButton)
         
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         toolbar.translatesAutoresizingMaskIntoConstraints = false
-        settingsButton.translatesAutoresizingMaskIntoConstraints = false
-        `switch`.translatesAutoresizingMaskIntoConstraints = false
-        clearButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        toolbarLeadingConstraint = toolbar.leadingAnchor.constraintEqualToAnchor(trailingAnchor, constant: -300)
+        toolbarStack.translatesAutoresizingMaskIntoConstraints = false
         
         configureScrollViewConstraints()
         configureToolbarConstraints()
-        configureSettingsButtonConstraints()
-        configureSwitchConstraints()
-        configureClearButtonConstraints()
+        configureToolbarStackConstraints()
     }
     
     private func configureScrollViewConstraints() {
@@ -303,23 +340,14 @@ class LogView: UIView {
     }
     
     private func configureToolbarConstraints() {
+        toolbarLeadingConstraint = toolbar.leadingAnchor.constraintEqualToAnchor(trailingAnchor, constant: -300)
         guard let toolbarConstraints = toolbarConstraints else { return }
         NSLayoutConstraint.activateConstraints(toolbarConstraints)
     }
     
-    private func configureSettingsButtonConstraints() {
-        guard let settingsButtonConstraints = settingsButtonConstraints else { return }
-        NSLayoutConstraint.activateConstraints(settingsButtonConstraints)
-    }
-    
-    private func configureSwitchConstraints() {
-        guard let switchConstraints = switchConstraints else { return }
-        NSLayoutConstraint.activateConstraints(switchConstraints)
-    }
-    
-    private func configureClearButtonConstraints() {
-        guard let clearButtonConstraints = clearButtonConstraints else { return }
-        NSLayoutConstraint.activateConstraints(clearButtonConstraints)
+    private func configureToolbarStackConstraints() {
+        guard let toolbarStackConstraints = toolbarStackConstraints else { return }
+        NSLayoutConstraint.activateConstraints(toolbarStackConstraints)
     }
     
     private var scrollViewConstraints: [NSLayoutConstraint]? {
@@ -335,34 +363,20 @@ class LogView: UIView {
     private var toolbarConstraints: [NSLayoutConstraint]? {
         guard let
         width = toolbar.widthAnchor.constraintEqualToConstant(320),
-        height = toolbar.heightAnchor.constraintEqualToConstant(100),
+        height = toolbar.heightAnchor.constraintEqualToConstant(50),
         centerY = toolbar.centerYAnchor.constraintEqualToAnchor(centerYAnchor)
             else { return nil }
         return [width, height, toolbarLeadingConstraint, centerY]
     }
     
-    private var settingsButtonConstraints: [NSLayoutConstraint]? {
+    private var toolbarStackConstraints: [NSLayoutConstraint]? {
         guard let
-            centerX = settingsButton.centerXAnchor.constraintEqualToAnchor(toolbar.centerXAnchor, constant: -100.0),
-            centerY = settingsButton.centerYAnchor.constraintEqualToAnchor(toolbar.centerYAnchor)
+            leading = toolbarStack.leadingAnchor.constraintEqualToAnchor(toolbar.leadingAnchor),
+            trailing = toolbarStack.trailingAnchor.constraintEqualToAnchor(toolbar.trailingAnchor, constant: -20),
+            top = toolbarStack.topAnchor.constraintEqualToAnchor(toolbar.topAnchor),
+            bottom = toolbarStack.bottomAnchor.constraintEqualToAnchor(toolbar.bottomAnchor)
             else { return nil }
-        return [centerX, centerY]
-    }
-    
-    private var switchConstraints: [NSLayoutConstraint]? {
-        guard let
-            centerX = `switch`.centerXAnchor.constraintEqualToAnchor(toolbar.centerXAnchor),
-            centerY = `switch`.centerYAnchor.constraintEqualToAnchor(toolbar.centerYAnchor)
-            else { return nil }
-        return [centerX, centerY]
-    }
-    
-    private var clearButtonConstraints: [NSLayoutConstraint]? {
-        guard let
-            centerX = clearButton.centerXAnchor.constraintEqualToAnchor(toolbar.centerXAnchor, constant: 100.0),
-            centerY = clearButton.centerYAnchor.constraintEqualToAnchor(toolbar.centerYAnchor)
-            else { return nil }
-        return [centerX, centerY]
+        return [leading, trailing, top, bottom]
     }
     
     // MARK: - Override
