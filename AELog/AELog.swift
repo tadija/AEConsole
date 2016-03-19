@@ -150,6 +150,14 @@ public class AELog {
 
 class LogView: UIView {
     
+    private struct Constant {
+        static let ToolbarWidth: CGFloat = 300
+        static let ToolbarHeight: CGFloat = 50
+        static let ToolbarCollapsed: CGFloat = -75
+        static let ToolbarExpanded: CGFloat = -300
+        static let MagicNumber: CGFloat = 10
+    }
+    
     // MARK: - Outlets
     
     private let scrollView = UIScrollView()
@@ -157,7 +165,7 @@ class LogView: UIView {
     
     private let toolbar = UIView()
     private let toolbarStack = UIStackView()
-    private var toolbarLeadingConstraint: NSLayoutConstraint!
+    private var toolbarLeading: NSLayoutConstraint!
     
     private let settingsButton = UIButton()
     private let touchButton = UIButton()
@@ -167,6 +175,9 @@ class LogView: UIView {
     private let closeGesture = UITapGestureRecognizer()
     
     // MARK: - Properties
+    
+    private var forwardTouches = false
+    private var autoFollow = true
     
     var text = "" {
         didSet {
@@ -178,9 +189,6 @@ class LogView: UIView {
             }
         }
     }
-    
-    private var shouldForwardTouches = false
-    private var autoFollow = true
     
     // MARK: - Init
     
@@ -206,7 +214,7 @@ class LogView: UIView {
     
     func touchButtonTapped(sender: UIButton) {
         touchButton.selected = !touchButton.selected
-        shouldForwardTouches = !shouldForwardTouches
+        forwardTouches = !forwardTouches
     }
     
     func followButtonTapped(sender: UIButton) {
@@ -226,7 +234,7 @@ class LogView: UIView {
     
     private func updateContentSize() {
         let size = (text as NSString).sizeWithAttributes([NSFontAttributeName: textView.font!])
-        let width = size.width + bounds.width + 10
+        let width = size.width + bounds.width + Constant.MagicNumber
         let frame = CGRect(x: 0, y: 0, width: width, height: size.height)
         textView.frame = frame
         scrollView.contentSize = textView.bounds.size
@@ -241,8 +249,8 @@ class LogView: UIView {
     }
     
     private func toggleToolbar() {
-        let collapsed = toolbarLeadingConstraint.constant == -75
-        toolbarLeadingConstraint.constant = collapsed ? -300 : -75
+        let collapsed = toolbarLeading.constant == Constant.ToolbarCollapsed
+        toolbarLeading.constant = collapsed ? Constant.ToolbarExpanded : Constant.ToolbarCollapsed
         UIView.animateWithDuration(0.3) {
             self.toolbar.layoutIfNeeded()
         }
@@ -272,18 +280,18 @@ class LogView: UIView {
         scrollView.alwaysBounceVertical = true
         scrollView.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.7)
         
+        textView.backgroundColor = UIColor.clearColor()
+        textView.textColor = UIColor.whiteColor().colorWithAlphaComponent(0.7)
         textView.editable = false
         textView.selectable = false
         textView.scrollEnabled = false
         textView.textContainer.lineFragmentPadding = 0
-        textView.textContainerInset = UIEdgeInsets(top: 8, left: 4, bottom: 0, right: 0)
-        textView.backgroundColor = UIColor.clearColor()
-        textView.textColor = UIColor.whiteColor().colorWithAlphaComponent(0.7)
+        textView.textContainerInset = UIEdgeInsets(top: Constant.MagicNumber, left: 4, bottom: 0, right: 0)
     }
     
     private func configureToolbar() {
         toolbar.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.3)
-        toolbar.layer.cornerRadius = 12
+        toolbar.layer.cornerRadius = Constant.MagicNumber
         
         toolbarStack.axis = .Horizontal
         toolbarStack.alignment = .Fill
@@ -340,7 +348,7 @@ class LogView: UIView {
     }
     
     private func configureToolbarConstraints() {
-        toolbarLeadingConstraint = toolbar.leadingAnchor.constraintEqualToAnchor(trailingAnchor, constant: -300)
+        toolbarLeading = toolbar.leadingAnchor.constraintEqualToAnchor(trailingAnchor, constant: Constant.ToolbarCollapsed)
         guard let toolbarConstraints = toolbarConstraints else { return }
         NSLayoutConstraint.activateConstraints(toolbarConstraints)
     }
@@ -362,17 +370,17 @@ class LogView: UIView {
     
     private var toolbarConstraints: [NSLayoutConstraint]? {
         guard let
-        width = toolbar.widthAnchor.constraintEqualToConstant(320),
-        height = toolbar.heightAnchor.constraintEqualToConstant(50),
+        width = toolbar.widthAnchor.constraintEqualToConstant(Constant.ToolbarWidth + Constant.MagicNumber),
+        height = toolbar.heightAnchor.constraintEqualToConstant(Constant.ToolbarHeight),
         centerY = toolbar.centerYAnchor.constraintEqualToAnchor(centerYAnchor)
             else { return nil }
-        return [width, height, toolbarLeadingConstraint, centerY]
+        return [width, height, toolbarLeading, centerY]
     }
     
     private var toolbarStackConstraints: [NSLayoutConstraint]? {
         guard let
             leading = toolbarStack.leadingAnchor.constraintEqualToAnchor(toolbar.leadingAnchor),
-            trailing = toolbarStack.trailingAnchor.constraintEqualToAnchor(toolbar.trailingAnchor, constant: -20),
+            trailing = toolbarStack.trailingAnchor.constraintEqualToAnchor(toolbar.trailingAnchor, constant: -Constant.MagicNumber),
             top = toolbarStack.topAnchor.constraintEqualToAnchor(toolbar.topAnchor),
             bottom = toolbarStack.bottomAnchor.constraintEqualToAnchor(toolbar.bottomAnchor)
             else { return nil }
@@ -390,7 +398,7 @@ class LogView: UIView {
     override func hitTest(point: CGPoint, withEvent event: UIEvent?) -> UIView? {
         let hitView = super.hitTest(point, withEvent: event)
         
-        if (hitView == scrollView || hitView == textView) && shouldForwardTouches {
+        if (hitView == scrollView || hitView == textView) && forwardTouches {
             return nil
         }
         
