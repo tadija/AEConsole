@@ -18,15 +18,15 @@ public func log(message: Any = "", path: String = __FILE__, line: Int = __LINE__
 // MARK: - AELogDelegate
 
 public protocol AELogDelegate: class {
-    func didLog(message: String)
+    func didLog(logLine: String)
 }
 
 extension AELogDelegate where Self: AppDelegate {
     
-    func didLog(message: String) {
+    func didLog(logLine: String) {
         guard let window = self.window else { return }
         let logView = AELog.sharedInstance.logView
-        logView.text += "\(message)\n"
+        logView.text += "\(logLine)\n"
         window.bringSubviewToFront(logView)
         logView.becomeFirstResponder()
     }
@@ -42,26 +42,26 @@ public class AELog {
         static let Enabled = "Enabled"
     }
     
-    // MARK: - Singleton
+    // MARK: - API
     
-    public static let sharedInstance = AELog()
-    
-    public class func launchWithDelegate(delegate: AELogDelegate, settingsPath: String? = nil) {
+    public class func launch(withDelegate delegate: AELogDelegate? = nil, settingsPath: String? = nil) {
         AELog.sharedInstance.delegate = delegate
         AELog.sharedInstance.settingsPath = settingsPath
     }
     
     // MARK: - Properties
     
+    private static let sharedInstance = AELog()
+    
     private let logView = LogView()
     
-    public weak var delegate: AELogDelegate? {
+    private weak var delegate: AELogDelegate? {
         didSet {
             addLogViewToAppWindow()
         }
     }
     
-    public var settingsPath: String?
+    private var settingsPath: String?
     
     // MARK: - Helpers
     
@@ -76,29 +76,21 @@ public class AELog {
         window.addSubview(logView)
     }
     
-    private var infoPlist: NSDictionary? {
-        guard let
-            path = NSBundle.mainBundle().pathForResource("Info", ofType: "plist"),
-            info = NSDictionary(contentsOfFile: path)
-        else { return nil }
-        return info
-    }
-    
-    private var logSettings: [String : AnyObject]? {
-        if let path = settingsPath {
-            return settingsForPath(path)
+    private lazy var logSettings: [String : AnyObject]? = { [unowned self] in
+        if let path = self.settingsPath {
+            return AELog.settingsForPath(path)
         } else if let path = NSBundle.mainBundle().pathForResource(Key.Name, ofType: "plist") {
-            return settingsForPath(path)
+            return AELog.settingsForPath(path)
         } else {
             guard let
-                info = infoPlist,
+                info = AELog.infoPlist,
                 settings = info[Key.Name] as? [String : AnyObject]
             else { return nil }
             return settings
         }
-    }
+    }()
     
-    private func settingsForPath(path: String?) -> [String : AnyObject]? {
+    private static func settingsForPath(path: String?) -> [String : AnyObject]? {
         guard let
             path = path,
             settings = NSDictionary(contentsOfFile: path) as? [String : AnyObject]
@@ -106,35 +98,37 @@ public class AELog {
         return settings
     }
     
-    private var logEnabled: Bool {
+    private static var infoPlist: NSDictionary? {
         guard let
-            settings = logSettings,
+            path = NSBundle.mainBundle().pathForResource("Info", ofType: "plist"),
+            info = NSDictionary(contentsOfFile: path)
+            else { return nil }
+        return info
+    }
+    
+    private lazy var logEnabled: Bool = { [unowned self] in
+        guard let
+            settings = self.logSettings,
             enabled = settings[Key.Enabled] as? Bool
         else { return false }
         return enabled
-    }
+    }()
     
     // MARK: - Actions
     
     private func log(text text: String, path: String, line: Int, function: String) {
         if logEnabled {
-            let logText = generateLogText(text, path: path, line: line, function: function)
-            NSLog(logText)
-            delegate?.didLog(logText)
+            let logLine = generateLogLine(text: text, path: path, line: line, function: function)
+            NSLog(logLine)
+            delegate?.didLog(logLine)
         }
     }
     
-    private func generateLogText(text: String, path: String, line: Int, function: String) -> String {
+    private func generateLogLine(text text: String, path: String, line: Int, function: String) -> String {
         let fileName = fileNameForPath(path)
         let message = text == "" ? "" : " | \"\(text)\""
-        let logText = "-- [\(threadName)] \(fileName) (\(line)) -> \(function)\(message)"
-        return logText
-    }
-    
-    private var threadName: String {
-        let thread = NSThread.currentThread()
-        let name = thread.isMainThread ? "Main" : (thread.name ?? "Unknown")
-        return name
+        let logLine = "-- [\(threadName)] \(fileName) (\(line)) -> \(function)\(message)"
+        return logLine
     }
     
     private func fileNameForPath(path: String) -> String {
@@ -142,6 +136,12 @@ public class AELog {
             fileName = NSURL(fileURLWithPath: path).URLByDeletingPathExtension?.lastPathComponent
         else { return "Unknown" }
         return fileName
+    }
+    
+    private var threadName: String {
+        let thread = NSThread.currentThread()
+        let name = thread.isMainThread ? "Main" : (thread.name ?? "Unknown")
+        return name
     }
     
 }
