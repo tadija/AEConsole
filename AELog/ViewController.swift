@@ -17,8 +17,14 @@ class ViewController: UIViewController {
             log("test log \(i)")
         }
     }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        log()
+    }
 
     @IBAction func buttonTopTapped(sender: AnyObject) {
+        log(sender)
         log("top button is tapped")
     }
     

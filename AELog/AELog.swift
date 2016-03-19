@@ -11,8 +11,8 @@ import UIKit
 
 // MARK: - Top Level
 
-public func log(message: String = "", path: String = __FILE__, line: Int = __LINE__, function: String = __FUNCTION__) {
-    AELog.sharedInstance.log(message, path: path, line: line, function: function)
+public func log(message: Any = "", path: String = __FILE__, line: Int = __LINE__, function: String = __FUNCTION__) {
+    AELog.sharedInstance.log(text: "\(message)", path: path, line: line, function: function)
 }
 
 // MARK: - AELogDelegate
@@ -116,19 +116,19 @@ public class AELog {
     
     // MARK: - Actions
     
-    private func log(message: String = "", path: String = __FILE__, line: Int = __LINE__, function: String = __FUNCTION__) {
+    private func log(text text: String, path: String, line: Int, function: String) {
         if logEnabled {
-            let logString = generateLogString(message: message, path: path, line: line, function: function)
-            NSLog(logString)
-            delegate?.didLog(logString)
+            let logText = generateLogText(text, path: path, line: line, function: function)
+            NSLog(logText)
+            delegate?.didLog(logText)
         }
     }
     
-    private func generateLogString(message message: String, path: String, line: Int, function: String) -> String {
+    private func generateLogText(text: String, path: String, line: Int, function: String) -> String {
         let fileName = fileNameForPath(path)
-        let logMessage = message == "" ? "" : " | \"\(message)\""
-        let logString = "-- [\(threadName)] \(fileName) (\(line)) -> \(function)\(logMessage)"
-        return logString
+        let message = text == "" ? "" : " | \"\(text)\""
+        let logText = "-- [\(threadName)] \(fileName) (\(line)) -> \(function)\(message)"
+        return logText
     }
     
     private var threadName: String {
@@ -154,8 +154,13 @@ class LogView: UIView {
     
     private let scrollView = UIScrollView()
     private let textView = UITextView()
+    
+    private let toolbar = UIView()
+    private let settingsButton = UIButton()
     private let `switch` = UISwitch()
     private let clearButton = UIButton()
+    
+    private let closeGesture = UITapGestureRecognizer()
     
     // MARK: - Properties
     
@@ -169,7 +174,8 @@ class LogView: UIView {
     
     private func updateContentSize() {
         let size = (text as NSString).sizeWithAttributes([NSFontAttributeName: textView.font!])
-        let frame = CGRect(x: 0, y: 0, width: size.width + 20, height: size.height)
+        let width = size.width + bounds.width + 10
+        let frame = CGRect(x: 0, y: 0, width: width, height: size.height)
         textView.frame = frame
         scrollView.contentSize = textView.bounds.size
     }
@@ -177,12 +183,13 @@ class LogView: UIView {
     private func scrollToBottom() {
         let diff = scrollView.contentSize.height - scrollView.bounds.size.height
         if diff > 0 {
-            let bottomOffset = CGPoint(x: 0, y: diff)
+            let bottomOffset = CGPoint(x: scrollView.contentOffset.x, y: diff)
             scrollView.setContentOffset(bottomOffset, animated: false)
         }
     }
     
     private var shouldForwardTouches = false
+    private var toolbarLeadingConstraint: NSLayoutConstraint!
     
     // MARK: - Init
     
@@ -199,6 +206,37 @@ class LogView: UIView {
     private func commonInit() {
         configureUI()
     }
+    
+    // MARK: - Actions
+    
+    func switchValueChanged(sender: UISwitch) {
+        shouldForwardTouches = !sender.on
+        clearButton.hidden = !sender.on
+    }
+    
+    func clearButtonTapped(sender: UIButton) {
+        text = ""
+    }
+    
+    func settingsButtonTapped(sender: UIButton) {
+        let collapsed = toolbarLeadingConstraint.constant == -100
+        toolbarLeadingConstraint.constant = collapsed ? -300 : -100
+        UIView.animateWithDuration(0.3) {
+            self.toolbar.layoutIfNeeded()
+        }
+    }
+    
+    func closeGestureRecognized(sender: UITapGestureRecognizer) {
+        toggleUI()
+    }
+    
+    private func toggleUI() {
+        UIView.transitionWithView(self, duration: 0.3, options: .TransitionCrossDissolve, animations: { () -> Void in
+            self.hidden = !self.hidden
+            }, completion: nil)
+    }
+    
+    // MARK: - UI
     
     private func configureUI() {
         configureOutlets()
@@ -217,37 +255,44 @@ class LogView: UIView {
         textView.backgroundColor = UIColor.clearColor()
         textView.textColor = UIColor.whiteColor().colorWithAlphaComponent(0.7)
         
+        toolbar.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.3)
+        toolbar.layer.cornerRadius = 12
+        
+        settingsButton.setTitle("Settings", forState: .Normal)
+        settingsButton.addTarget(self, action: Selector("settingsButtonTapped:"), forControlEvents: .TouchUpInside)
+        
         `switch`.on = true
         `switch`.addTarget(self, action: Selector("switchValueChanged:"), forControlEvents: .ValueChanged)
         
         clearButton.setTitle("Clear", forState: .Normal)
         clearButton.addTarget(self, action: Selector("clearButtonTapped:"), forControlEvents: .TouchUpInside)
+        
+        closeGesture.numberOfTouchesRequired = 2
+        closeGesture.numberOfTapsRequired = 2
+        closeGesture.addTarget(self, action: Selector("closeGestureRecognized:"))
+        addGestureRecognizer(closeGesture)
     }
-    
-    // MARK: - Actions
-    
-    func switchValueChanged(sender: UISwitch) {
-        shouldForwardTouches = !sender.on
-        clearButton.hidden = !sender.on
-    }
-    
-    func clearButtonTapped(sender: UIButton) {
-        text = ""
-    }
-    
-    // MARK: - Layout
     
     private func configureLayout() {
         addSubview(scrollView)
         scrollView.addSubview(textView)
-        addSubview(`switch`)
-        addSubview(clearButton)
+        
+        addSubview(toolbar)
+        toolbar.addSubview(settingsButton)
+        toolbar.addSubview(`switch`)
+        toolbar.addSubview(clearButton)
         
         scrollView.translatesAutoresizingMaskIntoConstraints = false
+        toolbar.translatesAutoresizingMaskIntoConstraints = false
+        settingsButton.translatesAutoresizingMaskIntoConstraints = false
         `switch`.translatesAutoresizingMaskIntoConstraints = false
         clearButton.translatesAutoresizingMaskIntoConstraints = false
         
+        toolbarLeadingConstraint = toolbar.leadingAnchor.constraintEqualToAnchor(trailingAnchor, constant: -300)
+        
         configureScrollViewConstraints()
+        configureToolbarConstraints()
+        configureSettingsButtonConstraints()
         configureSwitchConstraints()
         configureClearButtonConstraints()
     }
@@ -255,6 +300,16 @@ class LogView: UIView {
     private func configureScrollViewConstraints() {
         guard let scrollViewConstraints = scrollViewConstraints else { return }
         NSLayoutConstraint.activateConstraints(scrollViewConstraints)
+    }
+    
+    private func configureToolbarConstraints() {
+        guard let toolbarConstraints = toolbarConstraints else { return }
+        NSLayoutConstraint.activateConstraints(toolbarConstraints)
+    }
+    
+    private func configureSettingsButtonConstraints() {
+        guard let settingsButtonConstraints = settingsButtonConstraints else { return }
+        NSLayoutConstraint.activateConstraints(settingsButtonConstraints)
     }
     
     private func configureSwitchConstraints() {
@@ -277,23 +332,46 @@ class LogView: UIView {
         return [leading, trailing, top, bottom]
     }
     
+    private var toolbarConstraints: [NSLayoutConstraint]? {
+        guard let
+        width = toolbar.widthAnchor.constraintEqualToConstant(320),
+        height = toolbar.heightAnchor.constraintEqualToConstant(100),
+        centerY = toolbar.centerYAnchor.constraintEqualToAnchor(centerYAnchor)
+            else { return nil }
+        return [width, height, toolbarLeadingConstraint, centerY]
+    }
+    
+    private var settingsButtonConstraints: [NSLayoutConstraint]? {
+        guard let
+            centerX = settingsButton.centerXAnchor.constraintEqualToAnchor(toolbar.centerXAnchor, constant: -100.0),
+            centerY = settingsButton.centerYAnchor.constraintEqualToAnchor(toolbar.centerYAnchor)
+            else { return nil }
+        return [centerX, centerY]
+    }
+    
     private var switchConstraints: [NSLayoutConstraint]? {
         guard let
-            centerX = `switch`.centerXAnchor.constraintEqualToAnchor(centerXAnchor),
-            centerY = `switch`.centerYAnchor.constraintEqualToAnchor(centerYAnchor)
+            centerX = `switch`.centerXAnchor.constraintEqualToAnchor(toolbar.centerXAnchor),
+            centerY = `switch`.centerYAnchor.constraintEqualToAnchor(toolbar.centerYAnchor)
             else { return nil }
         return [centerX, centerY]
     }
     
     private var clearButtonConstraints: [NSLayoutConstraint]? {
         guard let
-            centerX = clearButton.centerXAnchor.constraintEqualToAnchor(centerXAnchor, constant: 100.0),
-            centerY = clearButton.centerYAnchor.constraintEqualToAnchor(centerYAnchor)
+            centerX = clearButton.centerXAnchor.constraintEqualToAnchor(toolbar.centerXAnchor, constant: 100.0),
+            centerY = clearButton.centerYAnchor.constraintEqualToAnchor(toolbar.centerYAnchor)
             else { return nil }
         return [centerX, centerY]
     }
     
     // MARK: - Override
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        updateContentSize()
+    }
     
     override func hitTest(point: CGPoint, withEvent event: UIEvent?) -> UIView? {
         let hitView = super.hitTest(point, withEvent: event)
@@ -311,9 +389,7 @@ class LogView: UIView {
     
     override func motionEnded(motion: UIEventSubtype, withEvent event: UIEvent?) {
         if motion == .MotionShake {
-            UIView.transitionWithView(self, duration: 0.3, options: .TransitionCrossDissolve, animations: { () -> Void in
-                self.hidden = !self.hidden
-                }, completion: nil)
+            toggleUI()
         }
     }
     
