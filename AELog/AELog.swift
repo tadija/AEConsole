@@ -40,6 +40,9 @@ public class AELog {
     private struct Key {
         static let Name = NSStringFromClass(AELog).componentsSeparatedByString(".").last!
         static let Enabled = "Enabled"
+        static let BackColor = "BackColor"
+        static let TextColor = "TextColor"
+        static let Opacity = "Opacity"
     }
     
     // MARK: - API
@@ -73,7 +76,66 @@ public class AELog {
         
         logView.frame = window.bounds
         logView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+        configureLogViewTheme()
+        
         window.addSubview(logView)
+    }
+    
+    private func configureLogViewTheme() {
+        if let backColor = settingBackColor {
+            logView.backColor = backColor
+        }
+        if let textColor = settingTextColor {
+            logView.textColor = textColor
+        }
+        if let opacity = settingOpacity {
+            logView.opacity = opacity
+        }
+    }
+    
+    private lazy var settingEnabled: Bool = { [unowned self] in
+        guard let
+            settings = self.logSettings,
+            enabled = settings[Key.Enabled] as? Bool
+        else { return false }
+        return enabled
+    }()
+    
+    private var settingBackColor: UIColor? {
+        return colorForKey(Key.BackColor)
+    }
+    
+    private var settingTextColor: UIColor? {
+        return colorForKey(Key.TextColor)
+    }
+    
+    private func colorForKey(key: String) -> UIColor? {
+        guard let
+            settings = logSettings,
+            hex = settings[key] as? String
+            else { return nil }
+        let color = AELog.colorFromHexString(hex)
+        return color
+    }
+    
+    private var settingOpacity: CGFloat? {
+        guard let
+            settings = logSettings,
+            opacity = settings[Key.Opacity] as? CGFloat
+        else { return nil }
+        return opacity
+    }
+    
+    private class func colorFromHexString(hex: String) -> UIColor? {
+        let scanner = NSScanner(string: hex)
+        var hexValue: UInt32 = 0
+        if scanner.scanHexInt(&hexValue) {
+            let red   = CGFloat((hexValue & 0xFF0000) >> 16) / 255.0
+            let green = CGFloat((hexValue & 0x00FF00) >> 8) / 255.0
+            let blue  = CGFloat((hexValue & 0x0000FF)) / 255.0
+            let color = UIColor(red: red, green: green, blue: blue, alpha: 1.0)
+            return color
+        } else { return nil }
     }
     
     private lazy var logSettings: [String : AnyObject]? = { [unowned self] in
@@ -106,18 +168,10 @@ public class AELog {
         return info
     }
     
-    private lazy var logEnabled: Bool = { [unowned self] in
-        guard let
-            settings = self.logSettings,
-            enabled = settings[Key.Enabled] as? Bool
-        else { return false }
-        return enabled
-    }()
-    
     // MARK: - Actions
     
     private func log(text text: String, path: String, line: Int, function: String) {
-        if logEnabled {
+        if settingEnabled {
             let logLine = generateLogLine(text: text, path: path, line: line, function: function)
             NSLog(logLine)
             delegate?.didLog(logLine)
@@ -151,6 +205,7 @@ public class AELog {
 class LogView: UIView {
     
     private struct Constant {
+        static let Opacity: CGFloat = 0.7
         static let ToolbarWidth: CGFloat = 300
         static let ToolbarHeight: CGFloat = 50
         static let ToolbarCollapsed: CGFloat = -75
@@ -188,6 +243,14 @@ class LogView: UIView {
             if autoFollow {
                 scrollToBottom()
             }
+        }
+    }
+    
+    private var backColor = UIColor.blackColor()
+    private var textColor = UIColor.whiteColor()
+    private var opacity: CGFloat = Constant.Opacity {
+        didSet {
+            configureUIWithOpacity(opacity)
         }
     }
     
@@ -229,8 +292,12 @@ class LogView: UIView {
     
     func opacityGestureRecognized(sender: UIPanGestureRecognizer) {
         if sender.state == .Ended {
-            let location = sender.locationInView(toolbar)
-            alpha = opacityForLocation(location)
+            let xTranslation = sender.translationInView(toolbar).x
+            if abs(xTranslation) > (3 * Constant.MagicNumber) {
+                let location = sender.locationInView(toolbar)
+                let opacity = opacityForLocation(location)
+                self.opacity = opacity
+            }
         }
     }
     
@@ -240,10 +307,11 @@ class LogView: UIView {
     
     // MARK: - Helpers
     
-    private func opacityForLocation(point: CGPoint) -> CGFloat {
-        let calculatedOpacity = ((point.x * 1.0) / 300)
-        let opacity = max(0.1, calculatedOpacity)
-        return opacity
+    private func opacityForLocation(location: CGPoint) -> CGFloat {
+        let calculatedOpacity = ((location.x * 1.0) / 300)
+        let minOpacity = max(0.1, calculatedOpacity)
+        let maxOpacity = min(0.9, minOpacity)
+        return maxOpacity
     }
     
     private func updateContentSize() {
@@ -266,6 +334,7 @@ class LogView: UIView {
         let collapsed = toolbarLeading.constant == Constant.ToolbarCollapsed
         toolbarLeading.constant = collapsed ? Constant.ToolbarExpanded : Constant.ToolbarCollapsed
         UIView.animateWithDuration(0.3) {
+            self.toolbar.alpha = collapsed ? 1.0 : 0.3
             self.toolbar.layoutIfNeeded()
         }
     }
@@ -281,6 +350,15 @@ class LogView: UIView {
     private func configureUI() {
         configureOutlets()
         configureLayout()
+        configureUIWithOpacity(0.7)
+    }
+    
+    private func configureUIWithOpacity(opacity: CGFloat) {
+        scrollView.backgroundColor = backColor.colorWithAlphaComponent(opacity)
+        let textOpacity = max(0.3, opacity)
+        textView.textColor = textColor.colorWithAlphaComponent(textOpacity)
+        let toolbarOpacity = min(0.7, opacity * 1.5)
+        toolbar.backgroundColor = backColor.colorWithAlphaComponent(toolbarOpacity)
     }
     
     private func configureOutlets() {
@@ -293,10 +371,8 @@ class LogView: UIView {
     
     private func configureScrollingTextView() {
         scrollView.alwaysBounceVertical = true
-        scrollView.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.7)
         
         textView.backgroundColor = UIColor.clearColor()
-        textView.textColor = UIColor.whiteColor().colorWithAlphaComponent(0.7)
         textView.editable = false
         textView.selectable = false
         textView.scrollEnabled = false
@@ -305,8 +381,8 @@ class LogView: UIView {
     }
     
     private func configureToolbar() {
-        toolbar.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.3)
         toolbar.layer.cornerRadius = Constant.MagicNumber
+        toolbar.alpha = 0.3
         
         toolbarStack.axis = .Horizontal
         toolbarStack.alignment = .Fill

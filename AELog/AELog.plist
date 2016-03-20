@@ -4,5 +4,11 @@
 <dict>
 	<key>Enabled</key>
 	<true/>
+	<key>BackColor</key>
+	<string></string>
+	<key>TextColor</key>
+	<string></string>
+	<key>Opacity</key>
+	<real>0.7</real>
 </dict>
 </plist>
