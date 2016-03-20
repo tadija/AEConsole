@@ -11,8 +11,8 @@ import UIKit
 
 // MARK: - Top Level
 
-public func log(message: Any = "", path: String = __FILE__, line: Int = __LINE__, function: String = __FUNCTION__) {
-    AELog.sharedInstance.log(text: "\(message)", path: path, line: line, function: function)
+public func log(message: Any = "", filePath: String = __FILE__, line: Int = __LINE__, function: String = __FUNCTION__) {
+    AELog.sharedInstance.log(message: "\(message)", filePath: filePath, line: line, function: function)
 }
 
 // MARK: - AELogDelegate
@@ -24,11 +24,14 @@ public protocol AELogDelegate: class {
 extension AELogDelegate where Self: AppDelegate {
     
     func didLog(logLine: String) {
-        guard let window = self.window else { return }
-        let logView = AELog.sharedInstance.logView
-        logView.text += "\(logLine)\n"
-        window.bringSubviewToFront(logView)
-        logView.becomeFirstResponder()
+        let shared = AELog.sharedInstance
+        if shared.settingConsole {
+            guard let window = self.window else { return }
+            let logView = shared.logView
+            logView.text += "\(logLine)\n"
+            logView.becomeFirstResponder()
+            window.bringSubviewToFront(logView)
+        }
     }
     
 }
@@ -37,9 +40,12 @@ extension AELogDelegate where Self: AppDelegate {
 
 public class AELog {
     
-    private struct Key {
-        static let Name = NSStringFromClass(AELog).componentsSeparatedByString(".").last!
-        static let Enabled = "Enabled"
+    public struct Setting {
+        private static let Name = NSStringFromClass(AELog).componentsSeparatedByString(".").last!
+        static let Log = "Log"
+        static let Console = "Console"
+        static let ConsoleAutoStart = "ConsoleAutoStart"
+        static let Files = "Files"
         static let BackColor = "BackColor"
         static let TextColor = "TextColor"
         static let Opacity = "Opacity"
@@ -76,6 +82,7 @@ public class AELog {
         
         logView.frame = window.bounds
         logView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+        logView.hidden = !settingConsoleAutoStart
         configureLogViewTheme()
         
         window.addSubview(logView)
@@ -93,20 +100,44 @@ public class AELog {
         }
     }
     
-    private lazy var settingEnabled: Bool = { [unowned self] in
+    private lazy var settingLog: Bool = { [unowned self] in
         guard let
             settings = self.logSettings,
-            enabled = settings[Key.Enabled] as? Bool
-        else { return false }
-        return enabled
+            logEnabled = settings[Setting.Log] as? Bool
+        else { return true }
+        return logEnabled
+    }()
+    
+    private lazy var settingConsole: Bool = { [unowned self] in
+        guard let
+            settings = self.logSettings,
+            consoleEnabled = settings[Setting.Console] as? Bool
+        else { return true }
+        return consoleEnabled
+    }()
+    
+    private lazy var settingConsoleAutoStart: Bool = { [unowned self] in
+        guard let
+            settings = self.logSettings,
+            showConsole = settings[Setting.ConsoleAutoStart] as? Bool
+        else { return true }
+        return showConsole
+    }()
+    
+    private lazy var settingFiles: [String : Bool]? = { [unowned self] in
+        guard let
+            settings = self.logSettings,
+            files = settings[Setting.Files] as? [String : Bool]
+        else { return nil }
+        return files
     }()
     
     private var settingBackColor: UIColor? {
-        return colorForKey(Key.BackColor)
+        return colorForKey(Setting.BackColor)
     }
     
     private var settingTextColor: UIColor? {
-        return colorForKey(Key.TextColor)
+        return colorForKey(Setting.TextColor)
     }
     
     private func colorForKey(key: String) -> UIColor? {
@@ -121,7 +152,7 @@ public class AELog {
     private var settingOpacity: CGFloat? {
         guard let
             settings = logSettings,
-            opacity = settings[Key.Opacity] as? CGFloat
+            opacity = settings[Setting.Opacity] as? CGFloat
         else { return nil }
         return opacity
     }
@@ -141,12 +172,12 @@ public class AELog {
     private lazy var logSettings: [String : AnyObject]? = { [unowned self] in
         if let path = self.settingsPath {
             return AELog.settingsForPath(path)
-        } else if let path = NSBundle.mainBundle().pathForResource(Key.Name, ofType: "plist") {
+        } else if let path = NSBundle.mainBundle().pathForResource(Setting.Name, ofType: "plist") {
             return AELog.settingsForPath(path)
         } else {
             guard let
                 info = AELog.infoPlist,
-                settings = info[Key.Name] as? [String : AnyObject]
+                settings = info[Setting.Name] as? [String : AnyObject]
             else { return nil }
             return settings
         }
@@ -170,18 +201,28 @@ public class AELog {
     
     // MARK: - Actions
     
-    private func log(text text: String, path: String, line: Int, function: String) {
-        if settingEnabled {
-            let logLine = generateLogLine(text: text, path: path, line: line, function: function)
-            NSLog(logLine)
-            delegate?.didLog(logLine)
+    private func log(message message: String, filePath: String, line: Int, function: String) {
+        if settingLog {
+            let fileName = fileNameForPath(filePath)
+            if fileEnabled(fileName) {
+                let logLine = generateLogLine(message: message, fileName: fileName, line: line, function: function)
+                NSLog(logLine)
+                delegate?.didLog(logLine)
+            }
         }
     }
     
-    private func generateLogLine(text text: String, path: String, line: Int, function: String) -> String {
-        let fileName = fileNameForPath(path)
-        let message = text == "" ? "" : " | \"\(text)\""
-        let logLine = "-- [\(threadName)] \(fileName) (\(line)) -> \(function)\(message)"
+    private func fileEnabled(fileName: String) -> Bool {
+        guard let
+            files = settingFiles,
+            fileEnabled = files[fileName]
+        else { return true }
+        return fileEnabled
+    }
+    
+    private func generateLogLine(message message: String, fileName: String, line: Int, function: String) -> String {
+        let text = message == "" ? "" : " | \"\(message)\""
+        let logLine = "-- [\(threadName)] \(fileName) (\(line)) -> \(function)\(text)"
         return logLine
     }
     
@@ -315,7 +356,10 @@ class LogView: UIView {
     }
     
     private func updateContentSize() {
-        let size = (text as NSString).sizeWithAttributes([NSFontAttributeName: textView.font!])
+        var size = CGSizeZero
+        if !text.isEmpty {
+            size = (text as NSString).sizeWithAttributes([NSFontAttributeName: textView.font!])
+        }
         let width = size.width + bounds.width + Constant.MagicNumber
         let frame = CGRect(x: 0, y: 0, width: width, height: size.height)
         textView.frame = frame
