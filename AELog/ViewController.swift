@@ -14,26 +14,26 @@ class ViewController: UIViewController {
         super.viewDidLoad()
 
         for i in 0...100 {
-            log("test log \(i)")
+            aelog("test log \(i)")
         }
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        log()
+        aelog()
     }
 
     @IBAction func buttonTopTapped(sender: AnyObject) {
-        log(sender)
-        log("top button is tapped")
+        aelog(sender)
+        aelog("top button is tapped")
     }
     
     @IBAction func buttonCenterTapped(sender: AnyObject) {
-        log("center button is tapped - it has even longer longer much longer very longer text")
+        aelog("center button is tapped - it has even longer longer much longer very longer text")
     }
     
     @IBAction func buttonBottomTapped(sender: AnyObject) {
-        log("bottom button is tapped - it has longer log text")
+        aelog("bottom button is tapped - it has longer log text")
     }
 
 }

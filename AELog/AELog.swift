@@ -11,7 +11,7 @@ import UIKit
 
 // MARK: - Top Level
 
-public func log(message: Any = "", filePath: String = __FILE__, line: Int = __LINE__, function: String = __FUNCTION__) {
+public func aelog(message: Any = "", filePath: String = __FILE__, line: Int = __LINE__, function: String = __FUNCTION__) {
     AELog.sharedInstance.log(message: "\(message)", filePath: filePath, line: line, function: function)
 }
 
@@ -25,162 +25,63 @@ extension AELogDelegate where Self: AppDelegate {
     
     func didLog(logLine: String) {
         let shared = AELog.sharedInstance
-        if shared.settingConsole {
+        if shared.settings.consoleEnabled {
             guard let window = self.window else { return }
-            let logView = shared.logView
-            logView.text += "\(logLine)\n"
-            logView.becomeFirstResponder()
-            window.bringSubviewToFront(logView)
+            let console = shared.console
+            console.text += "\(logLine)\n"
+            console.becomeFirstResponder()
+            window.bringSubviewToFront(console)
         }
     }
     
 }
 
-// MARK: - AELog
+// MARK: - AELogSettings
 
-public class AELog {
+public class AELogSettings {
     
-    public struct Setting {
+    public struct Key {
         private static let Name = NSStringFromClass(AELog).componentsSeparatedByString(".").last!
-        static let Log = "Log"
-        static let Console = "Console"
-        static let ConsoleAutoStart = "ConsoleAutoStart"
-        static let Files = "Files"
-        static let BackColor = "BackColor"
-        static let TextColor = "TextColor"
-        static let Opacity = "Opacity"
-    }
-    
-    // MARK: - API
-    
-    public class func launch(withDelegate delegate: AELogDelegate? = nil, settingsPath: String? = nil) {
-        AELog.sharedInstance.delegate = delegate
-        AELog.sharedInstance.settingsPath = settingsPath
+        
+        public static let Enabled = "Enabled"
+        public static let Files = "Files"
+        
+        private static let ConsoleSettings = "Console"
+        public struct Console {
+            public static let Enabled = "Enabled"
+            public static let AutoStart = "AutoStart"
+            public static let BackColor = "BackColor"
+            public static let TextColor = "TextColor"
+            public static let Opacity = "Opacity"
+        }
     }
     
     // MARK: - Properties
     
-    private static let sharedInstance = AELog()
-    
-    private let logView = LogView()
-    
-    private weak var delegate: AELogDelegate? {
-        didSet {
-            addLogViewToAppWindow()
-        }
-    }
-    
     private var settingsPath: String?
     
-    // MARK: - Helpers
-    
-    private func addLogViewToAppWindow() {
-        guard let
-            app = delegate as? AppDelegate,
-            window = app.window
-        else { return }
-        
-        logView.frame = window.bounds
-        logView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
-        logView.hidden = !settingConsoleAutoStart
-        configureLogViewTheme()
-        
-        window.addSubview(logView)
-    }
-    
-    private func configureLogViewTheme() {
-        if let backColor = settingBackColor {
-            logView.backColor = backColor
-        }
-        if let textColor = settingTextColor {
-            logView.textColor = textColor
-        }
-        if let opacity = settingOpacity {
-            logView.opacity = opacity
-        }
-    }
-    
-    private lazy var settingLog: Bool = { [unowned self] in
-        guard let
-            settings = self.logSettings,
-            logEnabled = settings[Setting.Log] as? Bool
-        else { return true }
-        return logEnabled
-    }()
-    
-    private lazy var settingConsole: Bool = { [unowned self] in
-        guard let
-            settings = self.logSettings,
-            consoleEnabled = settings[Setting.Console] as? Bool
-        else { return true }
-        return consoleEnabled
-    }()
-    
-    private lazy var settingConsoleAutoStart: Bool = { [unowned self] in
-        guard let
-            settings = self.logSettings,
-            showConsole = settings[Setting.ConsoleAutoStart] as? Bool
-        else { return true }
-        return showConsole
-    }()
-    
-    private lazy var settingFiles: [String : Bool]? = { [unowned self] in
-        guard let
-            settings = self.logSettings,
-            files = settings[Setting.Files] as? [String : Bool]
-        else { return nil }
-        return files
-    }()
-    
-    private var settingBackColor: UIColor? {
-        return colorForKey(Setting.BackColor)
-    }
-    
-    private var settingTextColor: UIColor? {
-        return colorForKey(Setting.TextColor)
-    }
-    
-    private func colorForKey(key: String) -> UIColor? {
-        guard let
-            settings = logSettings,
-            hex = settings[key] as? String
-            else { return nil }
-        let color = AELog.colorFromHexString(hex)
-        return color
-    }
-    
-    private var settingOpacity: CGFloat? {
-        guard let
-            settings = logSettings,
-            opacity = settings[Setting.Opacity] as? CGFloat
-        else { return nil }
-        return opacity
-    }
-    
-    private class func colorFromHexString(hex: String) -> UIColor? {
-        let scanner = NSScanner(string: hex)
-        var hexValue: UInt32 = 0
-        if scanner.scanHexInt(&hexValue) {
-            let red   = CGFloat((hexValue & 0xFF0000) >> 16) / 255.0
-            let green = CGFloat((hexValue & 0x00FF00) >> 8) / 255.0
-            let blue  = CGFloat((hexValue & 0x0000FF)) / 255.0
-            let color = UIColor(red: red, green: green, blue: blue, alpha: 1.0)
-            return color
-        } else { return nil }
-    }
+    // MARK: - Plist Helpers
     
     private lazy var logSettings: [String : AnyObject]? = { [unowned self] in
         if let path = self.settingsPath {
-            return AELog.settingsForPath(path)
-        } else if let path = NSBundle.mainBundle().pathForResource(Setting.Name, ofType: "plist") {
-            return AELog.settingsForPath(path)
+            return AELogSettings.settingsForPath(path)
+        } else if let path = NSBundle.mainBundle().pathForResource(Key.Name, ofType: "plist") {
+            return AELogSettings.settingsForPath(path)
         } else {
             guard let
-                info = AELog.infoPlist,
-                settings = info[Setting.Name] as? [String : AnyObject]
+                info = AELogSettings.infoPlist,
+                settings = info[Key.Name] as? [String : AnyObject]
             else { return nil }
             return settings
         }
+    }()
+    
+    private lazy var consoleSettings: [String : AnyObject]? = { [unowned self] in
+        guard let
+            settings = self.logSettings,
+            console = settings[Key.ConsoleSettings] as? [String : AnyObject]
+        else { return nil }
+        return console
     }()
     
     private static func settingsForPath(path: String?) -> [String : AnyObject]? {
@@ -195,14 +96,131 @@ public class AELog {
         guard let
             path = NSBundle.mainBundle().pathForResource("Info", ofType: "plist"),
             info = NSDictionary(contentsOfFile: path)
-            else { return nil }
+        else { return nil }
         return info
+    }
+    
+    // MARK: - Settings
+    
+    private lazy var enabled: Bool = { [unowned self] in
+        guard let
+            settings = self.logSettings,
+            enabled = settings[Key.Enabled] as? Bool
+        else { return true }
+        return enabled
+    }()
+    
+    private lazy var files: [String : Bool]? = { [unowned self] in
+        guard let
+            settings = self.logSettings,
+            files = settings[Key.Files] as? [String : Bool]
+        else { return nil }
+        return files
+    }()
+    
+    private lazy var consoleEnabled: Bool = { [unowned self] in
+        guard let
+            settings = self.consoleSettings,
+            enabled = settings[Key.Console.Enabled] as? Bool
+        else { return true }
+        return enabled
+    }()
+    
+    private lazy var consoleAutoStart: Bool = { [unowned self] in
+        guard let
+            settings = self.consoleSettings,
+            autoStart = settings[Key.Console.AutoStart] as? Bool
+        else { return true }
+        return autoStart
+    }()
+    
+    private lazy var consoleBackColor: UIColor? = { [unowned self] in
+        return self.consoleColorForKey(Key.Console.BackColor)
+    }()
+    
+    private lazy var consoleTextColor: UIColor? = { [unowned self] in
+        return self.consoleColorForKey(Key.Console.TextColor)
+    }()
+    
+    private lazy var consoleOpacity: CGFloat? = { [unowned self] in
+        guard let
+            settings = self.consoleSettings,
+            opacity = settings[Key.Console.Opacity] as? CGFloat
+        else { return nil }
+        return opacity
+    }()
+    
+    // MARK: - Color Helpers
+    
+    private func consoleColorForKey(key: String) -> UIColor? {
+        guard let
+            settings = consoleSettings,
+            hex = settings[key] as? String
+            else { return nil }
+        let color = AELogSettings.colorFromHexString(hex)
+        return color
+    }
+    
+    private class func colorFromHexString(hex: String) -> UIColor? {
+        let scanner = NSScanner(string: hex)
+        var hexValue: UInt32 = 0
+        if scanner.scanHexInt(&hexValue) {
+            let red   = CGFloat((hexValue & 0xFF0000) >> 16) / 255.0
+            let green = CGFloat((hexValue & 0x00FF00) >> 8) / 255.0
+            let blue  = CGFloat((hexValue & 0x0000FF)) / 255.0
+            let color = UIColor(red: red, green: green, blue: blue, alpha: 1.0)
+            return color
+        } else { return nil }
+    }
+    
+}
+
+// MARK: - AELog
+
+public class AELog {
+    
+    // MARK: - API
+    
+    public class func launch(withDelegate delegate: AELogDelegate? = nil, settingsPath: String? = nil) {
+        AELog.sharedInstance.delegate = delegate
+        AELog.sharedInstance.settings.settingsPath = settingsPath
+    }
+    
+    // MARK: - Properties
+    
+    private static let sharedInstance = AELog()
+    private let settings = AELogSettings()
+    
+    private let console = AEConsoleView()
+    private weak var delegate: AELogDelegate? {
+        didSet {
+            addConsoleToAppWindow()
+        }
+    }
+    
+    // MARK: - Helpers
+    
+    private func addConsoleToAppWindow() {
+        guard let
+            app = delegate as? AppDelegate,
+            window = app.window
+        else { return }
+        
+        console.frame = window.bounds
+        console.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+        console.hidden = !settings.consoleAutoStart
+        
+        console.backColor = settings.consoleBackColor ?? AEConsoleView.Default.BackColor
+        console.textColor = settings.consoleTextColor ?? AEConsoleView.Default.TextColor
+        console.opacity = settings.consoleOpacity ?? AEConsoleView.Default.Opacity
+        
+        window.addSubview(console)
     }
     
     // MARK: - Actions
     
     private func log(message message: String, filePath: String, line: Int, function: String) {
-        if settingLog {
+        if settings.enabled {
             let fileName = fileNameForPath(filePath)
             if fileEnabled(fileName) {
                 let logLine = generateLogLine(message: message, fileName: fileName, line: line, function: function)
@@ -214,7 +232,7 @@ public class AELog {
     
     private func fileEnabled(fileName: String) -> Bool {
         guard let
-            files = settingFiles,
+            files = settings.files,
             fileEnabled = files[fileName]
         else { return true }
         return fileEnabled
@@ -241,17 +259,19 @@ public class AELog {
     
 }
 
-// MARK: - LogView
+// MARK: - AEConsoleView
 
-class LogView: UIView {
+class AEConsoleView: UIView {
     
-    private struct Constant {
+    private struct Default {
         static let Opacity: CGFloat = 0.7
         static let ToolbarWidth: CGFloat = 300
         static let ToolbarHeight: CGFloat = 50
         static let ToolbarCollapsed: CGFloat = -75
         static let ToolbarExpanded: CGFloat = -300
         static let MagicNumber: CGFloat = 10
+        static let BackColor = UIColor.blackColor()
+        static let TextColor = UIColor.whiteColor()
     }
     
     // MARK: - Outlets
@@ -287,9 +307,9 @@ class LogView: UIView {
         }
     }
     
-    private var backColor = UIColor.blackColor()
-    private var textColor = UIColor.whiteColor()
-    private var opacity: CGFloat = Constant.Opacity {
+    private var backColor = Default.BackColor
+    private var textColor = Default.TextColor
+    private var opacity: CGFloat = Default.Opacity {
         didSet {
             configureUIWithOpacity(opacity)
         }
@@ -334,7 +354,7 @@ class LogView: UIView {
     func opacityGestureRecognized(sender: UIPanGestureRecognizer) {
         if sender.state == .Ended {
             let xTranslation = sender.translationInView(toolbar).x
-            if abs(xTranslation) > (3 * Constant.MagicNumber) {
+            if abs(xTranslation) > (3 * Default.MagicNumber) {
                 let location = sender.locationInView(toolbar)
                 let opacity = opacityForLocation(location)
                 self.opacity = opacity
@@ -360,7 +380,7 @@ class LogView: UIView {
         if !text.isEmpty {
             size = (text as NSString).sizeWithAttributes([NSFontAttributeName: textView.font!])
         }
-        let width = size.width + bounds.width + Constant.MagicNumber
+        let width = size.width + bounds.width + Default.MagicNumber
         let frame = CGRect(x: 0, y: 0, width: width, height: size.height)
         textView.frame = frame
         scrollView.contentSize = textView.bounds.size
@@ -375,8 +395,8 @@ class LogView: UIView {
     }
     
     private func toggleToolbar() {
-        let collapsed = toolbarLeading.constant == Constant.ToolbarCollapsed
-        toolbarLeading.constant = collapsed ? Constant.ToolbarExpanded : Constant.ToolbarCollapsed
+        let collapsed = toolbarLeading.constant == Default.ToolbarCollapsed
+        toolbarLeading.constant = collapsed ? Default.ToolbarExpanded : Default.ToolbarCollapsed
         UIView.animateWithDuration(0.3) {
             self.toolbar.alpha = collapsed ? 1.0 : 0.3
             self.toolbar.layoutIfNeeded()
@@ -421,11 +441,11 @@ class LogView: UIView {
         textView.selectable = false
         textView.scrollEnabled = false
         textView.textContainer.lineFragmentPadding = 0
-        textView.textContainerInset = UIEdgeInsets(top: Constant.MagicNumber, left: 4, bottom: 0, right: 0)
+        textView.textContainerInset = UIEdgeInsets(top: Default.MagicNumber, left: 4, bottom: 0, right: 0)
     }
     
     private func configureToolbar() {
-        toolbar.layer.cornerRadius = Constant.MagicNumber
+        toolbar.layer.cornerRadius = Default.MagicNumber
         toolbar.alpha = 0.3
         
         toolbarStack.axis = .Horizontal
@@ -488,7 +508,7 @@ class LogView: UIView {
     }
     
     private func configureToolbarConstraints() {
-        toolbarLeading = toolbar.leadingAnchor.constraintEqualToAnchor(trailingAnchor, constant: Constant.ToolbarCollapsed)
+        toolbarLeading = toolbar.leadingAnchor.constraintEqualToAnchor(trailingAnchor, constant: Default.ToolbarCollapsed)
         guard let toolbarConstraints = toolbarConstraints else { return }
         NSLayoutConstraint.activateConstraints(toolbarConstraints)
     }
@@ -510,8 +530,8 @@ class LogView: UIView {
     
     private var toolbarConstraints: [NSLayoutConstraint]? {
         guard let
-        width = toolbar.widthAnchor.constraintEqualToConstant(Constant.ToolbarWidth + Constant.MagicNumber),
-        height = toolbar.heightAnchor.constraintEqualToConstant(Constant.ToolbarHeight),
+        width = toolbar.widthAnchor.constraintEqualToConstant(Default.ToolbarWidth + Default.MagicNumber),
+        height = toolbar.heightAnchor.constraintEqualToConstant(Default.ToolbarHeight),
         centerY = toolbar.centerYAnchor.constraintEqualToAnchor(centerYAnchor)
             else { return nil }
         return [width, height, toolbarLeading, centerY]
@@ -520,7 +540,7 @@ class LogView: UIView {
     private var toolbarStackConstraints: [NSLayoutConstraint]? {
         guard let
             leading = toolbarStack.leadingAnchor.constraintEqualToAnchor(toolbar.leadingAnchor),
-            trailing = toolbarStack.trailingAnchor.constraintEqualToAnchor(toolbar.trailingAnchor, constant: -Constant.MagicNumber),
+            trailing = toolbarStack.trailingAnchor.constraintEqualToAnchor(toolbar.trailingAnchor, constant: -Default.MagicNumber),
             top = toolbarStack.topAnchor.constraintEqualToAnchor(toolbar.topAnchor),
             bottom = toolbarStack.bottomAnchor.constraintEqualToAnchor(toolbar.bottomAnchor)
             else { return nil }

@@ -2,22 +2,25 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>Log</key>
-	<true/>
-	<key>Console</key>
-	<true/>
-	<key>ConsoleAutoStart</key>
+	<key>Enabled</key>
 	<true/>
 	<key>Files</key>
 	<dict>
 		<key>ViewController</key>
 		<true/>
 	</dict>
-	<key>BackColor</key>
-	<string>000000</string>
-	<key>TextColor</key>
-	<string>FFFFFF</string>
-	<key>Opacity</key>
-	<real>0.7</real>
+	<key>Console</key>
+	<dict>
+		<key>Enabled</key>
+		<true/>
+		<key>AutoStart</key>
+		<true/>
+		<key>BackColor</key>
+		<string>000000</string>
+		<key>TextColor</key>
+		<string>FFFFFF</string>
+		<key>Opacity</key>
+		<real>0.7</real>
+	</dict>
 </dict>
 </plist>

@@ -18,7 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AELogDelegate {
 
         AELog.launch(withDelegate: self)
         
-        log("hello 1")
+        aelog("hello 1")
         
         return true
     }
@@ -36,13 +36,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AELogDelegate {
     func applicationWillEnterForeground(application: UIApplication) {
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
         
-        log("hello 2")
+        aelog("hello 2")
     }
 
     func applicationDidBecomeActive(application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
         
-        log("hello 3")
+        aelog("hello 3")
     }
 
     func applicationWillTerminate(application: UIApplication) {
