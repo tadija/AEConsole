@@ -11,19 +11,56 @@ import UIKit
 
 // MARK: - Top Level
 
-public func aelog(message: Any = "", filePath: String = __FILE__, line: Int = __LINE__, function: String = __FUNCTION__) {
-    AELog.sharedInstance.log(message: "\(message)", filePath: filePath, line: line, function: function)
+public func aelog(message: Any = "",
+    thread: NSThread = NSThread.currentThread(),
+    path: String = __FILE__,
+    line: Int = __LINE__,
+    function: String = __FUNCTION__)
+{
+    AELog.sharedInstance.log(thread: thread, path: path, line: line, function: function, message: "\(message)")
+}
+
+// MARK: - AELogLine
+
+public struct AELogLine: CustomStringConvertible {
+    
+    public let timestamp: NSDate
+    public let thread: NSThread
+    public let file: String
+    public let line: Int
+    public let function: String
+    public let message: String
+    
+    private static let dateFormatter = NSDateFormatter()
+    
+    public var description: String {
+        let date = AELogLine.dateFormatter.stringFromDate(timestamp)
+        let threadName = thread.isMainThread ? "Main" : (thread.name ?? "Unknown")
+        let message = self.message == "" ? "" : " | \"\(self.message)\""
+        let desc = "\(date) -- [\(threadName)] \(self.file) (\(self.line)) -> \(self.function)\(message)"
+        return desc
+    }
+    
+    public init(thread: NSThread, file: String, line: Int, function: String, message: String) {
+        self.timestamp = NSDate()
+        self.thread = thread
+        self.file = file
+        self.line = line
+        self.function = function
+        self.message = message
+    }
+    
 }
 
 // MARK: - AELogDelegate
 
 public protocol AELogDelegate: class {
-    func didLog(logLine: String)
+    func didLog(logLine: AELogLine)
 }
 
 extension AELogDelegate where Self: AppDelegate {
     
-    func didLog(logLine: String) {
+    func didLog(logLine: AELogLine) {
         let shared = AELog.sharedInstance
         if shared.settings.consoleEnabled {
             guard let window = self.window else { return }
@@ -54,6 +91,12 @@ public class AELogSettings {
             public static let TextColor = "TextColor"
             public static let Opacity = "Opacity"
         }
+    }
+    
+    // MARK: - Init
+    
+    public init() {
+        AELogLine.dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS"
     }
     
     // MARK: - Properties
@@ -219,29 +262,15 @@ public class AELog {
     
     // MARK: - Actions
     
-    private func log(message message: String, filePath: String, line: Int, function: String) {
+    private func log(thread thread: NSThread, path: String, line: Int, function: String, message: String) {
         if settings.enabled {
-            let fileName = fileNameForPath(filePath)
-            if fileEnabled(fileName) {
-                let logLine = generateLogLine(message: message, fileName: fileName, line: line, function: function)
-                NSLog(logLine)
+            let file = fileNameForPath(path)
+            if fileEnabled(file) {
+                let logLine = AELogLine(thread: thread, file: file, line: line, function: function, message: message)
+                print(logLine.description)
                 delegate?.didLog(logLine)
             }
         }
-    }
-    
-    private func fileEnabled(fileName: String) -> Bool {
-        guard let
-            files = settings.files,
-            fileEnabled = files[fileName]
-        else { return true }
-        return fileEnabled
-    }
-    
-    private func generateLogLine(message message: String, fileName: String, line: Int, function: String) -> String {
-        let text = message == "" ? "" : " | \"\(message)\""
-        let logLine = "-- [\(threadName)] \(fileName) (\(line)) -> \(function)\(text)"
-        return logLine
     }
     
     private func fileNameForPath(path: String) -> String {
@@ -251,10 +280,12 @@ public class AELog {
         return fileName
     }
     
-    private var threadName: String {
-        let thread = NSThread.currentThread()
-        let name = thread.isMainThread ? "Main" : (thread.name ?? "Unknown")
-        return name
+    private func fileEnabled(fileName: String) -> Bool {
+        guard let
+            files = settings.files,
+            fileEnabled = files[fileName]
+        else { return true }
+        return fileEnabled
     }
     
 }
@@ -337,7 +368,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
     private var maxLineWidth: CGFloat = 0.0
     private var currentOffsetX = -Default.MagicNumber
     
-    private var lines = [String]() {
+    private var lines = [AELogLine]() {
         didSet {
             updateUI()
         }
@@ -399,8 +430,8 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
     
     // MARK: - Actions
     
-    func addLogLine(logLine: String) {
-        let calculatedLineWidth = widthForLine(logLine)
+    func addLogLine(logLine: AELogLine) {
+        let calculatedLineWidth = widthForLine(logLine.description)
         if calculatedLineWidth > maxLineWidth {
             maxLineWidth = calculatedLineWidth
         }
@@ -446,7 +477,8 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
         let maxSize = CGSize(width: CGFloat.max, height: Default.RowHeight)
         let options = NSStringDrawingOptions.UsesLineFragmentOrigin
         let attributes = [NSFontAttributeName : UIFont.systemFontOfSize(Default.FontSize)]
-        let size = (line as NSString).boundingRectWithSize(maxSize, options: options, attributes: attributes, context: nil)
+        let nsLine = line as NSString
+        let size = nsLine.boundingRectWithSize(maxSize, options: options, attributes: attributes, context: nil)
         let width = size.width
         return width
     }
@@ -618,7 +650,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
     
     func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
         let logLine = lines[indexPath.row]
-        cell.textLabel?.text = logLine
+        cell.textLabel?.text = logLine.description
     }
     
     // MARK: - Override
