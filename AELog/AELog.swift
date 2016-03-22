@@ -28,7 +28,7 @@ extension AELogDelegate where Self: AppDelegate {
         if shared.settings.consoleEnabled {
             guard let window = self.window else { return }
             let console = shared.console
-            console.text += "\(logLine)\n"
+            console.addLogLine(logLine)
             console.becomeFirstResponder()
             window.bringSubviewToFront(console)
         }
@@ -261,23 +261,62 @@ public class AELog {
 
 // MARK: - AEConsoleView
 
-class AEConsoleView: UIView {
+private class AEConsoleCell: UITableViewCell {
+    
+    static let identifier = "AEConsoleCell"
+    
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        commonInit()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        commonInit()
+    }
+    
+    private func commonInit() {
+        backgroundColor = UIColor.clearColor()
+        guard let label = textLabel else { return }
+        label.font = UIFont.systemFontOfSize(AEConsoleView.Default.FontSize)
+        label.textColor = AEConsoleView.textColor
+        label.numberOfLines = 1
+        label.textAlignment = .Left
+    }
+    
+    private override func prepareForReuse() {
+        super.prepareForReuse()
+        textLabel?.textColor = AEConsoleView.textColor
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        textLabel?.frame = bounds
+    }
+    
+}
+
+class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
     
     private struct Default {
-        static let Opacity: CGFloat = 0.7
+        static let FontSize: CGFloat = 12.0
+        static let RowHeight: CGFloat = 14.0
+
         static let ToolbarWidth: CGFloat = 300
         static let ToolbarHeight: CGFloat = 50
         static let ToolbarCollapsed: CGFloat = -75
         static let ToolbarExpanded: CGFloat = -300
         static let MagicNumber: CGFloat = 10
+        
         static let BackColor = UIColor.blackColor()
         static let TextColor = UIColor.whiteColor()
+        static let Opacity: CGFloat = 0.7
     }
     
     // MARK: - Outlets
     
     private let scrollView = UIScrollView()
-    private let textView = UITextView()
+    private let tableView = UITableView()
     
     private let toolbar = UIView()
     private let toolbarStack = UIStackView()
@@ -293,17 +332,21 @@ class AEConsoleView: UIView {
     
     // MARK: - Properties
     
+    private var maxLineWidth: CGFloat = 0.0
     private var forwardTouches = false
     private var autoFollow = true
     
-    var text = "" {
+    private var lines = [String]() {
         didSet {
-            textView.text = text
-            
-            updateContentSize()
-            if autoFollow {
-                scrollToBottom()
-            }
+            updateUI()
+        }
+    }
+    
+    private func updateUI() {
+        tableView.reloadData()
+        updateContentSize()
+        if autoFollow {
+            scrollToBottom()
         }
     }
     
@@ -311,7 +354,28 @@ class AEConsoleView: UIView {
     private var textColor = Default.TextColor
     private var opacity: CGFloat = Default.Opacity {
         didSet {
-            configureUIWithOpacity(opacity)
+            configureColorsWithOpacity(opacity)
+        }
+    }
+    
+    private static var textColor: UIColor = Default.TextColor.colorWithAlphaComponent(Default.Opacity)
+    
+    private func configureColorsWithOpacity(opacity: CGFloat) {
+        scrollView.backgroundColor = backColor.colorWithAlphaComponent(opacity)
+        
+        let textOpacity = max(0.3, opacity)
+        AEConsoleView.textColor = textColor.colorWithAlphaComponent(textOpacity)
+        
+        let toolbarOpacity = min(0.7, opacity * 1.5)
+        toolbar.backgroundColor = backColor.colorWithAlphaComponent(toolbarOpacity)
+        
+        let toolbarBorderOpacity = toolbarOpacity / 2
+        toolbar.layer.borderColor = backColor.colorWithAlphaComponent(toolbarBorderOpacity).CGColor
+        toolbar.layer.borderWidth = 1.0
+        
+        if !lines.isEmpty {
+            // refresh text color
+            tableView.reloadData()
         }
     }
     
@@ -329,9 +393,18 @@ class AEConsoleView: UIView {
     
     private func commonInit() {
         configureUI()
+        opacity = Default.Opacity
     }
     
     // MARK: - Actions
+    
+    func addLogLine(logLine: String) {
+        let calculatedLineWidth = widthForLine(logLine)
+        if calculatedLineWidth > maxLineWidth {
+            maxLineWidth = calculatedLineWidth
+        }
+        lines.append(logLine)
+    }
     
     func settingsButtonTapped(sender: UIButton) {
         toggleToolbar()
@@ -348,7 +421,7 @@ class AEConsoleView: UIView {
     }
     
     func clearButtonTapped(sender: UIButton) {
-        text = ""
+        lines.removeAll()
     }
     
     func opacityGestureRecognized(sender: UIPanGestureRecognizer) {
@@ -368,6 +441,15 @@ class AEConsoleView: UIView {
     
     // MARK: - Helpers
     
+    private func widthForLine(line: String) -> CGFloat {
+        let maxSize = CGSize(width: CGFloat.max, height: Default.RowHeight)
+        let options = NSStringDrawingOptions.UsesLineFragmentOrigin
+        let attributes = [NSFontAttributeName : UIFont.systemFontOfSize(Default.FontSize)]
+        let size = (line as NSString).boundingRectWithSize(maxSize, options: options, attributes: attributes, context: nil)
+        let width = size.width
+        return width
+    }
+    
     private func opacityForLocation(location: CGPoint) -> CGFloat {
         let calculatedOpacity = ((location.x * 1.0) / 300)
         let minOpacity = max(0.1, calculatedOpacity)
@@ -376,20 +458,20 @@ class AEConsoleView: UIView {
     }
     
     private func updateContentSize() {
-        var size = CGSizeZero
-        if !text.isEmpty {
-            size = (text as NSString).sizeWithAttributes([NSFontAttributeName: textView.font!])
-        }
-        let width = size.width + bounds.width + Default.MagicNumber
-        let frame = CGRect(x: 0, y: 0, width: width, height: size.height)
-        textView.frame = frame
-        scrollView.contentSize = textView.bounds.size
+        let width = maxLineWidth
+        let height = CGFloat(lines.count) * Default.RowHeight
+        tableView.frame = CGRect(x: 0.0, y: 0.0, width: width, height: height)
+
+        let inset = Default.MagicNumber
+        scrollView.contentInset = UIEdgeInsets(top: inset, left: inset, bottom: inset, right: bounds.size.width)
+        scrollView.contentSize = tableView.bounds.size
     }
     
     private func scrollToBottom() {
         let diff = scrollView.contentSize.height - scrollView.bounds.size.height
         if diff > 0 {
-            let bottomOffset = CGPoint(x: scrollView.contentOffset.x, y: diff)
+            let yOffset = diff + Default.MagicNumber
+            let bottomOffset = CGPoint(x: scrollView.contentOffset.x, y: yOffset)
             scrollView.setContentOffset(bottomOffset, animated: false)
         }
     }
@@ -406,7 +488,7 @@ class AEConsoleView: UIView {
     private func toggleUI() {
         UIView.transitionWithView(self, duration: 0.3, options: .TransitionCrossDissolve, animations: { () -> Void in
             self.hidden = !self.hidden
-            }, completion: nil)
+        }, completion: nil)
     }
     
     // MARK: - UI
@@ -414,39 +496,34 @@ class AEConsoleView: UIView {
     private func configureUI() {
         configureOutlets()
         configureLayout()
-        configureUIWithOpacity(0.7)
-    }
-    
-    private func configureUIWithOpacity(opacity: CGFloat) {
-        scrollView.backgroundColor = backColor.colorWithAlphaComponent(opacity)
-        let textOpacity = max(0.3, opacity)
-        textView.textColor = textColor.colorWithAlphaComponent(textOpacity)
-        let toolbarOpacity = min(0.7, opacity * 1.5)
-        toolbar.backgroundColor = backColor.colorWithAlphaComponent(toolbarOpacity)
     }
     
     private func configureOutlets() {
-        configureScrollingTextView()
+        configureScrollingTableView()
         configureToolbar()
         configureToolbarButtons()
         configureOpacityGesture()
         configureCloseGesture()
     }
     
-    private func configureScrollingTextView() {
+    private func configureScrollingTableView() {
         scrollView.alwaysBounceVertical = true
+        scrollView.contentOffset = CGPoint(x: -Default.MagicNumber, y: Default.MagicNumber)
         
-        textView.backgroundColor = UIColor.clearColor()
-        textView.editable = false
-        textView.selectable = false
-        textView.scrollEnabled = false
-        textView.textContainer.lineFragmentPadding = 0
-        textView.textContainerInset = UIEdgeInsets(top: Default.MagicNumber, left: 4, bottom: 0, right: 0)
+        tableView.backgroundColor = UIColor.clearColor()
+        tableView.rowHeight = Default.RowHeight
+        tableView.scrollEnabled = false
+        tableView.allowsSelection = false
+        tableView.separatorStyle = .None
+
+        tableView.registerClass(AEConsoleCell.self, forCellReuseIdentifier: AEConsoleCell.identifier)
+        tableView.dataSource = self
+        tableView.delegate = self
     }
     
     private func configureToolbar() {
-        toolbar.layer.cornerRadius = Default.MagicNumber
         toolbar.alpha = 0.3
+        toolbar.layer.cornerRadius = Default.MagicNumber
         
         toolbarStack.axis = .Horizontal
         toolbarStack.alignment = .Fill
@@ -483,7 +560,7 @@ class AEConsoleView: UIView {
     }
     
     private func configureLayout() {
-        scrollView.addSubview(textView)
+        scrollView.addSubview(tableView)
         addSubview(scrollView)
 
         toolbarStack.addArrangedSubview(settingsButton)
@@ -547,6 +624,24 @@ class AEConsoleView: UIView {
         return [leading, trailing, top, bottom]
     }
     
+    // MARK: - UITableViewDataSource
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return lines.count
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier(AEConsoleCell.identifier) as! AEConsoleCell
+        return cell
+    }
+    
+    // MARK: - UITableViewDelegate
+    
+    func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        let logLine = lines[indexPath.row]
+        cell.textLabel?.text = logLine
+    }
+    
     // MARK: - Override
     
     override func layoutSubviews() {
@@ -558,7 +653,7 @@ class AEConsoleView: UIView {
     override func hitTest(point: CGPoint, withEvent event: UIEvent?) -> UIView? {
         let hitView = super.hitTest(point, withEvent: event)
         
-        if (hitView == scrollView || hitView == textView) && forwardTouches {
+        if hitView?.superview != toolbarStack && forwardTouches {
             return nil
         }
         
