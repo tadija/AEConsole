@@ -315,7 +315,6 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
     
     // MARK: - Outlets
     
-    private let scrollView = UIScrollView()
     private let tableView = UITableView()
     
     private let toolbar = UIView()
@@ -332,9 +331,11 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
     
     // MARK: - Properties
     
-    private var maxLineWidth: CGFloat = 0.0
     private var forwardTouches = false
     private var autoFollow = true
+    
+    private var maxLineWidth: CGFloat = 0.0
+    private var currentOffsetX = -Default.MagicNumber
     
     private var lines = [String]() {
         didSet {
@@ -361,7 +362,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
     private static var textColor: UIColor = Default.TextColor.colorWithAlphaComponent(Default.Opacity)
     
     private func configureColorsWithOpacity(opacity: CGFloat) {
-        scrollView.backgroundColor = backColor.colorWithAlphaComponent(opacity)
+        tableView.backgroundColor = backColor.colorWithAlphaComponent(opacity)
         
         let textOpacity = max(0.3, opacity)
         AEConsoleView.textColor = textColor.colorWithAlphaComponent(textOpacity)
@@ -458,21 +459,22 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
     }
     
     private func updateContentSize() {
-        let width = maxLineWidth
-        let height = CGFloat(lines.count) * Default.RowHeight
-        tableView.frame = CGRect(x: 0.0, y: 0.0, width: width, height: height)
-
-        let inset = Default.MagicNumber
-        scrollView.contentInset = UIEdgeInsets(top: inset, left: inset, bottom: inset, right: bounds.size.width)
-        scrollView.contentSize = tableView.bounds.size
+        let maxWidth = maxLineWidth
+        
+        let newFrame = CGRect(x: 0.0, y: 0.0, width: maxWidth, height: bounds.height)
+        tableView.frame = newFrame
+        
+        let defaultInset = Default.MagicNumber
+        let newInset = UIEdgeInsets(top: defaultInset, left: defaultInset, bottom: defaultInset, right: maxWidth)
+        tableView.contentInset = newInset
     }
     
     private func scrollToBottom() {
-        let diff = scrollView.contentSize.height - scrollView.bounds.size.height
+        let diff = tableView.contentSize.height - tableView.bounds.size.height
         if diff > 0 {
-            let yOffset = diff + Default.MagicNumber
-            let bottomOffset = CGPoint(x: scrollView.contentOffset.x, y: yOffset)
-            scrollView.setContentOffset(bottomOffset, animated: false)
+            let offsetY = diff + Default.MagicNumber
+            let bottomOffset = CGPoint(x: currentOffsetX, y: offsetY)
+            tableView.setContentOffset(bottomOffset, animated: false)
         }
     }
     
@@ -499,20 +501,15 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
     }
     
     private func configureOutlets() {
-        configureScrollingTableView()
+        configureTableView()
         configureToolbar()
         configureToolbarButtons()
         configureOpacityGesture()
         configureCloseGesture()
     }
     
-    private func configureScrollingTableView() {
-        scrollView.alwaysBounceVertical = true
-        scrollView.contentOffset = CGPoint(x: -Default.MagicNumber, y: Default.MagicNumber)
-        
-        tableView.backgroundColor = UIColor.clearColor()
+    private func configureTableView() {
         tableView.rowHeight = Default.RowHeight
-        tableView.scrollEnabled = false
         tableView.allowsSelection = false
         tableView.separatorStyle = .None
 
@@ -560,8 +557,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
     }
     
     private func configureLayout() {
-        scrollView.addSubview(tableView)
-        addSubview(scrollView)
+        addSubview(tableView)
 
         toolbarStack.addArrangedSubview(settingsButton)
         toolbarStack.addArrangedSubview(touchButton)
@@ -569,19 +565,12 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
         toolbarStack.addArrangedSubview(clearButton)
         toolbar.addSubview(toolbarStack)
         addSubview(toolbar)
-        
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
+
         toolbar.translatesAutoresizingMaskIntoConstraints = false
         toolbarStack.translatesAutoresizingMaskIntoConstraints = false
-        
-        configureScrollViewConstraints()
+
         configureToolbarConstraints()
         configureToolbarStackConstraints()
-    }
-    
-    private func configureScrollViewConstraints() {
-        guard let scrollViewConstraints = scrollViewConstraints else { return }
-        NSLayoutConstraint.activateConstraints(scrollViewConstraints)
     }
     
     private func configureToolbarConstraints() {
@@ -593,16 +582,6 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
     private func configureToolbarStackConstraints() {
         guard let toolbarStackConstraints = toolbarStackConstraints else { return }
         NSLayoutConstraint.activateConstraints(toolbarStackConstraints)
-    }
-    
-    private var scrollViewConstraints: [NSLayoutConstraint]? {
-        guard let
-            leading = scrollView.leadingAnchor.constraintEqualToAnchor(leadingAnchor),
-            trailing = scrollView.trailingAnchor.constraintEqualToAnchor(trailingAnchor),
-            top = scrollView.topAnchor.constraintEqualToAnchor(topAnchor),
-            bottom = scrollView.bottomAnchor.constraintEqualToAnchor(bottomAnchor)
-            else { return nil }
-        return [leading, trailing, top, bottom]
     }
     
     private var toolbarConstraints: [NSLayoutConstraint]? {
@@ -668,6 +647,16 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
         if motion == .MotionShake {
             toggleUI()
         }
+    }
+    
+    func scrollViewDidEndDragging(scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if !decelerate {
+            currentOffsetX = scrollView.contentOffset.x
+        }
+    }
+    
+    func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
+        currentOffsetX = scrollView.contentOffset.x
     }
     
 }
