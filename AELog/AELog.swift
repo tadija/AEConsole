@@ -31,10 +31,8 @@ public struct AELogLine: CustomStringConvertible {
     public let function: String
     public let message: String
     
-    private static let dateFormatter = NSDateFormatter()
-    
     public var description: String {
-        let date = AELogLine.dateFormatter.stringFromDate(timestamp)
+        let date = AELogSettings.sharedInstance.dateFormatter.stringFromDate(timestamp)
         let threadName = thread.isMainThread ? "Main" : (thread.name ?? "Unknown")
         let message = self.message == "" ? "" : " | \"\(self.message)\""
         let desc = "\(date) -- [\(threadName)] \(self.file) (\(self.line)) -> \(self.function)\(message)"
@@ -75,48 +73,45 @@ extension AELogDelegate where Self: AppDelegate {
 
 // MARK: - AELogSettings
 
-public class AELogSettings {
+private class AELogSettings {
     
-    public struct Key {
-        private static let Name = NSStringFromClass(AELog).componentsSeparatedByString(".").last!
-        
-        public static let Enabled = "Enabled"
-        public static let Files = "Files"
-        
-        private static let ConsoleSettings = "Console"
-        public struct Console {
-            public static let Enabled = "Enabled"
-            public static let AutoStart = "AutoStart"
-            public static let BackColor = "BackColor"
-            public static let TextColor = "TextColor"
-            public static let Opacity = "Opacity"
+    private struct Default {
+        private static let Enabled = true
+
+        private struct Console {
+            private static let Enabled = true
+            private static let AutoStart = true
+            private static let BackColor = UIColor.blackColor()
+            private static let TextColor = UIColor.whiteColor()
+            private static let Opacity: CGFloat = 0.7
         }
     }
     
-    // MARK: - Init
+    private typealias Key = AELog.Setting
     
-    public init() {
-        AELogLine.dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS"
-    }
+    // MARK: - Singleton
+    
+    private static let sharedInstance = AELogSettings()
     
     // MARK: - Properties
     
-    private var settingsPath: String?
+    private let dateFormatter = NSDateFormatter()
+    private var textOpacity = Default.Console.Opacity
+    
+    // MARK: - Init
+    
+    private init() {
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS"
+    }
     
     // MARK: - Plist Helpers
     
-    private lazy var logSettings: [String : AnyObject]? = { [unowned self] in
-        if let path = self.settingsPath {
-            return AELogSettings.settingsForPath(path)
-        } else if let path = NSBundle.mainBundle().pathForResource(Key.Name, ofType: "plist") {
-            return AELogSettings.settingsForPath(path)
-        } else {
-            guard let
-                info = AELogSettings.infoPlist,
-                settings = info[Key.Name] as? [String : AnyObject]
-            else { return nil }
-            return settings
-        }
+    private lazy var logSettings: [String : AnyObject]? = {
+        guard let
+            path = NSBundle.mainBundle().pathForResource("AELog", ofType: "plist"),
+            settings = NSDictionary(contentsOfFile: path) as? [String : AnyObject]
+        else { return nil }
+        return settings
     }()
     
     private lazy var consoleSettings: [String : AnyObject]? = { [unowned self] in
@@ -127,29 +122,13 @@ public class AELogSettings {
         return console
     }()
     
-    private static func settingsForPath(path: String?) -> [String : AnyObject]? {
-        guard let
-            path = path,
-            settings = NSDictionary(contentsOfFile: path) as? [String : AnyObject]
-        else { return nil }
-        return settings
-    }
-    
-    private static var infoPlist: NSDictionary? {
-        guard let
-            path = NSBundle.mainBundle().pathForResource("Info", ofType: "plist"),
-            info = NSDictionary(contentsOfFile: path)
-        else { return nil }
-        return info
-    }
-    
     // MARK: - Settings
     
     private lazy var enabled: Bool = { [unowned self] in
         guard let
             settings = self.logSettings,
             enabled = settings[Key.Enabled] as? Bool
-        else { return true }
+        else { return Default.Enabled }
         return enabled
     }()
     
@@ -165,7 +144,7 @@ public class AELogSettings {
         guard let
             settings = self.consoleSettings,
             enabled = settings[Key.Console.Enabled] as? Bool
-        else { return true }
+        else { return Default.Console.Enabled }
         return enabled
     }()
     
@@ -173,23 +152,27 @@ public class AELogSettings {
         guard let
             settings = self.consoleSettings,
             autoStart = settings[Key.Console.AutoStart] as? Bool
-        else { return true }
+        else { return Default.Console.AutoStart }
         return autoStart
     }()
     
-    private lazy var consoleBackColor: UIColor? = { [unowned self] in
-        return self.consoleColorForKey(Key.Console.BackColor)
+    private lazy var consoleBackColor: UIColor = { [unowned self] in
+        guard let color = self.consoleColorForKey(Key.Console.BackColor)
+        else { return Default.Console.BackColor }
+        return color
     }()
     
-    private lazy var consoleTextColor: UIColor? = { [unowned self] in
-        return self.consoleColorForKey(Key.Console.TextColor)
+    private lazy var consoleTextColor: UIColor = { [unowned self] in
+        guard let color = self.consoleColorForKey(Key.Console.TextColor)
+        else { return Default.Console.TextColor }
+        return color
     }()
     
-    private lazy var consoleOpacity: CGFloat? = { [unowned self] in
+    private lazy var consoleOpacity: CGFloat = { [unowned self] in
         guard let
             settings = self.consoleSettings,
             opacity = settings[Key.Console.Opacity] as? CGFloat
-        else { return nil }
+        else { return Default.Console.Opacity }
         return opacity
     }()
     
@@ -200,11 +183,11 @@ public class AELogSettings {
             settings = consoleSettings,
             hex = settings[key] as? String
             else { return nil }
-        let color = AELogSettings.colorFromHexString(hex)
+        let color = colorFromHexString(hex)
         return color
     }
     
-    private class func colorFromHexString(hex: String) -> UIColor? {
+    private func colorFromHexString(hex: String) -> UIColor? {
         let scanner = NSScanner(string: hex)
         var hexValue: UInt32 = 0
         if scanner.scanHexInt(&hexValue) {
@@ -222,17 +205,33 @@ public class AELogSettings {
 
 public class AELog {
     
+    public struct Setting {
+        public static let Enabled = "Enabled"
+        public static let Files = "Files"
+        
+        private static let ConsoleSettings = "Console"
+        public struct Console {
+            public static let Enabled = "Enabled"
+            public static let AutoStart = "AutoStart"
+            public static let BackColor = "BackColor"
+            public static let TextColor = "TextColor"
+            public static let Opacity = "Opacity"
+        }
+    }
+    
+    // MARK: - Singleton
+    
+    private static let sharedInstance = AELog()
+    
     // MARK: - API
     
-    public class func launch(withDelegate delegate: AELogDelegate? = nil, settingsPath: String? = nil) {
+    public class func launch(withDelegate delegate: AELogDelegate? = nil) {
         AELog.sharedInstance.delegate = delegate
-        AELog.sharedInstance.settings.settingsPath = settingsPath
     }
     
     // MARK: - Properties
     
-    private static let sharedInstance = AELog()
-    private let settings = AELogSettings()
+    private let settings = AELogSettings.sharedInstance
     
     private let console = AEConsoleView()
     private weak var delegate: AELogDelegate? {
@@ -253,14 +252,10 @@ public class AELog {
         console.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
         console.hidden = !settings.consoleAutoStart
         
-        console.backColor = settings.consoleBackColor ?? AEConsoleView.Default.BackColor
-        console.textColor = settings.consoleTextColor ?? AEConsoleView.Default.TextColor
-        console.opacity = settings.consoleOpacity ?? AEConsoleView.Default.Opacity
-        
         window.addSubview(console)
     }
     
-    // MARK: - Actions
+    // MARK: - API
     
     private func log(thread thread: NSThread, path: String, line: Int, function: String, message: String) {
         if settings.enabled {
@@ -272,6 +267,8 @@ public class AELog {
             }
         }
     }
+    
+    // MARK: - Helpers
     
     private func fileNameForPath(path: String) -> String {
         guard let
@@ -296,6 +293,12 @@ private class AEConsoleCell: UITableViewCell {
     
     static let identifier = "AEConsoleCell"
     
+    // MARK: - Properties
+    
+    private let settings = AELogSettings.sharedInstance
+    
+    // MARK: - Init
+    
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         commonInit()
@@ -310,14 +313,16 @@ private class AEConsoleCell: UITableViewCell {
         backgroundColor = UIColor.clearColor()
         guard let label = textLabel else { return }
         label.font = UIFont.systemFontOfSize(AEConsoleView.Default.FontSize)
-        label.textColor = AEConsoleView.textColor
+        label.textColor = settings.consoleTextColor.colorWithAlphaComponent(settings.textOpacity)
         label.numberOfLines = 1
         label.textAlignment = .Left
     }
     
+    // MARK: - Override
+    
     private override func prepareForReuse() {
         super.prepareForReuse()
-        textLabel?.textColor = AEConsoleView.textColor
+        textLabel?.textColor = settings.consoleTextColor.colorWithAlphaComponent(settings.textOpacity)
     }
     
     override func layoutSubviews() {
@@ -338,10 +343,6 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
         static let ToolbarCollapsed: CGFloat = -75
         static let ToolbarExpanded: CGFloat = -300
         static let MagicNumber: CGFloat = 10
-        
-        static let BackColor = UIColor.blackColor()
-        static let TextColor = UIColor.whiteColor()
-        static let Opacity: CGFloat = 0.7
     }
     
     // MARK: - Outlets
@@ -362,6 +363,8 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
     
     // MARK: - Properties
     
+    private let settings = AELogSettings.sharedInstance
+    
     private var forwardTouches = false
     private var autoFollow = true
     
@@ -381,28 +384,24 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
             scrollToBottom()
         }
     }
-    
-    private var backColor = Default.BackColor
-    private var textColor = Default.TextColor
-    private var opacity: CGFloat = Default.Opacity {
+
+    private var opacity: CGFloat = 1.0 {
         didSet {
             configureColorsWithOpacity(opacity)
         }
     }
     
-    private static var textColor: UIColor = Default.TextColor.colorWithAlphaComponent(Default.Opacity)
-    
     private func configureColorsWithOpacity(opacity: CGFloat) {
-        tableView.backgroundColor = backColor.colorWithAlphaComponent(opacity)
+        tableView.backgroundColor = settings.consoleBackColor.colorWithAlphaComponent(opacity)
         
         let textOpacity = max(0.3, opacity)
-        AEConsoleView.textColor = textColor.colorWithAlphaComponent(textOpacity)
+        settings.textOpacity = textOpacity
         
         let toolbarOpacity = min(0.7, opacity * 1.5)
-        toolbar.backgroundColor = backColor.colorWithAlphaComponent(toolbarOpacity)
+        toolbar.backgroundColor = settings.consoleBackColor.colorWithAlphaComponent(toolbarOpacity)
         
         let toolbarBorderOpacity = toolbarOpacity / 2
-        toolbar.layer.borderColor = backColor.colorWithAlphaComponent(toolbarBorderOpacity).CGColor
+        toolbar.layer.borderColor = settings.consoleBackColor.colorWithAlphaComponent(toolbarBorderOpacity).CGColor
         toolbar.layer.borderWidth = 1.0
         
         if !lines.isEmpty {
@@ -425,7 +424,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
     
     private func commonInit() {
         configureUI()
-        opacity = Default.Opacity
+        opacity = settings.consoleOpacity
     }
     
     // MARK: - Actions
