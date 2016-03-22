@@ -459,7 +459,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
     }
     
     private func updateContentSize() {
-        let maxWidth = maxLineWidth
+        let maxWidth = max(maxLineWidth, bounds.width)
         
         let newFrame = CGRect(x: 0.0, y: 0.0, width: maxWidth, height: bounds.height)
         tableView.frame = newFrame

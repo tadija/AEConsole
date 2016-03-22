@@ -23,7 +23,6 @@ class ViewController: UIViewController {
     }
 
     @IBAction func buttonTopTapped(sender: AnyObject) {
-        aelog(sender)
         aelog("top button is tapped")
         generateLogLines(count: 30)
     }
