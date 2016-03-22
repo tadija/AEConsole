@@ -83,6 +83,8 @@ private class AELogSettings {
             private static let AutoStart = true
             private static let BackColor = UIColor.blackColor()
             private static let TextColor = UIColor.whiteColor()
+            private static let FontSize: CGFloat = 12.0
+            private static let RowHeight: CGFloat = 14.0
             private static let Opacity: CGFloat = 0.7
         }
     }
@@ -141,44 +143,66 @@ private class AELogSettings {
     }()
     
     private lazy var consoleEnabled: Bool = { [unowned self] in
-        guard let
-            settings = self.consoleSettings,
-            enabled = settings[Key.Console.Enabled] as? Bool
+        guard let enabled = self.boolForKey(Key.Console.Enabled)
         else { return Default.Console.Enabled }
         return enabled
     }()
     
     private lazy var consoleAutoStart: Bool = { [unowned self] in
-        guard let
-            settings = self.consoleSettings,
-            autoStart = settings[Key.Console.AutoStart] as? Bool
+        guard let autoStart = self.boolForKey(Key.Console.AutoStart)
         else { return Default.Console.AutoStart }
         return autoStart
     }()
     
     private lazy var consoleBackColor: UIColor = { [unowned self] in
-        guard let color = self.consoleColorForKey(Key.Console.BackColor)
+        guard let color = self.colorForKey(Key.Console.BackColor)
         else { return Default.Console.BackColor }
         return color
     }()
     
     private lazy var consoleTextColor: UIColor = { [unowned self] in
-        guard let color = self.consoleColorForKey(Key.Console.TextColor)
+        guard let color = self.colorForKey(Key.Console.TextColor)
         else { return Default.Console.TextColor }
         return color
     }()
     
+    private lazy var consoleFontSize: CGFloat = { [unowned self] in
+        guard let fontSize = self.numberForKey(Key.Console.FontSize)
+        else { return Default.Console.FontSize }
+        return fontSize
+    }()
+    
+    private lazy var consoleRowHeight: CGFloat = { [unowned self] in
+        guard let rowHeight = self.numberForKey(Key.Console.RowHeight)
+        else { return Default.Console.RowHeight }
+        return rowHeight
+    }()
+    
     private lazy var consoleOpacity: CGFloat = { [unowned self] in
-        guard let
-            settings = self.consoleSettings,
-            opacity = settings[Key.Console.Opacity] as? CGFloat
+        guard let opacity = self.numberForKey(Key.Console.Opacity)
         else { return Default.Console.Opacity }
         return opacity
     }()
     
-    // MARK: - Color Helpers
+    // MARK: - Helpers
     
-    private func consoleColorForKey(key: String) -> UIColor? {
+    private func boolForKey(key: String) -> Bool? {
+        guard let
+            settings = consoleSettings,
+            bool = settings[key] as? Bool
+        else { return nil }
+        return bool
+    }
+    
+    private func numberForKey(key: String) -> CGFloat? {
+        guard let
+            settings = consoleSettings,
+            number = settings[key] as? CGFloat
+        else { return nil }
+        return number
+    }
+    
+    private func colorForKey(key: String) -> UIColor? {
         guard let
             settings = consoleSettings,
             hex = settings[key] as? String
@@ -215,6 +239,8 @@ public class AELog {
             public static let AutoStart = "AutoStart"
             public static let BackColor = "BackColor"
             public static let TextColor = "TextColor"
+            public static let FontSize = "FontSize"
+            public static let RowHeight = "RowHeight"
             public static let Opacity = "Opacity"
         }
     }
@@ -312,7 +338,7 @@ private class AEConsoleCell: UITableViewCell {
     private func commonInit() {
         backgroundColor = UIColor.clearColor()
         guard let label = textLabel else { return }
-        label.font = UIFont.systemFontOfSize(AEConsoleView.Default.FontSize)
+        label.font = UIFont.systemFontOfSize(settings.consoleFontSize)
         label.textColor = settings.consoleTextColor.colorWithAlphaComponent(settings.textOpacity)
         label.numberOfLines = 1
         label.textAlignment = .Left
@@ -334,10 +360,7 @@ private class AEConsoleCell: UITableViewCell {
 
 class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
     
-    private struct Default {
-        static let FontSize: CGFloat = 12.0
-        static let RowHeight: CGFloat = 14.0
-
+    private struct Layout {
         static let ToolbarWidth: CGFloat = 300
         static let ToolbarHeight: CGFloat = 50
         static let ToolbarCollapsed: CGFloat = -75
@@ -369,7 +392,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
     private var autoFollow = true
     
     private var maxLineWidth: CGFloat = 0.0
-    private var currentOffsetX = -Default.MagicNumber
+    private var currentOffsetX = -Layout.MagicNumber
     
     private var lines = [AELogLine]() {
         didSet {
@@ -458,7 +481,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
     func opacityGestureRecognized(sender: UIPanGestureRecognizer) {
         if sender.state == .Ended {
             let xTranslation = sender.translationInView(toolbar).x
-            if abs(xTranslation) > (3 * Default.MagicNumber) {
+            if abs(xTranslation) > (3 * Layout.MagicNumber) {
                 let location = sender.locationInView(toolbar)
                 let opacity = opacityForLocation(location)
                 self.opacity = opacity
@@ -473,9 +496,9 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
     // MARK: - Helpers
     
     private func widthForLine(line: String) -> CGFloat {
-        let maxSize = CGSize(width: CGFloat.max, height: Default.RowHeight)
+        let maxSize = CGSize(width: CGFloat.max, height: settings.consoleRowHeight)
         let options = NSStringDrawingOptions.UsesLineFragmentOrigin
-        let attributes = [NSFontAttributeName : UIFont.systemFontOfSize(Default.FontSize)]
+        let attributes = [NSFontAttributeName : UIFont.systemFontOfSize(settings.consoleFontSize)]
         let nsLine = line as NSString
         let size = nsLine.boundingRectWithSize(maxSize, options: options, attributes: attributes, context: nil)
         let width = size.width
@@ -495,7 +518,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
         let newFrame = CGRect(x: 0.0, y: 0.0, width: maxWidth, height: bounds.height)
         tableView.frame = newFrame
         
-        let defaultInset = Default.MagicNumber
+        let defaultInset = Layout.MagicNumber
         let newInset = UIEdgeInsets(top: defaultInset, left: defaultInset, bottom: defaultInset, right: maxWidth)
         tableView.contentInset = newInset
     }
@@ -503,15 +526,15 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
     private func scrollToBottom() {
         let diff = tableView.contentSize.height - tableView.bounds.size.height
         if diff > 0 {
-            let offsetY = diff + Default.MagicNumber
+            let offsetY = diff + Layout.MagicNumber
             let bottomOffset = CGPoint(x: currentOffsetX, y: offsetY)
             tableView.setContentOffset(bottomOffset, animated: false)
         }
     }
     
     private func toggleToolbar() {
-        let collapsed = toolbarLeading.constant == Default.ToolbarCollapsed
-        toolbarLeading.constant = collapsed ? Default.ToolbarExpanded : Default.ToolbarCollapsed
+        let collapsed = toolbarLeading.constant == Layout.ToolbarCollapsed
+        toolbarLeading.constant = collapsed ? Layout.ToolbarExpanded : Layout.ToolbarCollapsed
         UIView.animateWithDuration(0.3) {
             self.toolbar.alpha = collapsed ? 1.0 : 0.3
             self.toolbar.layoutIfNeeded()
@@ -540,7 +563,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
     }
     
     private func configureTableView() {
-        tableView.rowHeight = Default.RowHeight
+        tableView.rowHeight = settings.consoleRowHeight
         tableView.allowsSelection = false
         tableView.separatorStyle = .None
 
@@ -551,7 +574,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
     
     private func configureToolbar() {
         toolbar.alpha = 0.3
-        toolbar.layer.cornerRadius = Default.MagicNumber
+        toolbar.layer.cornerRadius = Layout.MagicNumber
         
         toolbarStack.axis = .Horizontal
         toolbarStack.alignment = .Fill
@@ -605,7 +628,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
     }
     
     private func configureToolbarConstraints() {
-        toolbarLeading = toolbar.leadingAnchor.constraintEqualToAnchor(trailingAnchor, constant: Default.ToolbarCollapsed)
+        toolbarLeading = toolbar.leadingAnchor.constraintEqualToAnchor(trailingAnchor, constant: Layout.ToolbarCollapsed)
         guard let toolbarConstraints = toolbarConstraints else { return }
         NSLayoutConstraint.activateConstraints(toolbarConstraints)
     }
@@ -617,8 +640,8 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
     
     private var toolbarConstraints: [NSLayoutConstraint]? {
         guard let
-        width = toolbar.widthAnchor.constraintEqualToConstant(Default.ToolbarWidth + Default.MagicNumber),
-        height = toolbar.heightAnchor.constraintEqualToConstant(Default.ToolbarHeight),
+        width = toolbar.widthAnchor.constraintEqualToConstant(Layout.ToolbarWidth + Layout.MagicNumber),
+        height = toolbar.heightAnchor.constraintEqualToConstant(Layout.ToolbarHeight),
         centerY = toolbar.centerYAnchor.constraintEqualToAnchor(centerYAnchor)
             else { return nil }
         return [width, height, toolbarLeading, centerY]
@@ -627,7 +650,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate {
     private var toolbarStackConstraints: [NSLayoutConstraint]? {
         guard let
             leading = toolbarStack.leadingAnchor.constraintEqualToAnchor(toolbar.leadingAnchor),
-            trailing = toolbarStack.trailingAnchor.constraintEqualToAnchor(toolbar.trailingAnchor, constant: -Default.MagicNumber),
+            trailing = toolbarStack.trailingAnchor.constraintEqualToAnchor(toolbar.trailingAnchor, constant: -Layout.MagicNumber),
             top = toolbarStack.topAnchor.constraintEqualToAnchor(toolbar.topAnchor),
             bottom = toolbarStack.bottomAnchor.constraintEqualToAnchor(toolbar.bottomAnchor)
             else { return nil }
