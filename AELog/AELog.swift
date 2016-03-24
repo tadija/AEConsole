@@ -11,12 +11,8 @@ import UIKit
 
 // MARK: - Top Level
 
-public func aelog(message: Any = "",
-    thread: NSThread = NSThread.currentThread(),
-    path: String = __FILE__,
-    line: Int = __LINE__,
-    function: String = __FUNCTION__)
-{
+public func aelog(message: Any = "", path: String = #file, line: Int = #line, function: String = #function) {
+    let thread = NSThread.currentThread()
     AELog.sharedInstance.log(thread: thread, path: path, line: line, function: function, message: "\(message)")
 }
 
@@ -382,8 +378,11 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     private let filterStack = UIStackView()
     private var filterTop: NSLayoutConstraint!
     
-    private let resetFilterButton = UIButton()
+    private let clearFilterButton = UIButton()
     private let textField = UITextField()
+    private let countLabelStack = UIStackView()
+    private let totalCountLabel = UILabel()
+    private let filteredCountLabel = UILabel()
     private let exportButton = UIButton()
     
     private let toolbar = UIView()
@@ -448,18 +447,66 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
             updateUI()
         }
     }
-    
-    private func updateUI() {
-        tableView.reloadData()
-        updateContentLayout()
-        if autoFollow {
-            scrollToBottom()
-        }
-    }
 
     private var opacity: CGFloat = 1.0 {
         didSet {
             configureColorsWithOpacity(opacity)
+        }
+    }
+    
+    // MARK: - Helpers
+    
+    private func updateUI() {
+        tableView.reloadData()
+        
+        updateCountLabels()
+        updateContentLayout()
+        
+        if autoFollow {
+            scrollToBottom()
+        }
+    }
+    
+    private func updateCountLabels() {
+        totalCountLabel.text = "□ \(lines.count)"
+        let filteredCount = filterActive ? filteredLines.count : 0
+        filteredCountLabel.text = "■ \(filteredCount)"
+    }
+    
+    private func updateContentLayout() {
+        let maxWidth = max(maxLineWidth, bounds.width)
+        
+        let newFrame = CGRect(x: 0.0, y: 0.0, width: maxWidth, height: bounds.height)
+        tableView.frame = newFrame
+        
+        UIView.animateWithDuration(0.3) { [unowned self] () -> Void in
+            let newInset = UIEdgeInsets(top: self.topContentInset, left: Layout.MagicNumber, bottom: Layout.MagicNumber, right: maxWidth)
+            self.tableView.contentInset = newInset
+        }
+        
+        updateContentOffset()
+    }
+    
+    private func updateContentOffset() {
+        if controlsActive {
+            if tableView.contentOffset.y == -topInsetSmall {
+                let offset = CGPoint(x: tableView.contentOffset.x, y: -topInsetLarge)
+                tableView.setContentOffset(offset, animated: true)
+            }
+        } else {
+            if tableView.contentOffset.y == -topInsetLarge {
+                let offset = CGPoint(x: tableView.contentOffset.x, y: -topInsetSmall)
+                tableView.setContentOffset(offset, animated: true)
+            }
+        }
+    }
+    
+    private func scrollToBottom() {
+        let diff = tableView.contentSize.height - tableView.bounds.size.height
+        if diff > 0 {
+            let offsetY = diff + Layout.MagicNumber
+            let bottomOffset = CGPoint(x: currentOffsetX, y: offsetY)
+            tableView.setContentOffset(bottomOffset, animated: false)
         }
     }
     
@@ -546,6 +593,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     
     func exportButtonTapped(sender: UIButton) {
         /// - TODO: implement
+        aelog("not yet implemented")
     }
     
     func opacityGestureRecognized(sender: UIPanGestureRecognizer) {
@@ -580,43 +628,6 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         let minOpacity = max(0.1, calculatedOpacity)
         let maxOpacity = min(0.9, minOpacity)
         return maxOpacity
-    }
-    
-    private func updateContentLayout() {
-        let maxWidth = max(maxLineWidth, bounds.width)
-        
-        let newFrame = CGRect(x: 0.0, y: 0.0, width: maxWidth, height: bounds.height)
-        tableView.frame = newFrame
-        
-        UIView.animateWithDuration(0.3) { [unowned self] () -> Void in
-            let newInset = UIEdgeInsets(top: self.topContentInset, left: Layout.MagicNumber, bottom: Layout.MagicNumber, right: maxWidth)
-            self.tableView.contentInset = newInset
-        }
-        
-        updateContentOffset()
-    }
-    
-    private func updateContentOffset() {
-        if controlsActive {
-            if tableView.contentOffset.y == -topInsetSmall {
-                let offset = CGPoint(x: tableView.contentOffset.x, y: -topInsetLarge)
-                tableView.setContentOffset(offset, animated: true)
-            }
-        } else {
-            if tableView.contentOffset.y == -topInsetLarge {
-                let offset = CGPoint(x: tableView.contentOffset.x, y: -topInsetSmall)
-                tableView.setContentOffset(offset, animated: true)
-            }
-        }
-    }
-    
-    private func scrollToBottom() {
-        let diff = tableView.contentSize.height - tableView.bounds.size.height
-        if diff > 0 {
-            let offsetY = diff + Layout.MagicNumber
-            let bottomOffset = CGPoint(x: currentOffsetX, y: offsetY)
-            tableView.setContentOffset(bottomOffset, animated: false)
-        }
     }
     
     private func toggleControls() {
@@ -672,48 +683,71 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     }
     
     private func configureFilter() {
+        configureFilterStack()
+        configureFilterCountLabels()
+        configureFilterTextField()
+        configureFilterButtons()
+    }
+    
+    private func configureFilterStack() {
         filter.alpha = 0.3
-        
         filterStack.axis = .Horizontal
         filterStack.alignment = .Fill
         filterStack.distribution = .Fill
-        
-        configureFilterControls()
     }
     
-    private func configureFilterControls() {
-        resetFilterButton.setTitle("🔥", forState: .Normal)
-        resetFilterButton.addTarget(self, action: Selector("filterClearButtonTapped:"), forControlEvents: .TouchUpInside)
+    private func configureFilterCountLabels() {
+        countLabelStack.axis = .Vertical
+        countLabelStack.alignment = .Fill
+        countLabelStack.distribution = .FillEqually
+        let stackInsets = UIEdgeInsets(top: Layout.MagicNumber, left: 0, bottom: Layout.MagicNumber, right: 0)
+        countLabelStack.layoutMargins = stackInsets
+        countLabelStack.layoutMarginsRelativeArrangement = true
         
+        totalCountLabel.font = UIFont.systemFontOfSize(12)
+        totalCountLabel.textColor = settings.consoleTextColor
+        totalCountLabel.textAlignment = .Left
+        
+        filteredCountLabel.font = UIFont.systemFontOfSize(12)
+        filteredCountLabel.textColor = settings.consoleTextColor
+        filteredCountLabel.textAlignment = .Left
+    }
+    
+    private func configureFilterTextField() {
+        let textColor = settings.consoleTextColor
         textField.delegate = self
-        textField.tintColor = settings.consoleTextColor
-        textField.textColor = settings.consoleTextColor
-        
-        let titleParagraphStyle = NSMutableParagraphStyle()
-        titleParagraphStyle.alignment = .Center
-        let attributes = [
-            NSForegroundColorAttributeName : UIColor.whiteColor().colorWithAlphaComponent(0.5),
-            NSParagraphStyleAttributeName : titleParagraphStyle
-        ]
+        textField.tintColor = textColor
+        textField.font = UIFont.systemFontOfSize(14)
+        textField.textColor = textColor
+        let attributes = [NSForegroundColorAttributeName : textColor.colorWithAlphaComponent(0.5)]
         let placeholderText = NSAttributedString(string: "Type here...", attributes: attributes)
         textField.attributedPlaceholder = placeholderText
-        
+        textField.layer.sublayerTransform = CATransform3DMakeTranslation(10, 0, 0)
+    }
+    
+    private func configureFilterButtons() {
         exportButton.setTitle("🌙", forState: .Normal)
-        exportButton.addTarget(self, action: Selector("exportButtonTapped:"), forControlEvents: .TouchUpInside)
+        exportButton.addTarget(self, action: #selector(exportButtonTapped(_:)), forControlEvents: .TouchUpInside)
+        
+        clearFilterButton.setTitle("🔥", forState: .Normal)
+        clearFilterButton.addTarget(self, action: #selector(filterClearButtonTapped(_:)), forControlEvents: .TouchUpInside)
     }
     
     private func configureToolbar() {
+        configureToolbarStack()
+        configureToolbarButtons()
+    }
+    
+    private func configureToolbarStack() {
         toolbar.alpha = 0.3
         toolbar.layer.cornerRadius = Layout.MagicNumber
         
         toolbarStack.axis = .Horizontal
         toolbarStack.alignment = .Fill
         toolbarStack.distribution = .FillEqually
-        
-        configureToolbarControls()
     }
     
-    private func configureToolbarControls() {
+    private func configureToolbarButtons() {
         settingsButton.setTitle("☀️", forState: .Normal)
         touchButton.setTitle("✨", forState: .Normal)
         touchButton.setTitle("⚡️", forState: .Selected)
@@ -724,10 +758,10 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         touchButton.selected = true
         followButton.selected = true
         
-        settingsButton.addTarget(self, action: Selector("settingsButtonTapped:"), forControlEvents: .TouchUpInside)
-        touchButton.addTarget(self, action: Selector("touchButtonTapped:"), forControlEvents: .TouchUpInside)
-        followButton.addTarget(self, action: Selector("followButtonTapped:"), forControlEvents: .TouchUpInside)
-        clearButton.addTarget(self, action: Selector("clearButtonTapped:"), forControlEvents: .TouchUpInside)
+        settingsButton.addTarget(self, action: #selector(settingsButtonTapped(_:)), forControlEvents: .TouchUpInside)
+        touchButton.addTarget(self, action: #selector(touchButtonTapped(_:)), forControlEvents: .TouchUpInside)
+        followButton.addTarget(self, action: #selector(followButtonTapped(_:)), forControlEvents: .TouchUpInside)
+        clearButton.addTarget(self, action: #selector(clearButtonTapped(_:)), forControlEvents: .TouchUpInside)
     }
     
     private func configureGestures() {
@@ -736,23 +770,29 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     }
     
     private func configureOpacityGesture() {
-        opacityGesture.addTarget(self, action: "opacityGestureRecognized:")
+        opacityGesture.addTarget(self, action: #selector(opacityGestureRecognized(_:)))
         toolbar.addGestureRecognizer(opacityGesture)
     }
     
     private func configureCloseGesture() {
         closeGesture.numberOfTouchesRequired = 2
         closeGesture.numberOfTapsRequired = 2
-        closeGesture.addTarget(self, action: Selector("closeGestureRecognized:"))
+        closeGesture.addTarget(self, action: #selector(closeGestureRecognized(_:)))
         addGestureRecognizer(closeGesture)
     }
     
     private func configureLayout() {
         addSubview(tableView)
         
-        filterStack.addArrangedSubview(resetFilterButton)
-        filterStack.addArrangedSubview(textField)
         filterStack.addArrangedSubview(exportButton)
+        
+        countLabelStack.addArrangedSubview(totalCountLabel)
+        countLabelStack.addArrangedSubview(filteredCountLabel)
+        filterStack.addArrangedSubview(countLabelStack)
+        
+        filterStack.addArrangedSubview(textField)
+        filterStack.addArrangedSubview(clearFilterButton)
+
         filter.addSubview(filterStack)
         addSubview(filter)
 
@@ -789,9 +829,10 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     }
     
     private func configureFilterControlsConstraints() {
-        let filterClearButtonWidth = resetFilterButton.widthAnchor.constraintEqualToConstant(Layout.FilterButtonWidth)
+        let filterClearButtonWidth = clearFilterButton.widthAnchor.constraintEqualToConstant(Layout.FilterButtonWidth)
+        let countLabelsWidth = countLabelStack.widthAnchor.constraintGreaterThanOrEqualToConstant(50)
         let exportButtonWidth = exportButton.widthAnchor.constraintEqualToConstant(Layout.FilterButtonWidth)
-        NSLayoutConstraint.activateConstraints([filterClearButtonWidth, exportButtonWidth])
+        NSLayoutConstraint.activateConstraints([filterClearButtonWidth, countLabelsWidth, exportButtonWidth])
     }
     
     private func configureToolbarConstraints() {
