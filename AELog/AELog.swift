@@ -450,14 +450,20 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     
     private var filterActive = false {
         didSet {
-            filterActive ? updateFilteredLines() : clearFilteredLines()
+            if filterActive {
+                guard let filter = filterText else { return }
+                aelog("Filter Lines [\(filterActive)] - <\(filter)>")
+                filterLinesWithText(filter)
+            } else {
+                aelog("Filter Lines [\(filterActive)]")
+                clearFilteredLines()
+            }
             updateUI()
         }
     }
     
-    private func updateFilteredLines() {
-        guard let filter = filterText else { return }
-        let filtered = lines.filter({ $0.description.containsString(filter) })
+    private func filterLinesWithText(text: String) {
+        let filtered = lines.filter({ $0.description.containsString(text) })
         filteredLines = filtered
     }
     
@@ -516,6 +522,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
                 tableView.setContentOffset(offset, animated: true)
             }
         }
+        tableView.flashScrollIndicators()
     }
     
     private func scrollToBottom() {
@@ -575,11 +582,13 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     func touchButtonTapped(sender: UIButton) {
         touchButton.selected = !touchButton.selected
         forwardTouches = !forwardTouches
+        aelog("Forward Touches [\(forwardTouches)]")
     }
     
     func followButtonTapped(sender: UIButton) {
         followButton.selected = !followButton.selected
         autoFollow = !autoFollow
+        aelog("Auto Follow [\(autoFollow)]")
     }
     
     func clearButtonTapped(sender: UIButton) {
@@ -587,8 +596,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     }
     
     func exportButtonTapped(sender: UIButton) {
-        /// - TODO: implement
-        aelog("not yet implemented")
+        exportAllLogLines()
     }
     
     func opacityGestureRecognized(sender: UIPanGestureRecognizer) {
@@ -676,6 +684,27 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         UIView.transitionWithView(self, duration: 0.3, options: .TransitionCrossDissolve, animations: { () -> Void in
             self.hidden = !self.hidden
         }, completion: nil)
+    }
+    
+    private func exportAllLogLines() {
+        let stringLines = lines.map({ $0.description })
+        let log = stringLines.joinWithSeparator("\n")
+
+        if isEmpty(log) {
+            aelog("Log is empty, nothing to export here.")
+        } else {
+            let filename = "\(NSDate().timeIntervalSince1970).aelog"
+            let documentsPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
+            let documentsURL = NSURL(fileURLWithPath: documentsPath)
+            let fileURL = documentsURL.URLByAppendingPathComponent(filename)
+            
+            do {
+                try log.writeToURL(fileURL, atomically: true, encoding: NSUTF8StringEncoding)
+                aelog("Log is exported to path: \(fileURL)")
+            } catch {
+                aelog(error)
+            }
+        }
     }
     
     // MARK: - UI
