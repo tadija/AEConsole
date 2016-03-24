@@ -95,6 +95,9 @@ private class AELogSettings {
     
     private let dateFormatter = NSDateFormatter()
     private var textOpacity = Default.Console.Opacity
+    private var consoleFont: UIFont {
+        return UIFont.monospacedDigitSystemFontOfSize(consoleFontSize, weight: UIFontWeightRegular)
+    }
     
     // MARK: - Init
     
@@ -334,7 +337,7 @@ private class AEConsoleCell: UITableViewCell {
     private func commonInit() {
         backgroundColor = UIColor.clearColor()
         guard let label = textLabel else { return }
-        label.font = UIFont.systemFontOfSize(settings.consoleFontSize)
+        label.font = settings.consoleFont
         label.textColor = settings.consoleTextColor.colorWithAlphaComponent(settings.textOpacity)
         label.numberOfLines = 1
         label.textAlignment = .Left
@@ -593,6 +596,8 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     
     func clearButtonTapped(sender: UIButton) {
         lines.removeAll()
+        filteredLines.removeAll()
+        updateUI()
     }
     
     func exportButtonTapped(sender: UIButton) {
@@ -637,7 +642,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     private func widthForLine(line: String) -> CGFloat {
         let maxSize = CGSize(width: CGFloat.max, height: settings.consoleRowHeight)
         let options = NSStringDrawingOptions.UsesLineFragmentOrigin
-        let attributes = [NSFontAttributeName : UIFont.systemFontOfSize(settings.consoleFontSize)]
+        let attributes = [NSFontAttributeName : settings.consoleFont]
         let nsLine = line as NSString
         let size = nsLine.boundingRectWithSize(maxSize, options: options, attributes: attributes, context: nil)
         let width = size.width
@@ -753,11 +758,11 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         countLabelStack.layoutMargins = stackInsets
         countLabelStack.layoutMarginsRelativeArrangement = true
         
-        totalCountLabel.font = UIFont.systemFontOfSize(12)
+        totalCountLabel.font = settings.consoleFont
         totalCountLabel.textColor = settings.consoleTextColor
         totalCountLabel.textAlignment = .Left
         
-        filteredCountLabel.font = UIFont.systemFontOfSize(12)
+        filteredCountLabel.font = settings.consoleFont
         filteredCountLabel.textColor = settings.consoleTextColor
         filteredCountLabel.textAlignment = .Left
     }
@@ -767,7 +772,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         textField.delegate = self
         textField.autocapitalizationType = .None
         textField.tintColor = textColor
-        textField.font = UIFont.systemFontOfSize(14)
+        textField.font = settings.consoleFont.fontWithSize(14)
         textField.textColor = textColor
         let attributes = [NSForegroundColorAttributeName : textColor.colorWithAlphaComponent(0.5)]
         let placeholderText = NSAttributedString(string: "Type here...", attributes: attributes)
