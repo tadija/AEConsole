@@ -397,6 +397,24 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     private let opacityGesture = UIPanGestureRecognizer()
     private let closeGesture = UITapGestureRecognizer()
     
+    // MARK: - API
+    
+    func addLogLine(logLine: AELogLine) {
+        let calculatedLineWidth = widthForLine(logLine.description)
+        if calculatedLineWidth > maxLineWidth {
+            maxLineWidth = calculatedLineWidth
+        }
+        
+        if filterActive {
+            guard let filter = filterText else { return }
+            if logLine.description.containsString(filter) {
+                filteredLines.append(logLine)
+            }
+        }
+        
+        lines.append(logLine)
+    }
+    
     // MARK: - Properties
     
     private let settings = AELogSettings.sharedInstance
@@ -422,30 +440,29 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         }
     }
     
-    private var filteredLines: [AELogLine] {
-        guard let filter = filterText else { return lines }
-        let filtered = lines.filter({ $0.description.containsString(filter) })
-        return filtered
-    }
+    private var filteredLines = [AELogLine]()
     
     private var filterText: String? {
         didSet {
-            if let text = filterText {
-                let characterSet = NSCharacterSet.whitespaceAndNewlineCharacterSet()
-                let emptyText = text.stringByTrimmingCharactersInSet(characterSet) == ""
-                if !emptyText {
-                    filterActive = true
-                }
-            } else {
-                filterActive = false
-            }
+            filterActive = !isEmpty(filterText)
         }
     }
     
     private var filterActive = false {
         didSet {
+            filterActive ? updateFilteredLines() : clearFilteredLines()
             updateUI()
         }
+    }
+    
+    private func updateFilteredLines() {
+        guard let filter = filterText else { return }
+        let filtered = lines.filter({ $0.description.containsString(filter) })
+        filteredLines = filtered
+    }
+    
+    private func clearFilteredLines() {
+        filteredLines = [AELogLine]()
     }
 
     private var opacity: CGFloat = 1.0 {
@@ -551,14 +568,6 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     
     // MARK: - Actions
     
-    func addLogLine(logLine: AELogLine) {
-        let calculatedLineWidth = widthForLine(logLine.description)
-        if calculatedLineWidth > maxLineWidth {
-            maxLineWidth = calculatedLineWidth
-        }
-        lines.append(logLine)
-    }
-    
     func settingsButtonTapped(sender: UIButton) {
         toggleControls()
     }
@@ -575,20 +584,6 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     
     func clearButtonTapped(sender: UIButton) {
         lines.removeAll()
-    }
-    
-    func filterClearButtonTapped(sender: UIButton) {
-        textField.resignFirstResponder()
-        if textField.text != "" {
-            textField.text = nil
-            filterText = nil
-        }
-    }
-    
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        filterText = textField.text
-        return true
     }
     
     func exportButtonTapped(sender: UIButton) {
@@ -611,6 +606,24 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         toggleUI()
     }
     
+    func filterClearButtonTapped(sender: UIButton) {
+        textField.resignFirstResponder()
+        if !isEmpty(textField.text) {
+            filterText = nil
+        }
+        textField.text = nil
+    }
+    
+    // MARK: - UITextFieldDelegate
+    
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        if !isEmpty(textField.text) {
+            filterText = textField.text
+        }
+        return true
+    }
+    
     // MARK: - Helpers
     
     private func widthForLine(line: String) -> CGFloat {
@@ -628,6 +641,13 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         let minOpacity = max(0.1, calculatedOpacity)
         let maxOpacity = min(0.9, minOpacity)
         return maxOpacity
+    }
+    
+    private func isEmpty(text: String?) -> Bool {
+        guard let text = text else { return true }
+        let characterSet = NSCharacterSet.whitespaceAndNewlineCharacterSet()
+        let isTextEmpty = text.stringByTrimmingCharactersInSet(characterSet).isEmpty
+        return isTextEmpty
     }
     
     private func toggleControls() {
@@ -716,6 +736,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     private func configureFilterTextField() {
         let textColor = settings.consoleTextColor
         textField.delegate = self
+        textField.autocapitalizationType = .None
         textField.tintColor = textColor
         textField.font = UIFont.systemFontOfSize(14)
         textField.textColor = textColor
