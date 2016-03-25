@@ -16,6 +16,94 @@ public func aelog(message: Any = "", path: String = #file, line: Int = #line, fu
     AELog.sharedInstance.log(thread: thread, path: path, line: line, function: function, message: "\(message)")
 }
 
+// MARK: - AELog
+
+public class AELog {
+    
+    public struct SettingKey {
+        public static let Enabled = "Enabled"
+        public static let Files = "Files"
+        
+        private static let ConsoleSettings = "Console"
+        public struct Console {
+            public static let Enabled = "Enabled"
+            public static let AutoStart = "AutoStart"
+            public static let BackColor = "BackColor"
+            public static let TextColor = "TextColor"
+            public static let FontSize = "FontSize"
+            public static let RowHeight = "RowHeight"
+            public static let Opacity = "Opacity"
+        }
+    }
+    
+    // MARK: - Singleton
+    
+    private static let sharedInstance = AELog()
+    
+    // MARK: - API
+    
+    public class func launch(withDelegate delegate: AELogDelegate? = nil) {
+        AELog.sharedInstance.delegate = delegate
+    }
+    
+    // MARK: - Properties
+    
+    private let settings = AELogSettings.sharedInstance
+    
+    private let console = AEConsoleView()
+    private weak var delegate: AELogDelegate? {
+        didSet {
+            addConsoleToAppWindow()
+        }
+    }
+    
+    // MARK: - Helpers
+    
+    private func addConsoleToAppWindow() {
+        guard let
+            app = delegate as? AppDelegate,
+            window = app.window
+            else { return }
+        
+        console.frame = window.bounds
+        console.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+        console.hidden = !settings.consoleAutoStart
+        
+        window.addSubview(console)
+    }
+    
+    // MARK: - API
+    
+    private func log(thread thread: NSThread, path: String, line: Int, function: String, message: String) {
+        if settings.enabled {
+            let file = fileNameForPath(path)
+            if fileEnabled(file) {
+                let logLine = AELogLine(thread: thread, file: file, line: line, function: function, message: message)
+                print(logLine.description)
+                delegate?.didLog(logLine)
+            }
+        }
+    }
+    
+    // MARK: - Helpers
+    
+    private func fileNameForPath(path: String) -> String {
+        guard let
+            fileName = NSURL(fileURLWithPath: path).URLByDeletingPathExtension?.lastPathComponent
+            else { return "Unknown" }
+        return fileName
+    }
+    
+    private func fileEnabled(fileName: String) -> Bool {
+        guard let
+            files = settings.files,
+            fileEnabled = files[fileName]
+            else { return true }
+        return fileEnabled
+    }
+    
+}
+
 // MARK: - AELogLine
 
 public struct AELogLine: CustomStringConvertible {
@@ -42,27 +130,6 @@ public struct AELogLine: CustomStringConvertible {
         self.line = line
         self.function = function
         self.message = message
-    }
-    
-}
-
-// MARK: - AELogDelegate
-
-public protocol AELogDelegate: class {
-    func didLog(logLine: AELogLine)
-}
-
-extension AELogDelegate where Self: AppDelegate {
-    
-    func didLog(logLine: AELogLine) {
-        let shared = AELog.sharedInstance
-        if shared.settings.consoleEnabled {
-            guard let window = self.window else { return }
-            let console = shared.console
-            console.addLogLine(logLine)
-            console.becomeFirstResponder()
-            window.bringSubviewToFront(console)
-        }
     }
     
 }
@@ -224,151 +291,41 @@ private class AELogSettings {
     
 }
 
-// MARK: - AELog
+// MARK: - AELogDelegate
 
-public class AELog {
+public protocol AELogDelegate: class {
+    func didLog(logLine: AELogLine)
+}
+
+extension AELogDelegate where Self: AppDelegate {
     
-    public struct SettingKey {
-        public static let Enabled = "Enabled"
-        public static let Files = "Files"
-        
-        private static let ConsoleSettings = "Console"
-        public struct Console {
-            public static let Enabled = "Enabled"
-            public static let AutoStart = "AutoStart"
-            public static let BackColor = "BackColor"
-            public static let TextColor = "TextColor"
-            public static let FontSize = "FontSize"
-            public static let RowHeight = "RowHeight"
-            public static let Opacity = "Opacity"
+    func didLog(logLine: AELogLine) {
+        let shared = AELog.sharedInstance
+        if shared.settings.consoleEnabled {
+            guard let window = self.window else { return }
+            let console = shared.console
+            console.addLogLine(logLine)
+            console.becomeFirstResponder()
+            window.bringSubviewToFront(console)
         }
-    }
-    
-    // MARK: - Singleton
-    
-    private static let sharedInstance = AELog()
-    
-    // MARK: - API
-    
-    public class func launch(withDelegate delegate: AELogDelegate? = nil) {
-        AELog.sharedInstance.delegate = delegate
-    }
-    
-    // MARK: - Properties
-    
-    private let settings = AELogSettings.sharedInstance
-    
-    private let console = AEConsoleView()
-    private weak var delegate: AELogDelegate? {
-        didSet {
-            addConsoleToAppWindow()
-        }
-    }
-    
-    // MARK: - Helpers
-    
-    private func addConsoleToAppWindow() {
-        guard let
-            app = delegate as? AppDelegate,
-            window = app.window
-        else { return }
-        
-        console.frame = window.bounds
-        console.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
-        console.hidden = !settings.consoleAutoStart
-        
-        window.addSubview(console)
-    }
-    
-    // MARK: - API
-    
-    private func log(thread thread: NSThread, path: String, line: Int, function: String, message: String) {
-        if settings.enabled {
-            let file = fileNameForPath(path)
-            if fileEnabled(file) {
-                let logLine = AELogLine(thread: thread, file: file, line: line, function: function, message: message)
-                print(logLine.description)
-                delegate?.didLog(logLine)
-            }
-        }
-    }
-    
-    // MARK: - Helpers
-    
-    private func fileNameForPath(path: String) -> String {
-        guard let
-            fileName = NSURL(fileURLWithPath: path).URLByDeletingPathExtension?.lastPathComponent
-        else { return "Unknown" }
-        return fileName
-    }
-    
-    private func fileEnabled(fileName: String) -> Bool {
-        guard let
-            files = settings.files,
-            fileEnabled = files[fileName]
-        else { return true }
-        return fileEnabled
     }
     
 }
 
 // MARK: - AEConsoleView
 
-private class AEConsoleCell: UITableViewCell {
-    
-    static let identifier = "AEConsoleCell"
-    
-    // MARK: - Properties
-    
-    private let settings = AELogSettings.sharedInstance
-    
-    // MARK: - Init
-    
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        commonInit()
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        commonInit()
-    }
-    
-    private func commonInit() {
-        backgroundColor = UIColor.clearColor()
-        guard let label = textLabel else { return }
-        label.font = settings.consoleFont
-        label.textColor = settings.consoleTextColor.colorWithAlphaComponent(settings.textOpacity)
-        label.numberOfLines = 1
-        label.textAlignment = .Left
-    }
-    
-    // MARK: - Override
-    
-    private override func prepareForReuse() {
-        super.prepareForReuse()
-        textLabel?.textColor = settings.consoleTextColor.colorWithAlphaComponent(settings.textOpacity)
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        textLabel?.frame = bounds
-    }
-    
-}
-
 class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate {
     
     private struct Layout {
-        static let FilterHeight: CGFloat = 50
-        static let FilterCollapsed: CGFloat = -50
+        static let FilterHeight: CGFloat = 64
         static let FilterExpanded: CGFloat = 0
+        static let FilterCollapsed: CGFloat = -Layout.FilterHeight
         static let FilterButtonWidth: CGFloat = 75
         
         static let ToolbarWidth: CGFloat = 300
         static let ToolbarHeight: CGFloat = 50
+        static let ToolbarExpanded: CGFloat = -Layout.ToolbarWidth
         static let ToolbarCollapsed: CGFloat = -75
-        static let ToolbarExpanded: CGFloat = -300
         
         static let MagicNumber: CGFloat = 10
     }
@@ -576,6 +533,36 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         opacity = settings.consoleOpacity
     }
     
+    // MARK: - UITableViewDataSource
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        let rows = filterActive ? filteredLines : lines
+        return rows.count
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier(AEConsoleCell.identifier) as! AEConsoleCell
+        return cell
+    }
+    
+    // MARK: - UITableViewDelegate
+    
+    func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        let rows = filterActive ? filteredLines : lines
+        let logLine = rows[indexPath.row]
+        cell.textLabel?.text = logLine.description
+    }
+    
+    // MARK: - UITextFieldDelegate
+    
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        if !isEmpty(textField.text) {
+            filterText = textField.text
+        }
+        return true
+    }
+    
     // MARK: - Actions
     
     func settingsButtonTapped(sender: UIButton) {
@@ -625,16 +612,6 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
             filterText = nil
         }
         textField.text = nil
-    }
-    
-    // MARK: - UITextFieldDelegate
-    
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        if !isEmpty(textField.text) {
-            filterText = textField.text
-        }
-        return true
     }
     
     // MARK: - Helpers
@@ -748,6 +725,10 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         filterStack.axis = .Horizontal
         filterStack.alignment = .Fill
         filterStack.distribution = .Fill
+        
+        let stackInsets = UIEdgeInsets(top: Layout.MagicNumber, left: 0, bottom: 0, right: 0)
+        filterStack.layoutMargins = stackInsets
+        filterStack.layoutMarginsRelativeArrangement = true
     }
     
     private func configureFilterCountLabels() {
@@ -835,6 +816,8 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         closeGesture.addTarget(self, action: #selector(closeGestureRecognized(_:)))
         addGestureRecognizer(closeGesture)
     }
+    
+    // MARK: - Layout
     
     private func configureLayout() {
         addSubview(tableView)
@@ -939,26 +922,6 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         return [leading, trailing, top, bottom]
     }
     
-    // MARK: - UITableViewDataSource
-    
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let rows = filterActive ? filteredLines : lines
-        return rows.count
-    }
-    
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(AEConsoleCell.identifier) as! AEConsoleCell
-        return cell
-    }
-    
-    // MARK: - UITableViewDelegate
-    
-    func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
-        let rows = filterActive ? filteredLines : lines
-        let logLine = rows[indexPath.row]
-        cell.textLabel?.text = logLine.description
-    }
-    
     // MARK: - Override
     
     override func layoutSubviews() {
@@ -997,6 +960,51 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     
     func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
         currentOffsetX = scrollView.contentOffset.x
+    }
+    
+}
+
+// MARK: - AEConsoleCell
+
+private class AEConsoleCell: UITableViewCell {
+    
+    static let identifier = "AEConsoleCell"
+    
+    // MARK: - Properties
+    
+    private let settings = AELogSettings.sharedInstance
+    
+    // MARK: - Init
+    
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        commonInit()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        commonInit()
+    }
+    
+    private func commonInit() {
+        backgroundColor = UIColor.clearColor()
+        guard let label = textLabel else { return }
+        label.font = settings.consoleFont
+        label.textColor = settings.consoleTextColor.colorWithAlphaComponent(settings.textOpacity)
+        label.numberOfLines = 1
+        label.textAlignment = .Left
+    }
+    
+    // MARK: - Override
+    
+    private override func prepareForReuse() {
+        super.prepareForReuse()
+        textLabel?.textColor = settings.consoleTextColor.colorWithAlphaComponent(settings.textOpacity)
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        textLabel?.frame = bounds
     }
     
 }
