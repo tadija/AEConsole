@@ -50,26 +50,26 @@ public class AELog {
     
     private let settings = AELogSettings.sharedInstance
     
-    private let console = AEConsoleView()
+    private let consoleView = AEConsoleView()
     private weak var delegate: AELogDelegate? {
         didSet {
-            addConsoleToAppWindow()
+            addConsoleViewToAppWindow()
         }
     }
     
     // MARK: - Helpers
     
-    private func addConsoleToAppWindow() {
+    private func addConsoleViewToAppWindow() {
         guard let
             app = delegate as? AppDelegate,
             window = app.window
-            else { return }
+        else { return }
         
-        console.frame = window.bounds
-        console.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
-        console.hidden = !settings.consoleAutoStart
+        consoleView.frame = window.bounds
+        consoleView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+        consoleView.hidden = !settings.consoleAutoStart
         
-        window.addSubview(console)
+        window.addSubview(consoleView)
     }
     
     // MARK: - API
@@ -90,7 +90,7 @@ public class AELog {
     private func fileNameForPath(path: String) -> String {
         guard let
             fileName = NSURL(fileURLWithPath: path).URLByDeletingPathExtension?.lastPathComponent
-            else { return "Unknown" }
+        else { return "Unknown" }
         return fileName
     }
     
@@ -98,7 +98,7 @@ public class AELog {
         guard let
             files = settings.files,
             fileEnabled = files[fileName]
-            else { return true }
+        else { return true }
         return fileEnabled
     }
     
@@ -272,7 +272,7 @@ private class AELogSettings {
         guard let
             settings = consoleSettings,
             hex = settings[key] as? String
-            else { return nil }
+        else { return nil }
         let color = colorFromHexString(hex)
         return color
     }
@@ -303,10 +303,10 @@ extension AELogDelegate where Self: AppDelegate {
         let shared = AELog.sharedInstance
         if shared.settings.consoleEnabled {
             guard let window = self.window else { return }
-            let console = shared.console
-            console.addLogLine(logLine)
-            console.becomeFirstResponder()
-            window.bringSubviewToFront(console)
+            let consoleView = shared.consoleView
+            consoleView.addLogLine(logLine)
+            consoleView.becomeFirstResponder()
+            window.bringSubviewToFront(consoleView)
         }
     }
     
@@ -317,15 +317,14 @@ extension AELogDelegate where Self: AppDelegate {
 class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate {
     
     private struct Layout {
-        static let FilterHeight: CGFloat = 64
-        static let FilterExpanded: CGFloat = 0
-        static let FilterCollapsed: CGFloat = -Layout.FilterHeight
-        static let FilterButtonWidth: CGFloat = 75
+        static let FilterHeight: CGFloat = 60
+        static let FilterExpandedTop: CGFloat = 0
+        static let FilterCollapsedTop: CGFloat = -Layout.FilterHeight
         
-        static let ToolbarWidth: CGFloat = 300
-        static let ToolbarHeight: CGFloat = 50
-        static let ToolbarExpanded: CGFloat = -Layout.ToolbarWidth
-        static let ToolbarCollapsed: CGFloat = -75
+        static let MenuWidth: CGFloat = 300
+        static let MenuHeight: CGFloat = 50
+        static let MenuExpandedLeading: CGFloat = -Layout.MenuWidth
+        static let MenuCollapsedLeading: CGFloat = -75
         
         static let MagicNumber: CGFloat = 10
     }
@@ -334,28 +333,28 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     
     private let tableView = UITableView()
     
-    private let filter = UIView()
+    private let filterView = UIView()
     private let filterStack = UIStackView()
-    private var filterTop: NSLayoutConstraint!
+    private var filterViewTop: NSLayoutConstraint!
     
-    private let clearFilterButton = UIButton()
+    private let exportLogButton = UIButton()
+    private let linesCountStack = UIStackView()
+    private let linesTotalLabel = UILabel()
+    private let linesFilteredLabel = UILabel()
     private let textField = UITextField()
-    private let countLabelStack = UIStackView()
-    private let totalCountLabel = UILabel()
-    private let filteredCountLabel = UILabel()
-    private let exportButton = UIButton()
+    private let clearFilterButton = UIButton()
     
-    private let toolbar = UIView()
-    private let toolbarStack = UIStackView()
-    private var toolbarLeading: NSLayoutConstraint!
+    private let menuView = UIView()
+    private let menuStack = UIStackView()
+    private var menuViewLeading: NSLayoutConstraint!
     
-    private let settingsButton = UIButton()
-    private let touchButton = UIButton()
-    private let followButton = UIButton()
-    private let clearButton = UIButton()
+    private let toggleToolbarButton = UIButton()
+    private let forwardTouchesButton = UIButton()
+    private let autoFollowButton = UIButton()
+    private let clearLogButton = UIButton()
     
-    private let opacityGesture = UIPanGestureRecognizer()
-    private let closeGesture = UITapGestureRecognizer()
+    private let updateOpacityGesture = UIPanGestureRecognizer()
+    private let hideConsoleGesture = UITapGestureRecognizer()
     
     // MARK: - API
     
@@ -379,20 +378,18 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     
     private let settings = AELogSettings.sharedInstance
     
-    private var forwardTouches = false
-    private var autoFollow = true
-    
     private var maxLineWidth: CGFloat = 0.0
     private var currentOffsetX = -Layout.MagicNumber
-    private var topInsetSmall = Layout.MagicNumber
-    private var topInsetLarge = Layout.MagicNumber + Layout.FilterHeight
-    private var topContentInset = Layout.MagicNumber
     
-    private var controlsActive = false {
+    private var toolbarActive = false {
         didSet {
-            topContentInset = controlsActive ? topInsetLarge : topInsetSmall
+            currentTopInset = toolbarActive ? topInsetLarge : topInsetSmall
         }
     }
+    
+    private var currentTopInset = Layout.MagicNumber
+    private var topInsetSmall = Layout.MagicNumber
+    private var topInsetLarge = Layout.MagicNumber + Layout.FilterHeight
     
     private var lines = [AELogLine]() {
         didSet {
@@ -410,25 +407,21 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     
     private var filterActive = false {
         didSet {
-            if filterActive {
-                guard let filter = filterText else { return }
-                aelog("Filter Lines [\(filterActive)] - <\(filter)>")
-                filterLinesWithText(filter)
-            } else {
-                aelog("Filter Lines [\(filterActive)]")
-                clearFilteredLines()
-            }
+            updateFilter()
             updateUI()
         }
     }
     
-    private func filterLinesWithText(text: String) {
-        let filtered = lines.filter({ $0.description.containsString(text) })
-        filteredLines = filtered
-    }
-    
-    private func clearFilteredLines() {
-        filteredLines = [AELogLine]()
+    private func updateFilter() {
+        if filterActive {
+            guard let filter = filterText else { return }
+            aelog("Filter Lines [\(filterActive)] - <\(filter)>")
+            let filtered = lines.filter({ $0.description.containsString(filter) })
+            filteredLines = filtered
+        } else {
+            aelog("Filter Lines [\(filterActive)]")
+            filteredLines.removeAll()
+        }
     }
 
     private var opacity: CGFloat = 1.0 {
@@ -442,18 +435,18 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     private func updateUI() {
         tableView.reloadData()
         
-        updateCountLabels()
+        updateLinesCountLabels()
         updateContentLayout()
         
-        if autoFollow {
+        if autoFollowButton.selected {
             scrollToBottom()
         }
     }
     
-    private func updateCountLabels() {
-        totalCountLabel.text = "□ \(lines.count)"
+    private func updateLinesCountLabels() {
+        linesTotalLabel.text = "□ \(lines.count)"
         let filteredCount = filterActive ? filteredLines.count : 0
-        filteredCountLabel.text = "■ \(filteredCount)"
+        linesFilteredLabel.text = "■ \(filteredCount)"
     }
     
     private func updateContentLayout() {
@@ -463,7 +456,8 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         tableView.frame = newFrame
         
         UIView.animateWithDuration(0.3) { [unowned self] () -> Void in
-            let newInset = UIEdgeInsets(top: self.topContentInset, left: Layout.MagicNumber, bottom: Layout.MagicNumber, right: maxWidth)
+            let inset = Layout.MagicNumber
+            let newInset = UIEdgeInsets(top: self.currentTopInset, left: inset, bottom: inset, right: maxWidth)
             self.tableView.contentInset = newInset
         }
         
@@ -471,7 +465,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     }
     
     private func updateContentOffset() {
-        if controlsActive {
+        if toolbarActive {
             if tableView.contentOffset.y == -topInsetSmall {
                 let offset = CGPoint(x: tableView.contentOffset.x, y: -topInsetLarge)
                 tableView.setContentOffset(offset, animated: true)
@@ -500,15 +494,15 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         let textOpacity = max(0.3, opacity)
         settings.textOpacity = textOpacity
         
-        let controlOpacity = min(0.7, opacity * 1.5)
-        filter.backgroundColor = settings.consoleBackColor.colorWithAlphaComponent(controlOpacity)
-        toolbar.backgroundColor = settings.consoleBackColor.colorWithAlphaComponent(controlOpacity)
+        let toolbarOpacity = min(0.7, opacity * 1.5)
+        filterView.backgroundColor = settings.consoleBackColor.colorWithAlphaComponent(toolbarOpacity)
+        menuView.backgroundColor = settings.consoleBackColor.colorWithAlphaComponent(toolbarOpacity)
         
-        let borderOpacity = controlOpacity / 2
-        filter.layer.borderColor = settings.consoleBackColor.colorWithAlphaComponent(borderOpacity).CGColor
-        filter.layer.borderWidth = 1.0
-        toolbar.layer.borderColor = settings.consoleBackColor.colorWithAlphaComponent(borderOpacity).CGColor
-        toolbar.layer.borderWidth = 1.0
+        let borderOpacity = toolbarOpacity / 2
+        filterView.layer.borderColor = settings.consoleBackColor.colorWithAlphaComponent(borderOpacity).CGColor
+        filterView.layer.borderWidth = 1.0
+        menuView.layer.borderColor = settings.consoleBackColor.colorWithAlphaComponent(borderOpacity).CGColor
+        menuView.layer.borderWidth = 1.0
         
         if !lines.isEmpty {
             // refresh text color
@@ -565,53 +559,49 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     
     // MARK: - Actions
     
-    func settingsButtonTapped(sender: UIButton) {
-        toggleControls()
+    func didTapToggleToolbarButton(sender: UIButton) {
+        toggleToolbar()
     }
     
-    func touchButtonTapped(sender: UIButton) {
-        touchButton.selected = !touchButton.selected
-        forwardTouches = !forwardTouches
-        aelog("Forward Touches [\(forwardTouches)]")
+    func didTapForwardTouchesButton(sender: UIButton) {
+        forwardTouchesButton.selected = !forwardTouchesButton.selected
+        aelog("Forward Touches [\(forwardTouchesButton.selected)]")
     }
     
-    func followButtonTapped(sender: UIButton) {
-        followButton.selected = !followButton.selected
-        autoFollow = !autoFollow
-        aelog("Auto Follow [\(autoFollow)]")
+    func didTapAutoFollowButton(sender: UIButton) {
+        autoFollowButton.selected = !autoFollowButton.selected
+        aelog("Auto Follow [\(autoFollowButton.selected)]")
     }
     
-    func clearButtonTapped(sender: UIButton) {
-        lines.removeAll()
-        filteredLines.removeAll()
-        updateUI()
+    func didTapClearLogButton(sender: UIButton) {
+        clearLog()
     }
     
-    func exportButtonTapped(sender: UIButton) {
+    func didTapExportButton(sender: UIButton) {
         exportAllLogLines()
     }
     
-    func opacityGestureRecognized(sender: UIPanGestureRecognizer) {
+    func didTapFilterClearButton(sender: UIButton) {
+        textField.resignFirstResponder()
+        if !isEmpty(textField.text) {
+            filterText = nil
+        }
+        textField.text = nil
+    }
+    
+    func didRecognizeUpdateOpacityGesture(sender: UIPanGestureRecognizer) {
         if sender.state == .Ended {
-            let xTranslation = sender.translationInView(toolbar).x
+            let xTranslation = sender.translationInView(menuView).x
             if abs(xTranslation) > (3 * Layout.MagicNumber) {
-                let location = sender.locationInView(toolbar)
+                let location = sender.locationInView(menuView)
                 let opacity = opacityForLocation(location)
                 self.opacity = opacity
             }
         }
     }
     
-    func closeGestureRecognized(sender: UITapGestureRecognizer) {
-        toggleUI()
-    }
-    
-    func filterClearButtonTapped(sender: UIButton) {
-        textField.resignFirstResponder()
-        if !isEmpty(textField.text) {
-            filterText = nil
-        }
-        textField.text = nil
+    func didRecognizeHideConsoleGesture(sender: UITapGestureRecognizer) {
+        toggleConsoleUI()
     }
     
     // MARK: - Helpers
@@ -640,28 +630,32 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         return isTextEmpty
     }
     
-    private func toggleControls() {
-        let controlsVisible = controlsActive
-        
-        filterTop.constant = controlsVisible ? Layout.FilterCollapsed : Layout.FilterExpanded
-        toolbarLeading.constant = controlsVisible ? Layout.ToolbarCollapsed : Layout.ToolbarExpanded
-        let alpha: CGFloat = controlsVisible ? 0.3 : 1.0
+    private func toggleToolbar() {
+        filterViewTop.constant = toolbarActive ? Layout.FilterCollapsedTop : Layout.FilterExpandedTop
+        menuViewLeading.constant = toolbarActive ? Layout.MenuCollapsedLeading : Layout.MenuExpandedLeading
+        let alpha: CGFloat = toolbarActive ? 0.3 : 1.0
         
         UIView.animateWithDuration(0.3) {
-            self.filter.alpha = alpha
-            self.toolbar.alpha = alpha
-            self.filter.layoutIfNeeded()
-            self.toolbar.layoutIfNeeded()
+            self.filterView.alpha = alpha
+            self.menuView.alpha = alpha
+            self.filterView.layoutIfNeeded()
+            self.menuView.layoutIfNeeded()
         }
         
-        if controlsVisible {
+        if toolbarActive {
             textField.resignFirstResponder()
         }
         
-        controlsActive = !controlsVisible
+        toolbarActive = !toolbarActive
     }
     
-    private func toggleUI() {
+    private func clearLog() {
+        lines.removeAll()
+        filteredLines.removeAll()
+        updateUI()
+    }
+    
+    private func toggleConsoleUI() {
         textField.resignFirstResponder()
         UIView.transitionWithView(self, duration: 0.3, options: .TransitionCrossDissolve, animations: { () -> Void in
             self.hidden = !self.hidden
@@ -698,8 +692,8 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     
     private func configureOutlets() {
         configureTableView()
-        configureFilter()
-        configureToolbar()
+        configureFilterView()
+        configureMenuView()
         configureGestures()
     }
     
@@ -713,15 +707,15 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         tableView.delegate = self
     }
     
-    private func configureFilter() {
+    private func configureFilterView() {
         configureFilterStack()
-        configureFilterCountLabels()
+        configureFilterLinesCount()
         configureFilterTextField()
         configureFilterButtons()
     }
     
     private func configureFilterStack() {
-        filter.alpha = 0.3
+        filterView.alpha = 0.3
         filterStack.axis = .Horizontal
         filterStack.alignment = .Fill
         filterStack.distribution = .Fill
@@ -731,21 +725,21 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         filterStack.layoutMarginsRelativeArrangement = true
     }
     
-    private func configureFilterCountLabels() {
-        countLabelStack.axis = .Vertical
-        countLabelStack.alignment = .Fill
-        countLabelStack.distribution = .FillEqually
+    private func configureFilterLinesCount() {
+        linesCountStack.axis = .Vertical
+        linesCountStack.alignment = .Fill
+        linesCountStack.distribution = .FillEqually
         let stackInsets = UIEdgeInsets(top: Layout.MagicNumber, left: 0, bottom: Layout.MagicNumber, right: 0)
-        countLabelStack.layoutMargins = stackInsets
-        countLabelStack.layoutMarginsRelativeArrangement = true
+        linesCountStack.layoutMargins = stackInsets
+        linesCountStack.layoutMarginsRelativeArrangement = true
         
-        totalCountLabel.font = settings.consoleFont
-        totalCountLabel.textColor = settings.consoleTextColor
-        totalCountLabel.textAlignment = .Left
+        linesTotalLabel.font = settings.consoleFont
+        linesTotalLabel.textColor = settings.consoleTextColor
+        linesTotalLabel.textAlignment = .Left
         
-        filteredCountLabel.font = settings.consoleFont
-        filteredCountLabel.textColor = settings.consoleTextColor
-        filteredCountLabel.textAlignment = .Left
+        linesFilteredLabel.font = settings.consoleFont
+        linesFilteredLabel.textColor = settings.consoleTextColor
+        linesFilteredLabel.textAlignment = .Left
     }
     
     private func configureFilterTextField() {
@@ -758,168 +752,149 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         let attributes = [NSForegroundColorAttributeName : textColor.colorWithAlphaComponent(0.5)]
         let placeholderText = NSAttributedString(string: "Type here...", attributes: attributes)
         textField.attributedPlaceholder = placeholderText
-        textField.layer.sublayerTransform = CATransform3DMakeTranslation(10, 0, 0)
+        textField.layer.sublayerTransform = CATransform3DMakeTranslation(Layout.MagicNumber, 0, 0)
     }
     
     private func configureFilterButtons() {
-        exportButton.setTitle("🌙", forState: .Normal)
-        exportButton.addTarget(self, action: #selector(exportButtonTapped(_:)), forControlEvents: .TouchUpInside)
+        exportLogButton.setTitle("🌙", forState: .Normal)
+        exportLogButton.addTarget(self, action: #selector(didTapExportButton(_:)), forControlEvents: .TouchUpInside)
         
         clearFilterButton.setTitle("🔥", forState: .Normal)
-        clearFilterButton.addTarget(self, action: #selector(filterClearButtonTapped(_:)), forControlEvents: .TouchUpInside)
+        clearFilterButton.addTarget(self, action: #selector(didTapFilterClearButton(_:)), forControlEvents: .TouchUpInside)
     }
     
-    private func configureToolbar() {
-        configureToolbarStack()
-        configureToolbarButtons()
+    private func configureMenuView() {
+        configureMenuStack()
+        configureMenuButtons()
     }
     
-    private func configureToolbarStack() {
-        toolbar.alpha = 0.3
-        toolbar.layer.cornerRadius = Layout.MagicNumber
+    private func configureMenuStack() {
+        menuView.alpha = 0.3
+        menuView.layer.cornerRadius = Layout.MagicNumber
         
-        toolbarStack.axis = .Horizontal
-        toolbarStack.alignment = .Fill
-        toolbarStack.distribution = .FillEqually
+        menuStack.axis = .Horizontal
+        menuStack.alignment = .Fill
+        menuStack.distribution = .FillEqually
     }
     
-    private func configureToolbarButtons() {
-        settingsButton.setTitle("☀️", forState: .Normal)
-        touchButton.setTitle("✨", forState: .Normal)
-        touchButton.setTitle("⚡️", forState: .Selected)
-        followButton.setTitle("🌟", forState: .Normal)
-        followButton.setTitle("💫", forState: .Selected)
-        clearButton.setTitle("🔥", forState: .Normal)
+    private func configureMenuButtons() {
+        toggleToolbarButton.setTitle("☀️", forState: .Normal)
+        forwardTouchesButton.setTitle("⚡️", forState: .Normal)
+        forwardTouchesButton.setTitle("✨", forState: .Selected)
+        autoFollowButton.setTitle("🌟", forState: .Normal)
+        autoFollowButton.setTitle("💫", forState: .Selected)
+        clearLogButton.setTitle("🔥", forState: .Normal)
+
+        autoFollowButton.selected = true
         
-        touchButton.selected = true
-        followButton.selected = true
-        
-        settingsButton.addTarget(self, action: #selector(settingsButtonTapped(_:)), forControlEvents: .TouchUpInside)
-        touchButton.addTarget(self, action: #selector(touchButtonTapped(_:)), forControlEvents: .TouchUpInside)
-        followButton.addTarget(self, action: #selector(followButtonTapped(_:)), forControlEvents: .TouchUpInside)
-        clearButton.addTarget(self, action: #selector(clearButtonTapped(_:)), forControlEvents: .TouchUpInside)
+        toggleToolbarButton.addTarget(self, action: #selector(didTapToggleToolbarButton(_:)), forControlEvents: .TouchUpInside)
+        forwardTouchesButton.addTarget(self, action: #selector(didTapForwardTouchesButton(_:)), forControlEvents: .TouchUpInside)
+        autoFollowButton.addTarget(self, action: #selector(didTapAutoFollowButton(_:)), forControlEvents: .TouchUpInside)
+        clearLogButton.addTarget(self, action: #selector(didTapClearLogButton(_:)), forControlEvents: .TouchUpInside)
     }
     
     private func configureGestures() {
-        configureOpacityGesture()
-        configureCloseGesture()
+        configureUpdateOpacityGesture()
+        configureHideConsoleGesture()
     }
     
-    private func configureOpacityGesture() {
-        opacityGesture.addTarget(self, action: #selector(opacityGestureRecognized(_:)))
-        toolbar.addGestureRecognizer(opacityGesture)
+    private func configureUpdateOpacityGesture() {
+        updateOpacityGesture.addTarget(self, action: #selector(didRecognizeUpdateOpacityGesture(_:)))
+        menuView.addGestureRecognizer(updateOpacityGesture)
     }
     
-    private func configureCloseGesture() {
-        closeGesture.numberOfTouchesRequired = 2
-        closeGesture.numberOfTapsRequired = 2
-        closeGesture.addTarget(self, action: #selector(closeGestureRecognized(_:)))
-        addGestureRecognizer(closeGesture)
+    private func configureHideConsoleGesture() {
+        hideConsoleGesture.numberOfTouchesRequired = 2
+        hideConsoleGesture.numberOfTapsRequired = 2
+        hideConsoleGesture.addTarget(self, action: #selector(didRecognizeHideConsoleGesture(_:)))
+        addGestureRecognizer(hideConsoleGesture)
     }
     
     // MARK: - Layout
     
     private func configureLayout() {
+        configureHierarchy()
+        configureViewsForLayout()
+        configureConstraints()
+    }
+    
+    private func configureHierarchy() {
         addSubview(tableView)
         
-        filterStack.addArrangedSubview(exportButton)
+        filterStack.addArrangedSubview(exportLogButton)
         
-        countLabelStack.addArrangedSubview(totalCountLabel)
-        countLabelStack.addArrangedSubview(filteredCountLabel)
-        filterStack.addArrangedSubview(countLabelStack)
+        linesCountStack.addArrangedSubview(linesTotalLabel)
+        linesCountStack.addArrangedSubview(linesFilteredLabel)
+        filterStack.addArrangedSubview(linesCountStack)
         
         filterStack.addArrangedSubview(textField)
         filterStack.addArrangedSubview(clearFilterButton)
-
-        filter.addSubview(filterStack)
-        addSubview(filter)
-
-        toolbarStack.addArrangedSubview(settingsButton)
-        toolbarStack.addArrangedSubview(touchButton)
-        toolbarStack.addArrangedSubview(followButton)
-        toolbarStack.addArrangedSubview(clearButton)
-        toolbar.addSubview(toolbarStack)
-        addSubview(toolbar)
         
-        filter.translatesAutoresizingMaskIntoConstraints = false
-        filterStack.translatesAutoresizingMaskIntoConstraints = false
-
-        toolbar.translatesAutoresizingMaskIntoConstraints = false
-        toolbarStack.translatesAutoresizingMaskIntoConstraints = false
+        filterView.addSubview(filterStack)
+        addSubview(filterView)
         
-        configureFilterConstraints()
-        configureFilterStackConstraints()
-        configureFilterControlsConstraints()
-        
-        configureToolbarConstraints()
-        configureToolbarStackConstraints()
+        menuStack.addArrangedSubview(toggleToolbarButton)
+        menuStack.addArrangedSubview(forwardTouchesButton)
+        menuStack.addArrangedSubview(autoFollowButton)
+        menuStack.addArrangedSubview(clearLogButton)
+        menuView.addSubview(menuStack)
+        addSubview(menuView)
     }
     
-    private func configureFilterConstraints() {
-        filterTop = filter.topAnchor.constraintEqualToAnchor(topAnchor, constant: Layout.FilterCollapsed)
-        guard let filterConstraints = filterConstraints else { return }
-        NSLayoutConstraint.activateConstraints(filterConstraints)
+    private func configureViewsForLayout() {
+        filterView.translatesAutoresizingMaskIntoConstraints = false
+        filterStack.translatesAutoresizingMaskIntoConstraints = false
+        
+        menuView.translatesAutoresizingMaskIntoConstraints = false
+        menuStack.translatesAutoresizingMaskIntoConstraints = false
+    }
+    
+    private func configureConstraints() {
+        configureFilterViewConstraints()
+        configureFilterStackConstraints()
+        configureFilterStackSubviewConstraints()
+        
+        configureMenuViewConstraints()
+        configureMenuStackConstraints()
+    }
+    
+    private func configureFilterViewConstraints() {
+        let leading = filterView.leadingAnchor.constraintEqualToAnchor(leadingAnchor)
+        let trailing = filterView.trailingAnchor.constraintEqualToAnchor(trailingAnchor)
+        let height = filterView.heightAnchor.constraintEqualToConstant(Layout.FilterHeight)
+        filterViewTop = filterView.topAnchor.constraintEqualToAnchor(topAnchor, constant: Layout.FilterCollapsedTop)
+        NSLayoutConstraint.activateConstraints([leading, trailing, height, filterViewTop])
     }
     
     private func configureFilterStackConstraints() {
-        guard let filterStackConstraints = filterStackConstraints else { return }
-        NSLayoutConstraint.activateConstraints(filterStackConstraints)
+        let leading = filterStack.leadingAnchor.constraintEqualToAnchor(filterView.leadingAnchor)
+        let trailing = filterStack.trailingAnchor.constraintEqualToAnchor(filterView.trailingAnchor)
+        let top = filterStack.topAnchor.constraintEqualToAnchor(filterView.topAnchor)
+        let bottom = filterStack.bottomAnchor.constraintEqualToAnchor(filterView.bottomAnchor)
+        NSLayoutConstraint.activateConstraints([leading, trailing, top, bottom])
     }
     
-    private func configureFilterControlsConstraints() {
-        let filterClearButtonWidth = clearFilterButton.widthAnchor.constraintEqualToConstant(Layout.FilterButtonWidth)
-        let countLabelsWidth = countLabelStack.widthAnchor.constraintGreaterThanOrEqualToConstant(50)
-        let exportButtonWidth = exportButton.widthAnchor.constraintEqualToConstant(Layout.FilterButtonWidth)
-        NSLayoutConstraint.activateConstraints([filterClearButtonWidth, countLabelsWidth, exportButtonWidth])
+    private func configureFilterStackSubviewConstraints() {
+        let exportButtonWidth = exportLogButton.widthAnchor.constraintEqualToConstant(75)
+        let linesCountWidth = linesCountStack.widthAnchor.constraintGreaterThanOrEqualToConstant(50)
+        let clearFilterButtonWidth = clearFilterButton.widthAnchor.constraintEqualToConstant(75)
+        NSLayoutConstraint.activateConstraints([exportButtonWidth, linesCountWidth, clearFilterButtonWidth])
     }
     
-    private func configureToolbarConstraints() {
-        toolbarLeading = toolbar.leadingAnchor.constraintEqualToAnchor(trailingAnchor, constant: Layout.ToolbarCollapsed)
-        guard let toolbarConstraints = toolbarConstraints else { return }
-        NSLayoutConstraint.activateConstraints(toolbarConstraints)
+    private func configureMenuViewConstraints() {
+        let width = menuView.widthAnchor.constraintEqualToConstant(Layout.MenuWidth + Layout.MagicNumber)
+        let height = menuView.heightAnchor.constraintEqualToConstant(Layout.MenuHeight)
+        let centerY = menuView.centerYAnchor.constraintEqualToAnchor(centerYAnchor)
+        menuViewLeading = menuView.leadingAnchor.constraintEqualToAnchor(trailingAnchor, constant: Layout.MenuCollapsedLeading)
+        NSLayoutConstraint.activateConstraints([width, height, centerY, menuViewLeading])
     }
     
-    private func configureToolbarStackConstraints() {
-        guard let toolbarStackConstraints = toolbarStackConstraints else { return }
-        NSLayoutConstraint.activateConstraints(toolbarStackConstraints)
-    }
-    
-    private var filterConstraints: [NSLayoutConstraint]? {
-        guard let
-            leading = filter.leadingAnchor.constraintEqualToAnchor(leadingAnchor),
-            trailing = filter.trailingAnchor.constraintEqualToAnchor(trailingAnchor),
-            height = filter.heightAnchor.constraintEqualToConstant(Layout.FilterHeight)
-            else { return nil }
-        return [leading, trailing, filterTop, height]
-    }
-    
-    private var filterStackConstraints: [NSLayoutConstraint]? {
-        guard let
-            leading = filterStack.leadingAnchor.constraintEqualToAnchor(filter.leadingAnchor),
-            trailing = filterStack.trailingAnchor.constraintEqualToAnchor(filter.trailingAnchor),
-            top = filterStack.topAnchor.constraintEqualToAnchor(filter.topAnchor),
-            bottom = filterStack.bottomAnchor.constraintEqualToAnchor(filter.bottomAnchor)
-            else { return nil }
-        return [leading, trailing, top, bottom]
-    }
-    
-    private var toolbarConstraints: [NSLayoutConstraint]? {
-        guard let
-        width = toolbar.widthAnchor.constraintEqualToConstant(Layout.ToolbarWidth + Layout.MagicNumber),
-        height = toolbar.heightAnchor.constraintEqualToConstant(Layout.ToolbarHeight),
-        centerY = toolbar.centerYAnchor.constraintEqualToAnchor(centerYAnchor)
-            else { return nil }
-        return [width, height, toolbarLeading, centerY]
-    }
-    
-    private var toolbarStackConstraints: [NSLayoutConstraint]? {
-        guard let
-            leading = toolbarStack.leadingAnchor.constraintEqualToAnchor(toolbar.leadingAnchor),
-            trailing = toolbarStack.trailingAnchor.constraintEqualToAnchor(toolbar.trailingAnchor, constant: -Layout.MagicNumber),
-            top = toolbarStack.topAnchor.constraintEqualToAnchor(toolbar.topAnchor),
-            bottom = toolbarStack.bottomAnchor.constraintEqualToAnchor(toolbar.bottomAnchor)
-            else { return nil }
-        return [leading, trailing, top, bottom]
+    private func configureMenuStackConstraints() {
+        let leading = menuStack.leadingAnchor.constraintEqualToAnchor(menuView.leadingAnchor)
+        let trailing = menuStack.trailingAnchor.constraintEqualToAnchor(menuView.trailingAnchor, constant: -Layout.MagicNumber)
+        let top = menuStack.topAnchor.constraintEqualToAnchor(menuView.topAnchor)
+        let bottom = menuStack.bottomAnchor.constraintEqualToAnchor(menuView.bottomAnchor)
+        NSLayoutConstraint.activateConstraints([leading, trailing, top, bottom])
     }
     
     // MARK: - Override
@@ -933,9 +908,9 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     override func hitTest(point: CGPoint, withEvent event: UIEvent?) -> UIView? {
         let hitView = super.hitTest(point, withEvent: event)
         
-        let notFilter = hitView?.superview != filterStack
-        let notToolbar = hitView?.superview != toolbarStack
-        if notFilter && notToolbar && forwardTouches {
+        let filter = hitView?.superview == filterStack
+        let menu = hitView?.superview == menuStack
+        if !filter && !menu && forwardTouchesButton.selected {
             return nil
         }
         
@@ -948,7 +923,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     
     override func motionEnded(motion: UIEventSubtype, withEvent event: UIEvent?) {
         if motion == .MotionShake {
-            toggleUI()
+            toggleConsoleUI()
         }
     }
     
