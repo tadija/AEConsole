@@ -27,7 +27,6 @@ import UIKit
 
 // MARK: - Top Level
 
-
 /** 
     Writes the textual representations of a current timestamp, thread name, 
     file name, line number and function name into the standard output.
@@ -101,7 +100,7 @@ public class AELog {
     private static let sharedInstance = AELog()
     private let settings = AELogSettings.sharedInstance
     
-    private let consoleView = AEConsoleView()
+    private var consoleView: UIView?
     private weak var delegate: AELogDelegate? {
         didSet {
             addConsoleViewToAppWindow()
@@ -139,16 +138,20 @@ public class AELog {
     // MARK: Helpers
     
     private func addConsoleViewToAppWindow() {
+        guard #available(iOS 9, *) else { return }
+        
         guard let
             app = delegate as? AppDelegate,
             window = app.window
-            else { return }
+        else { return }
         
-        consoleView.frame = window.bounds
-        consoleView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
-        consoleView.hidden = !settings.consoleAutoStart
+        let console = AEConsoleView()
+        console.frame = window.bounds
+        console.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+        console.hidden = !settings.consoleAutoStart
+        window.addSubview(console)
         
-        window.addSubview(consoleView)
+        consoleView = console
     }
     
     private func fileNameForPath(path: String) -> String {
@@ -231,13 +234,16 @@ extension AELogDelegate where Self: AppDelegate {
         - parameter logLine: Log line which will be added to Console UI.
     */
     func didLog(logLine: AELogLine) {
-        let shared = AELog.sharedInstance
-        if shared.settings.consoleEnabled {
-            guard let window = self.window else { return }
-            let consoleView = shared.consoleView
-            consoleView.addLogLine(logLine)
-            consoleView.becomeFirstResponder()
-            window.bringSubviewToFront(consoleView)
+        guard #available(iOS 9, *) else { return }
+        
+        if AELog.sharedInstance.settings.consoleEnabled {
+            guard let
+                window = self.window,
+                console = AELog.sharedInstance.consoleView as? AEConsoleView
+            else { return }
+            console.addLogLine(logLine)
+            console.becomeFirstResponder()
+            window.bringSubviewToFront(console)
         }
     }
     
@@ -271,9 +277,6 @@ private class AELogSettings {
     
     private let dateFormatter = NSDateFormatter()
     private var textOpacity = Default.Console.Opacity
-    private var consoleFont: UIFont {
-        return UIFont.monospacedDigitSystemFontOfSize(consoleFontSize, weight: UIFontWeightRegular)
-    }
     
     // MARK: Init
     
@@ -402,6 +405,7 @@ private class AELogSettings {
 
 // MARK: - AEConsoleView
 
+@available(iOS 9.0, *)
 class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate {
     
     // MARK: Constants
@@ -417,6 +421,11 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         static let MenuCollapsedLeading: CGFloat = -75
         
         static let MagicNumber: CGFloat = 10
+    }
+    
+    private static var consoleFont: UIFont {
+        let fontSize = AELogSettings.sharedInstance.consoleFontSize
+        return UIFont.monospacedDigitSystemFontOfSize(fontSize, weight: UIFontWeightRegular)
     }
     
     // MARK: Outlets
@@ -699,7 +708,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     private func widthForLine(line: String) -> CGFloat {
         let maxSize = CGSize(width: CGFloat.max, height: settings.consoleRowHeight)
         let options = NSStringDrawingOptions.UsesLineFragmentOrigin
-        let attributes = [NSFontAttributeName : settings.consoleFont]
+        let attributes = [NSFontAttributeName : AEConsoleView.consoleFont]
         let nsLine = line as NSString
         let size = nsLine.boundingRectWithSize(maxSize, options: options, attributes: attributes, context: nil)
         let width = size.width
@@ -823,11 +832,11 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         linesCountStack.layoutMargins = stackInsets
         linesCountStack.layoutMarginsRelativeArrangement = true
         
-        linesTotalLabel.font = settings.consoleFont
+        linesTotalLabel.font = AEConsoleView.consoleFont
         linesTotalLabel.textColor = settings.consoleTextColor
         linesTotalLabel.textAlignment = .Left
         
-        linesFilteredLabel.font = settings.consoleFont
+        linesFilteredLabel.font = AEConsoleView.consoleFont
         linesFilteredLabel.textColor = settings.consoleTextColor
         linesFilteredLabel.textAlignment = .Left
     }
@@ -837,7 +846,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         textField.delegate = self
         textField.autocapitalizationType = .None
         textField.tintColor = textColor
-        textField.font = settings.consoleFont.fontWithSize(14)
+        textField.font = AEConsoleView.consoleFont.fontWithSize(14)
         textField.textColor = textColor
         let attributes = [NSForegroundColorAttributeName : textColor.colorWithAlphaComponent(0.5)]
         let placeholderText = NSAttributedString(string: "Type here...", attributes: attributes)
@@ -1031,6 +1040,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
 
 // MARK: - AEConsoleCell
 
+@available (iOS 9.0, *)
 private class AEConsoleCell: UITableViewCell {
     
     // MARK: Constants
@@ -1056,7 +1066,7 @@ private class AEConsoleCell: UITableViewCell {
     private func commonInit() {
         backgroundColor = UIColor.clearColor()
         guard let label = textLabel else { return }
-        label.font = settings.consoleFont
+        label.font = AEConsoleView.consoleFont
         label.textColor = settings.consoleTextColor.colorWithAlphaComponent(settings.textOpacity)
         label.numberOfLines = 1
         label.textAlignment = .Left
