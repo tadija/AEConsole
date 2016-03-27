@@ -7,29 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8BBD39171C9A0071007FE800 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBD39161C9A0071007FE800 /* AppDelegate.swift */; };
-		8BBD39191C9A0071007FE800 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBD39181C9A0071007FE800 /* ViewController.swift */; };
-		8BBD391C1C9A0071007FE800 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8BBD391A1C9A0071007FE800 /* Main.storyboard */; };
-		8BBD391E1C9A0071007FE800 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8BBD391D1C9A0071007FE800 /* Assets.xcassets */; };
-		8BBD39211C9A0071007FE800 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8BBD391F1C9A0071007FE800 /* LaunchScreen.storyboard */; };
-		8BBD39291C9A007D007FE800 /* AELog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBD39281C9A007D007FE800 /* AELog.swift */; };
-		8BBD392B1C9A19CF007FE800 /* AELog.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8BBD392A1C9A19CF007FE800 /* AELog.plist */; };
+		8B5894691CA89F27005F0B9D /* AELog.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B5894681CA89F27005F0B9D /* AELog.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		8B5894711CA89F6C005F0B9D /* AELog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B5894701CA89F6C005F0B9D /* AELog.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		8BBD39131C9A0071007FE800 /* AELog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AELog.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		8BBD39161C9A0071007FE800 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		8BBD39181C9A0071007FE800 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		8BBD391B1C9A0071007FE800 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		8BBD391D1C9A0071007FE800 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		8BBD39201C9A0071007FE800 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		8BBD39221C9A0071007FE800 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8BBD39281C9A007D007FE800 /* AELog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AELog.swift; sourceTree = "<group>"; };
-		8BBD392A1C9A19CF007FE800 /* AELog.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = AELog.plist; sourceTree = "<group>"; };
+		8B5894651CA89F27005F0B9D /* AELog.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AELog.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8B5894681CA89F27005F0B9D /* AELog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AELog.h; sourceTree = "<group>"; };
+		8B58946A1CA89F27005F0B9D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8B5894701CA89F6C005F0B9D /* AELog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AELog.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		8BBD39101C9A0071007FE800 /* Frameworks */ = {
+		8B5894611CA89F27005F0B9D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -39,47 +29,62 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		8BBD390A1C9A0071007FE800 = {
+		8B58945B1CA89F27005F0B9D = {
 			isa = PBXGroup;
 			children = (
-				8BBD39151C9A0071007FE800 /* AELog */,
-				8BBD39141C9A0071007FE800 /* Products */,
+				8B5894671CA89F27005F0B9D /* Sources */,
+				8B5894661CA89F27005F0B9D /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		8BBD39141C9A0071007FE800 /* Products */ = {
+		8B5894661CA89F27005F0B9D /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8BBD39131C9A0071007FE800 /* AELog.app */,
+				8B5894651CA89F27005F0B9D /* AELog.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		8BBD39151C9A0071007FE800 /* AELog */ = {
+		8B5894671CA89F27005F0B9D /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				8BBD39161C9A0071007FE800 /* AppDelegate.swift */,
-				8BBD39181C9A0071007FE800 /* ViewController.swift */,
-				8BBD39281C9A007D007FE800 /* AELog.swift */,
-				8BBD392A1C9A19CF007FE800 /* AELog.plist */,
-				8BBD391A1C9A0071007FE800 /* Main.storyboard */,
-				8BBD391D1C9A0071007FE800 /* Assets.xcassets */,
-				8BBD391F1C9A0071007FE800 /* LaunchScreen.storyboard */,
-				8BBD39221C9A0071007FE800 /* Info.plist */,
+				8B5894701CA89F6C005F0B9D /* AELog.swift */,
+				8B5894721CA89F78005F0B9D /* Supporting Files */,
 			);
-			path = AELog;
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		8B5894721CA89F78005F0B9D /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				8B5894681CA89F27005F0B9D /* AELog.h */,
+				8B58946A1CA89F27005F0B9D /* Info.plist */,
+			);
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		8B5894621CA89F27005F0B9D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8B5894691CA89F27005F0B9D /* AELog.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
-		8BBD39121C9A0071007FE800 /* AELog */ = {
+		8B5894641CA89F27005F0B9D /* AELog */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8BBD39251C9A0071007FE800 /* Build configuration list for PBXNativeTarget "AELog" */;
+			buildConfigurationList = 8B58946D1CA89F27005F0B9D /* Build configuration list for PBXNativeTarget "AELog" */;
 			buildPhases = (
-				8BBD390F1C9A0071007FE800 /* Sources */,
-				8BBD39101C9A0071007FE800 /* Frameworks */,
-				8BBD39111C9A0071007FE800 /* Resources */,
+				8B5894601CA89F27005F0B9D /* Sources */,
+				8B5894611CA89F27005F0B9D /* Frameworks */,
+				8B5894621CA89F27005F0B9D /* Headers */,
+				8B5894631CA89F27005F0B9D /* Resources */,
 			);
 			buildRules = (
 			);
@@ -87,93 +92,67 @@
 			);
 			name = AELog;
 			productName = AELog;
-			productReference = 8BBD39131C9A0071007FE800 /* AELog.app */;
-			productType = "com.apple.product-type.application";
+			productReference = 8B5894651CA89F27005F0B9D /* AELog.framework */;
+			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		8BBD390B1C9A0071007FE800 /* Project object */ = {
+		8B58945C1CA89F27005F0B9D /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0720;
-				LastUpgradeCheck = 0720;
+				LastUpgradeCheck = 0730;
 				ORGANIZATIONNAME = AE;
 				TargetAttributes = {
-					8BBD39121C9A0071007FE800 = {
-						CreatedOnToolsVersion = 7.2.1;
+					8B5894641CA89F27005F0B9D = {
+						CreatedOnToolsVersion = 7.3;
 					};
 				};
 			};
-			buildConfigurationList = 8BBD390E1C9A0071007FE800 /* Build configuration list for PBXProject "AELog" */;
+			buildConfigurationList = 8B58945F1CA89F27005F0B9D /* Build configuration list for PBXProject "AELog" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
-				Base,
 			);
-			mainGroup = 8BBD390A1C9A0071007FE800;
-			productRefGroup = 8BBD39141C9A0071007FE800 /* Products */;
+			mainGroup = 8B58945B1CA89F27005F0B9D;
+			productRefGroup = 8B5894661CA89F27005F0B9D /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8BBD39121C9A0071007FE800 /* AELog */,
+				8B5894641CA89F27005F0B9D /* AELog */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		8BBD39111C9A0071007FE800 /* Resources */ = {
+		8B5894631CA89F27005F0B9D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8BBD39211C9A0071007FE800 /* LaunchScreen.storyboard in Resources */,
-				8BBD392B1C9A19CF007FE800 /* AELog.plist in Resources */,
-				8BBD391E1C9A0071007FE800 /* Assets.xcassets in Resources */,
-				8BBD391C1C9A0071007FE800 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		8BBD390F1C9A0071007FE800 /* Sources */ = {
+		8B5894601CA89F27005F0B9D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8BBD39191C9A0071007FE800 /* ViewController.swift in Sources */,
-				8BBD39171C9A0071007FE800 /* AppDelegate.swift in Sources */,
-				8BBD39291C9A007D007FE800 /* AELog.swift in Sources */,
+				8B5894711CA89F6C005F0B9D /* AELog.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXVariantGroup section */
-		8BBD391A1C9A0071007FE800 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				8BBD391B1C9A0071007FE800 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		8BBD391F1C9A0071007FE800 /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				8BBD39201C9A0071007FE800 /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
-
 /* Begin XCBuildConfiguration section */
-		8BBD39231C9A0071007FE800 /* Debug */ = {
+		8B58946B1CA89F27005F0B9D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -189,6 +168,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -212,13 +192,16 @@
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
 			};
 			name = Debug;
 		};
-		8BBD39241C9A0071007FE800 /* Release */ = {
+		8B58946C1CA89F27005F0B9D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -234,6 +217,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -250,53 +234,68 @@
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
 			};
 			name = Release;
 		};
-		8BBD39261C9A0071007FE800 /* Debug */ = {
+		8B58946E1CA89F27005F0B9D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				INFOPLIST_FILE = AELog/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				CLANG_ENABLE_MODULES = YES;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = Sources/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = net.tadija.AELog;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
-		8BBD39271C9A0071007FE800 /* Release */ = {
+		8B58946F1CA89F27005F0B9D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				INFOPLIST_FILE = AELog/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				CLANG_ENABLE_MODULES = YES;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = Sources/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = net.tadija.AELog;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		8BBD390E1C9A0071007FE800 /* Build configuration list for PBXProject "AELog" */ = {
+		8B58945F1CA89F27005F0B9D /* Build configuration list for PBXProject "AELog" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8BBD39231C9A0071007FE800 /* Debug */,
-				8BBD39241C9A0071007FE800 /* Release */,
+				8B58946B1CA89F27005F0B9D /* Debug */,
+				8B58946C1CA89F27005F0B9D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		8BBD39251C9A0071007FE800 /* Build configuration list for PBXNativeTarget "AELog" */ = {
+		8B58946D1CA89F27005F0B9D /* Build configuration list for PBXNativeTarget "AELog" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8BBD39261C9A0071007FE800 /* Debug */,
-				8BBD39271C9A0071007FE800 /* Release */,
+				8B58946E1CA89F27005F0B9D /* Debug */,
+				8B58946F1CA89F27005F0B9D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 8BBD390B1C9A0071007FE800 /* Project object */;
+	rootObject = 8B58945C1CA89F27005F0B9D /* Project object */;
 }

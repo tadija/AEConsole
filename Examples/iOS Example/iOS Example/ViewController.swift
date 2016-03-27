@@ -1,12 +1,13 @@
 //
 //  ViewController.swift
-//  AELog
+//  iOS Example
 //
-//  Created by Marko Tadic on 3/16/16.
+//  Created by Marko Tadic on 3/28/16.
 //  Copyright © 2016 AE. All rights reserved.
 //
 
 import UIKit
+import AELog
 
 class ViewController: UIViewController {
 
@@ -21,7 +22,7 @@ class ViewController: UIViewController {
         aelog()
         generateLogLines(count: 200)
     }
-
+    
     @IBAction func buttonTopTapped(sender: AnyObject) {
         aelog("top button is tapped")
         generateLogLines(count: 30)

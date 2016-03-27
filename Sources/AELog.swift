@@ -141,8 +141,8 @@ public class AELog {
         guard #available(iOS 9, *) else { return }
         
         guard let
-            app = delegate as? AppDelegate,
-            window = app.window
+            app = delegate as? UIApplicationDelegate,
+            window = app.window!
         else { return }
         
         let console = AEConsoleView()
@@ -221,7 +221,7 @@ public protocol AELogDelegate: class {
     func didLog(logLine: AELogLine)
 }
 
-extension AELogDelegate where Self: AppDelegate {
+public extension AELogDelegate where Self: UIApplicationDelegate {
     
     /**
         Forwards latest log line from `aelog` to Console UI.
@@ -238,7 +238,7 @@ extension AELogDelegate where Self: AppDelegate {
         
         if AELog.sharedInstance.settings.consoleEnabled {
             guard let
-                window = self.window,
+                window = self.window!,
                 console = AELog.sharedInstance.consoleView as? AEConsoleView
             else { return }
             console.addLogLine(logLine)
