@@ -1,9 +1,25 @@
 //
-//  AELog.swift
-//  AELog
+// AELog.swift
 //
-//  Created by Marko Tadic on 3/16/16.
-//  Copyright © 2016 AE. All rights reserved.
+// Copyright (c) 2016 Marko Tadić <tadija@me.com> http://tadija.net
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 //
 
 import Foundation
@@ -11,6 +27,17 @@ import UIKit
 
 // MARK: - Top Level
 
+
+/** 
+    Writes the textual representations of a current timestamp, thread name, 
+    file name, line number and function name into the standard output.
+ 
+    You can optionally give it a custom message which will be added to the end of a log line.
+ 
+    - NOTE: If `AELog` setting "Enabled" is set to "NO" then it does nothing.
+ 
+    - parameter message: Custom text which will be added to the end of a log line
+*/
 public func aelog(message: Any = "", path: String = #file, line: Int = #line, function: String = #function) {
     let thread = NSThread.currentThread()
     AELog.sharedInstance.log(thread: thread, path: path, line: line, function: function, message: "\(message)")
@@ -18,36 +45,60 @@ public func aelog(message: Any = "", path: String = #file, line: Int = #line, fu
 
 // MARK: - AELog
 
+/**
+    Handles logging called from `aelog` top-level function.
+ 
+    If you launch `AELog` with delegate then it will also add console UI overlay on top of your app.
+    There is `Setting` struct which you can check for a list of possible settings.
+*/
 public class AELog {
     
-    public struct SettingKey {
+    // MARK: Constants
+    
+    /**
+        Setting keys which can be used in `AELog.plist` dictionary.
+     
+        Create `AELog.plist` dictionary file and add it to your target.
+        There you can set flag to enable or disable logging with `aelog`,
+        manage list of files which should write log or not, or tweak Console UI look.
+    */
+    public struct Setting {
+        /// Boolean - Logging enabled flag (defaults to `YES`) 
         public static let Enabled = "Enabled"
+        
+        /// Dictionary - Key: file name without extension, Value: Boolean (defaults to empty - all files log enabled)
         public static let Files = "Files"
         
         private static let ConsoleSettings = "Console"
+        /// Dictionary - Settings for Console UI
         public struct Console {
+            
+            /// Boolean - Console UI enabled flag (defaults to `YES`)
             public static let Enabled = "Enabled"
+            
+            /// Boolean - Console UI visible on app start flag (defaults to `YES`)
             public static let AutoStart = "AutoStart"
+            
+            /// String - Hex string for Console background color (defaults to 000000)
             public static let BackColor = "BackColor"
+            
+            /// String - Hex string for Console text color (defaults to FFFFFF)
             public static let TextColor = "TextColor"
+            
+            /// Number - Console UI font size (defaults to 12)
             public static let FontSize = "FontSize"
+            
+            /// Number - Console UI row height (defaults to 14)
             public static let RowHeight = "RowHeight"
+            
+            /// Number - Console UI opacity (defaults to 0.7)
             public static let Opacity = "Opacity"
         }
     }
     
-    // MARK: - Singleton
+    // MARK: Properties
     
     private static let sharedInstance = AELog()
-    
-    // MARK: - API
-    
-    public class func launch(withDelegate delegate: AELogDelegate? = nil) {
-        AELog.sharedInstance.delegate = delegate
-    }
-    
-    // MARK: - Properties
-    
     private let settings = AELogSettings.sharedInstance
     
     private let consoleView = AEConsoleView()
@@ -57,22 +108,22 @@ public class AELog {
         }
     }
     
-    // MARK: - Helpers
+    // MARK: API
     
-    private func addConsoleViewToAppWindow() {
-        guard let
-            app = delegate as? AppDelegate,
-            window = app.window
-        else { return }
-        
-        consoleView.frame = window.bounds
-        consoleView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
-        consoleView.hidden = !settings.consoleAutoStart
-        
-        window.addSubview(consoleView)
+    /**
+        Configures Console UI for use with `aelog`.
+     
+        This should be called from your AppDelegate's `didFinishLaunchingWithOptions` method.
+        Your AppDelegate should only add conformance to `AELogDelegate` protocol.
+     
+        - parameter delegate: Your AppDelegate which conforms to `AELogDelegate` protocol
+     
+        - NOTE: Call this method only if you want Console UI on your iOS device 
+                (it is not required if you just need logging functionality without Console UI).
+    */
+    public class func launchWithDelegate(delegate: AELogDelegate) {
+        AELog.sharedInstance.delegate = delegate
     }
-    
-    // MARK: - API
     
     private func log(thread thread: NSThread, path: String, line: Int, function: String, message: String) {
         if settings.enabled {
@@ -85,7 +136,20 @@ public class AELog {
         }
     }
     
-    // MARK: - Helpers
+    // MARK: Helpers
+    
+    private func addConsoleViewToAppWindow() {
+        guard let
+            app = delegate as? AppDelegate,
+            window = app.window
+            else { return }
+        
+        consoleView.frame = window.bounds
+        consoleView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+        consoleView.hidden = !settings.consoleAutoStart
+        
+        window.addSubview(consoleView)
+    }
     
     private func fileNameForPath(path: String) -> String {
         guard let
@@ -106,15 +170,21 @@ public class AELog {
 
 // MARK: - AELogLine
 
+/**
+    Custom data structure used by `AELog` for log lines.
+*/
 public struct AELogLine: CustomStringConvertible {
     
-    public let timestamp: NSDate
-    public let thread: NSThread
-    public let file: String
-    public let line: Int
-    public let function: String
-    public let message: String
+    // MARK: Properties
     
+    private let timestamp: NSDate
+    private let thread: NSThread
+    private let file: String
+    private let line: Int
+    private let function: String
+    private let message: String
+    
+    /// Concatenated text representation of a complete log line
     public var description: String {
         let date = AELogSettings.sharedInstance.dateFormatter.stringFromDate(timestamp)
         let threadName = thread.isMainThread ? "Main" : (thread.name ?? "Unknown")
@@ -123,7 +193,9 @@ public struct AELogLine: CustomStringConvertible {
         return desc
     }
     
-    public init(thread: NSThread, file: String, line: Int, function: String, message: String) {
+    // MARK: Init
+    
+    private init(thread: NSThread, file: String, line: Int, function: String, message: String) {
         self.timestamp = NSDate()
         self.thread = thread
         self.file = file
@@ -134,9 +206,48 @@ public struct AELogLine: CustomStringConvertible {
     
 }
 
+// MARK: - AELogDelegate
+
+/**
+    Communicates data between `aelog` and Console UI.
+ 
+    Default implementation is provided via protocol extension,
+    so you should just add conformance to this protocol in your `AppDelegate`.
+*/
+public protocol AELogDelegate: class {
+    func didLog(logLine: AELogLine)
+}
+
+extension AELogDelegate where Self: AppDelegate {
+    
+    /**
+        Forwards latest log line from `aelog` to Console UI.
+     
+        Default implementation will configure Console UI to listen for shake gesture,
+        so it can be displayed when needed with all data logged with `aelog`.
+     
+        - NOTE: If `AELog` Console setting "Enabled" is set to "NO" then it does nothing.
+     
+        - parameter logLine: Log line which will be added to Console UI.
+    */
+    func didLog(logLine: AELogLine) {
+        let shared = AELog.sharedInstance
+        if shared.settings.consoleEnabled {
+            guard let window = self.window else { return }
+            let consoleView = shared.consoleView
+            consoleView.addLogLine(logLine)
+            consoleView.becomeFirstResponder()
+            window.bringSubviewToFront(consoleView)
+        }
+    }
+    
+}
+
 // MARK: - AELogSettings
 
 private class AELogSettings {
+    
+    // MARK: Constants
     
     private struct Default {
         private static let Enabled = true
@@ -152,13 +263,11 @@ private class AELogSettings {
         }
     }
     
-    private typealias Key = AELog.SettingKey
+    private typealias Key = AELog.Setting
     
-    // MARK: - Singleton
+    // MARK: Properties
     
     private static let sharedInstance = AELogSettings()
-    
-    // MARK: - Properties
     
     private let dateFormatter = NSDateFormatter()
     private var textOpacity = Default.Console.Opacity
@@ -166,13 +275,13 @@ private class AELogSettings {
         return UIFont.monospacedDigitSystemFontOfSize(consoleFontSize, weight: UIFontWeightRegular)
     }
     
-    // MARK: - Init
+    // MARK: Init
     
     private init() {
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS"
     }
     
-    // MARK: - Plist Helpers
+    // MARK: Plist Helpers
     
     private lazy var logSettings: [String : AnyObject]? = {
         guard let
@@ -190,7 +299,7 @@ private class AELogSettings {
         return console
     }()
     
-    // MARK: - Settings
+    // MARK: Settings
     
     private lazy var enabled: Bool = { [unowned self] in
         guard let
@@ -250,7 +359,7 @@ private class AELogSettings {
         return opacity
     }()
     
-    // MARK: - Helpers
+    // MARK: Helpers
     
     private func boolForKey(key: String) -> Bool? {
         guard let
@@ -291,30 +400,11 @@ private class AELogSettings {
     
 }
 
-// MARK: - AELogDelegate
-
-public protocol AELogDelegate: class {
-    func didLog(logLine: AELogLine)
-}
-
-extension AELogDelegate where Self: AppDelegate {
-    
-    func didLog(logLine: AELogLine) {
-        let shared = AELog.sharedInstance
-        if shared.settings.consoleEnabled {
-            guard let window = self.window else { return }
-            let consoleView = shared.consoleView
-            consoleView.addLogLine(logLine)
-            consoleView.becomeFirstResponder()
-            window.bringSubviewToFront(consoleView)
-        }
-    }
-    
-}
-
 // MARK: - AEConsoleView
 
 class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate {
+    
+    // MARK: Constants
     
     private struct Layout {
         static let FilterHeight: CGFloat = 60
@@ -329,7 +419,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         static let MagicNumber: CGFloat = 10
     }
     
-    // MARK: - Outlets
+    // MARK: Outlets
     
     private let tableView = UITableView()
     
@@ -356,7 +446,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     private let updateOpacityGesture = UIPanGestureRecognizer()
     private let hideConsoleGesture = UITapGestureRecognizer()
     
-    // MARK: - API
+    // MARK: API
     
     func addLogLine(logLine: AELogLine) {
         let calculatedLineWidth = widthForLine(logLine.description)
@@ -374,7 +464,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         lines.append(logLine)
     }
     
-    // MARK: - Properties
+    // MARK: Properties
     
     private let settings = AELogSettings.sharedInstance
     
@@ -430,7 +520,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         }
     }
     
-    // MARK: - Helpers
+    // MARK: Helpers
     
     private func updateUI() {
         tableView.reloadData()
@@ -510,7 +600,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         }
     }
     
-    // MARK: - Init
+    // MARK: Init
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -527,7 +617,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         opacity = settings.consoleOpacity
     }
     
-    // MARK: - UITableViewDataSource
+    // MARK: UITableViewDataSource
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let rows = filterActive ? filteredLines : lines
@@ -539,7 +629,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         return cell
     }
     
-    // MARK: - UITableViewDelegate
+    // MARK: UITableViewDelegate
     
     func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
         let rows = filterActive ? filteredLines : lines
@@ -547,7 +637,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         cell.textLabel?.text = logLine.description
     }
     
-    // MARK: - UITextFieldDelegate
+    // MARK: UITextFieldDelegate
     
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         textField.resignFirstResponder()
@@ -557,7 +647,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         return true
     }
     
-    // MARK: - Actions
+    // MARK: Actions
     
     func didTapToggleToolbarButton(sender: UIButton) {
         toggleToolbar()
@@ -604,7 +694,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         toggleConsoleUI()
     }
     
-    // MARK: - Helpers
+    // MARK: Helpers
     
     private func widthForLine(line: String) -> CGFloat {
         let maxSize = CGSize(width: CGFloat.max, height: settings.consoleRowHeight)
@@ -683,7 +773,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         }
     }
     
-    // MARK: - UI
+    // MARK: UI
     
     private func configureUI() {
         configureOutlets()
@@ -810,7 +900,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         addGestureRecognizer(hideConsoleGesture)
     }
     
-    // MARK: - Layout
+    // MARK: Layout
     
     private func configureLayout() {
         configureHierarchy()
@@ -897,7 +987,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         NSLayoutConstraint.activateConstraints([leading, trailing, top, bottom])
     }
     
-    // MARK: - Override
+    // MARK: Override
     
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -943,13 +1033,15 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
 
 private class AEConsoleCell: UITableViewCell {
     
+    // MARK: Constants
+    
     static let identifier = "AEConsoleCell"
     
-    // MARK: - Properties
+    // MARK: Properties
     
     private let settings = AELogSettings.sharedInstance
     
-    // MARK: - Init
+    // MARK: Init
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -970,7 +1062,7 @@ private class AEConsoleCell: UITableViewCell {
         label.textAlignment = .Left
     }
     
-    // MARK: - Override
+    // MARK: Override
     
     private override func prepareForReuse() {
         super.prepareForReuse()
