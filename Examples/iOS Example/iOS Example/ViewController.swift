@@ -23,6 +23,11 @@ class ViewController: UIViewController {
         generateLogLines(count: 200)
     }
     
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        aelog()
+    }
+    
     @IBAction func buttonTopTapped(sender: AnyObject) {
         aelog("top button is tapped")
         generateLogLines(count: 30)

@@ -7,17 +7,16 @@
 //
 
 import UIKit
-import AELog
+import AEConsole
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, AELogDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        AELog.launchWithDelegate(self)
+        AEConsole.launchWithAppDelegate(self)
         aelog()
-        
         return true
     }
 
@@ -40,6 +39,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AELogDelegate {
     func applicationWillTerminate(application: UIApplication) {
         aelog()
     }
-
 
 }
