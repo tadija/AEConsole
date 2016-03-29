@@ -62,13 +62,49 @@ public class AEConsole: AELogDelegate {
         sharedInstance.appDelegate = delegate
     }
     
+    /// Show Console UI
+    public class func show() {
+        if sharedInstance.consoleView.hidden {
+            sharedInstance.activateConsoleUI()
+            sharedInstance.consoleView.toggleUI()
+        }
+    }
+    
+    /// Hide Console UI
+    public class func hide() {
+        if !sharedInstance.consoleView.hidden {
+            sharedInstance.consoleView.toggleUI()
+        }
+    }
+    
+    // MARK: - Init
+    
+    private init() {
+        let center = NSNotificationCenter.defaultCenter()
+        let notification = UIApplicationDidBecomeActiveNotification
+        center.addObserver(self, selector: #selector(activateConsoleUI), name: notification, object: nil)
+    }
+    
+    deinit {
+        NSNotificationCenter.defaultCenter().removeObserver(self)
+    }
+    
+    @objc private func activateConsoleUI() {
+        guard let
+            delegate = appDelegate,
+            window = delegate.window!
+        else { return }
+
+        window.bringSubviewToFront(consoleView)
+        if settings.shakeGestureEnabled {
+            consoleView.becomeFirstResponder()
+        }
+    }
+    
     // MARK: - AELogDelegate
     
     /**
         Forwards latest log line from `aelog` to Console UI.
-
-        Default implementation will configure Console UI to listen for shake gesture,
-        so it can be displayed when needed (with all data already logged by `aelog`).
 
         - NOTE: If `AEConsole` setting "Enabled" is set to "NO" then it does nothing.
 
@@ -76,14 +112,8 @@ public class AEConsole: AELogDelegate {
     */
     public func didLog(logLine: AELogLine) {
         if settings.consoleEnabled {
-            guard let
-                delegate = appDelegate,
-                window = delegate.window!
-            else { return }
-            
             consoleView.addLogLine(logLine)
-            consoleView.becomeFirstResponder()
-            window.bringSubviewToFront(consoleView)
+            activateConsoleUI()
         }
     }
     
@@ -111,8 +141,11 @@ public class AEConsoleSettings: AELogSettings {
             /// Boolean - Console UI enabled flag (defaults to `YES`)
             public static let Enabled = "Enabled"
             
-            /// Boolean - Console UI visible on app start flag (defaults to `YES`)
+            /// Boolean - Console UI visible on app start flag (defaults to `NO`)
             public static let AutoStart = "AutoStart"
+            
+            /// Boolean - Shake gesture enabled flag (defaults to `YES`)
+            public static let ShakeGesture = "ShakeGesture"
             
             /// String - Hex string for Console background color (defaults to 000000)
             public static let BackColor = "BackColor"
@@ -133,7 +166,8 @@ public class AEConsoleSettings: AELogSettings {
     
     private struct Default {
         private static let Enabled = true
-        private static let AutoStart = true
+        private static let AutoStart = false
+        private static let ShakeGesture = true
         private static let BackColor = UIColor.blackColor()
         private static let TextColor = UIColor.whiteColor()
         private static let FontSize: CGFloat = 12.0
@@ -142,8 +176,10 @@ public class AEConsoleSettings: AELogSettings {
     }
     
     // MARK: Properties
-
-    private var textOpacity = Default.Opacity
+    
+    private lazy var textColorWithOpacity: UIColor = { [unowned self] in
+        self.consoleTextColor.colorWithAlphaComponent(Default.Opacity)
+    }()
     
     private lazy var consoleSettings: [String : AnyObject]? = { [unowned self] in
         guard let
@@ -169,6 +205,12 @@ public class AEConsoleSettings: AELogSettings {
         guard let autoStart = self.boolForKey(Key.Console.AutoStart)
         else { return Default.AutoStart }
         return autoStart
+    }()
+    
+    private lazy var shakeGestureEnabled: Bool = { [unowned self] in
+        guard let shake = self.boolForKey(Key.Console.ShakeGesture)
+        else { return Default.ShakeGesture }
+        return shake
     }()
     
     private lazy var consoleBackColor: UIColor = { [unowned self] in
@@ -306,6 +348,13 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         lines.append(logLine)
     }
     
+    func toggleUI() {
+        textField.resignFirstResponder()
+        UIView.transitionWithView(self, duration: 0.3, options: .TransitionCrossDissolve, animations: { () -> Void in
+            self.hidden = !self.hidden
+        }, completion: nil)
+    }
+    
     // MARK: Properties
     
     private let settings = AEConsole.sharedInstance.settings
@@ -424,7 +473,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         tableView.backgroundColor = settings.consoleBackColor.colorWithAlphaComponent(opacity)
         
         let textOpacity = max(0.3, opacity)
-        settings.textOpacity = textOpacity
+        settings.textColorWithOpacity = settings.consoleTextColor.colorWithAlphaComponent(textOpacity)
         
         let toolbarOpacity = min(0.7, opacity * 1.5)
         filterView.backgroundColor = settings.consoleBackColor.colorWithAlphaComponent(toolbarOpacity)
@@ -533,7 +582,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     }
     
     func didRecognizeHideConsoleGesture(sender: UITapGestureRecognizer) {
-        toggleConsoleUI()
+        toggleUI()
     }
     
     // MARK: Helpers
@@ -585,13 +634,6 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         lines.removeAll()
         filteredLines.removeAll()
         updateUI()
-    }
-    
-    private func toggleConsoleUI() {
-        textField.resignFirstResponder()
-        UIView.transitionWithView(self, duration: 0.3, options: .TransitionCrossDissolve, animations: { () -> Void in
-            self.hidden = !self.hidden
-            }, completion: nil)
     }
     
     private func exportAllLogLines() {
@@ -855,7 +897,9 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     
     override func motionEnded(motion: UIEventSubtype, withEvent event: UIEvent?) {
         if motion == .MotionShake {
-            toggleConsoleUI()
+            if settings.shakeGestureEnabled {
+                toggleUI()
+            }
         }
     }
     
@@ -879,10 +923,6 @@ private class AEConsoleCell: UITableViewCell {
     
     static let identifier = "AEConsoleCell"
     
-    // MARK: Properties
-    
-    private let settings = AEConsole.sharedInstance.settings
-    
     // MARK: Init
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
@@ -898,8 +938,8 @@ private class AEConsoleCell: UITableViewCell {
     private func commonInit() {
         backgroundColor = UIColor.clearColor()
         guard let label = textLabel else { return }
-        label.font = settings.consoleFont
-        label.textColor = settings.consoleTextColor.colorWithAlphaComponent(settings.textOpacity)
+        label.font = AEConsole.sharedInstance.settings.consoleFont
+        label.textColor = AEConsole.sharedInstance.settings.textColorWithOpacity
         label.numberOfLines = 1
         label.textAlignment = .Left
     }
@@ -908,7 +948,7 @@ private class AEConsoleCell: UITableViewCell {
     
     private override func prepareForReuse() {
         super.prepareForReuse()
-        textLabel?.textColor = settings.consoleTextColor.colorWithAlphaComponent(settings.textOpacity)
+        textLabel?.textColor = AEConsole.sharedInstance.settings.textColorWithOpacity
     }
     
     override func layoutSubviews() {

@@ -27,14 +27,14 @@ import Foundation
 // MARK: - Top Level
 
 /** 
-    Writes the textual representations of a current timestamp, thread name, 
+    Writes the textual representations of current timestamp, thread name,
     file name, line number and function name into the standard output.
  
-    You can optionally give it a custom message which will be added to the end of a log line.
+    You can optionally provide custom message to be added at the end of a log line.
  
-    - NOTE: If `AELog` setting "Enabled" is set to "NO" then it does nothing.
+    - NOTE: If `AELog` setting "Enabled" is set to "NO" this will do nothing.
  
-    - parameter message: Custom text which will be added to the end of a log line
+    - parameter message: Custom text which will be added at the end of a log line
 */
 public func aelog(message: Any = "", path: String = #file, line: Int = #line, function: String = #function) {
     let thread = NSThread.currentThread()
@@ -109,6 +109,8 @@ public struct AELogLine: CustomStringConvertible {
     private let line: Int
     private let function: String
     private let message: String
+    
+    // MARK: - CustomStringConvertible
     
     /// Concatenated text representation of a complete log line
     public var description: String {
