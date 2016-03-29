@@ -43,10 +43,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>AELog</key>
-	<dict>
-		<key>Enabled</key>
-		<true/>
-	</dict>
 </dict>
 </plist>
