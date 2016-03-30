@@ -1,0 +1,3 @@
+[submodule "AELog"]
+	path = AELog
+	url = https://github.com/tadija/AELog.git

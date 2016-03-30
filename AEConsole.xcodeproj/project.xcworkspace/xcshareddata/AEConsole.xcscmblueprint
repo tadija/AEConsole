@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "6C7A04FACE692A64ED1F1DB337EFBFC23C24ABE5",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "6C7A04FACE692A64ED1F1DB337EFBFC23C24ABE5" : 0,
+    "8BAFD82C102FDED3CA031E1AC3061BE3D531C9E5" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "EE699919-42A2-4ADA-9DFE-DBDB2E372B28",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "6C7A04FACE692A64ED1F1DB337EFBFC23C24ABE5" : "AEConsole\/",
+    "8BAFD82C102FDED3CA031E1AC3061BE3D531C9E5" : "AELog\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "AEConsole",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "AEConsole.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:tadija\/AEConsole.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "6C7A04FACE692A64ED1F1DB337EFBFC23C24ABE5"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:tadija\/AELog.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "8BAFD82C102FDED3CA031E1AC3061BE3D531C9E5"
+    }
+  ]
+}
