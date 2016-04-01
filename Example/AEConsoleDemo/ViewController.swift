@@ -33,17 +33,13 @@ class ViewController: UIViewController {
     
     // MARK: - Actions
 
-    @IBAction func didTapButton(sender: UIButton) {
+    @IBAction func didTapLogButton(sender: UIButton) {
         aelog(sender)
         generateLogLines(count: Int.random(max: 218))
     }
     
-    @IBAction func didChangeSwitchValue(sender: UISwitch) {
-        if sender.on {
-            AEConsole.show()
-        } else {
-            AEConsole.hide()
-        }
+    @IBAction func didTapToggleButton(sender: UIButton) {
+        AEConsole.toggle()
     }
     
     // MARK: - Helpers

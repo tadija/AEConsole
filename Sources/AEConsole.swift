@@ -62,17 +62,17 @@ public class AEConsole: AELogDelegate {
         sharedInstance.appDelegate = delegate
     }
     
-    /// Show Console UI
-    public class func show() {
+    /// Current state of Console UI visibility
+    public class var hidden: Bool {
+        return sharedInstance.consoleView.hidden
+    }
+    
+    /// Toggle Console UI
+    public class func toggle() {
         if sharedInstance.consoleView.hidden {
             sharedInstance.activateConsoleUI()
             sharedInstance.consoleView.toggleUI()
-        }
-    }
-    
-    /// Hide Console UI
-    public class func hide() {
-        if !sharedInstance.consoleView.hidden {
+        } else {
             sharedInstance.consoleView.toggleUI()
         }
     }
@@ -397,7 +397,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
         if filterActive {
             guard let filter = filterText else { return }
             aelog("Filter Lines [\(filterActive)] - <\(filter)>")
-            let filtered = lines.filter({ $0.description.containsString(filter) })
+            let filtered = lines.filter({ $0.description.localizedCaseInsensitiveContainsString(filter) })
             filteredLines = filtered
         } else {
             aelog("Filter Lines [\(filterActive)]")

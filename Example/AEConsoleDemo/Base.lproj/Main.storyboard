@@ -21,30 +21,31 @@
                                 <rect key="frame" x="197" y="185" width="206" height="30"/>
                                 <state key="normal" title="Log Random Number Of Lines"/>
                                 <connections>
-                                    <action selector="didTapButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="5q7-nl-kIc"/>
+                                    <action selector="didTapLogButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="ms5-sa-FVi"/>
                                 </connections>
                             </button>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="TPZ-zM-lfk">
-                                <rect key="frame" x="276" y="385" width="51" height="31"/>
-                                <connections>
-                                    <action selector="didChangeSwitchValue:" destination="BYZ-38-t0r" eventType="valueChanged" id="6SB-mJ-h0u"/>
-                                </connections>
-                            </switch>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="You can also toggle Console UI with a shake gesture. Go ahead, shake it!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Nsn-kt-aD7">
-                                <rect key="frame" x="20" y="432" width="560" height="21"/>
+                                <rect key="frame" x="50" y="395" width="500" height="41"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mzu-IB-8wu">
+                                <rect key="frame" x="238" y="345" width="125" height="30"/>
+                                <state key="normal" title="Toggle Console UI"/>
+                                <connections>
+                                    <action selector="didTapToggleButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Mev-AT-n6a"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="XAf-Sq-dqm" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" constant="-100" id="B6D-Jk-jcV"/>
-                            <constraint firstAttribute="leadingMargin" secondItem="Nsn-kt-aD7" secondAttribute="leading" id="LNA-Ge-NiC"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="Nsn-kt-aD7" secondAttribute="trailing" id="MBx-3D-5xN"/>
-                            <constraint firstItem="TPZ-zM-lfk" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" constant="100" id="no0-4Y-I3J"/>
-                            <constraint firstItem="TPZ-zM-lfk" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="pdc-xA-y8x"/>
-                            <constraint firstItem="Nsn-kt-aD7" firstAttribute="top" secondItem="TPZ-zM-lfk" secondAttribute="bottom" constant="16" id="wD0-hu-gvE"/>
+                            <constraint firstItem="Nsn-kt-aD7" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="30" id="LNA-Ge-NiC"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="Nsn-kt-aD7" secondAttribute="trailing" constant="30" id="MBx-3D-5xN"/>
+                            <constraint firstItem="mzu-IB-8wu" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" constant="60" id="lVP-hG-TB0"/>
+                            <constraint firstItem="mzu-IB-8wu" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="mbl-9r-Mtj"/>
+                            <constraint firstItem="Nsn-kt-aD7" firstAttribute="top" secondItem="mzu-IB-8wu" secondAttribute="bottom" constant="20" id="yCf-5d-BSd"/>
                             <constraint firstItem="XAf-Sq-dqm" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="zhQ-XV-Zqr"/>
                         </constraints>
                     </view>
