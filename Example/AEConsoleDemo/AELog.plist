@@ -9,6 +9,10 @@
 		<key>ViewController</key>
 		<true/>
 	</dict>
+	<key>DateFormat</key>
+	<string>yyyy-MM-dd HH:mm:ss.SSS</string>
+	<key>Template</key>
+	<string>{date} -- [{thread}] {file} ({line}) -&gt; {function} &gt; {message}</string>
 	<key>Console</key>
 	<dict>
 		<key>Enabled</key>

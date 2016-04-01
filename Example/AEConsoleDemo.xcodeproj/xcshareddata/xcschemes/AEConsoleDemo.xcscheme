@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8B58947B1CA8A0E4005F0B9D"
-               BuildableName = "iOS Example.app"
-               BlueprintName = "iOS Example"
-               ReferencedContainer = "container:iOS Example.xcodeproj">
+               BlueprintIdentifier = "8B01E90E1CAF15230049F98E"
+               BuildableName = "AEConsoleDemo.app"
+               BlueprintName = "AEConsoleDemo"
+               ReferencedContainer = "container:AEConsoleDemo.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -32,10 +32,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "8B58947B1CA8A0E4005F0B9D"
-            BuildableName = "iOS Example.app"
-            BlueprintName = "iOS Example"
-            ReferencedContainer = "container:iOS Example.xcodeproj">
+            BlueprintIdentifier = "8B01E90E1CAF15230049F98E"
+            BuildableName = "AEConsoleDemo.app"
+            BlueprintName = "AEConsoleDemo"
+            ReferencedContainer = "container:AEConsoleDemo.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -55,10 +55,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "8B58947B1CA8A0E4005F0B9D"
-            BuildableName = "iOS Example.app"
-            BlueprintName = "iOS Example"
-            ReferencedContainer = "container:iOS Example.xcodeproj">
+            BlueprintIdentifier = "8B01E90E1CAF15230049F98E"
+            BuildableName = "AEConsoleDemo.app"
+            BlueprintName = "AEConsoleDemo"
+            ReferencedContainer = "container:AEConsoleDemo.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -74,10 +74,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "8B58947B1CA8A0E4005F0B9D"
-            BuildableName = "iOS Example.app"
-            BlueprintName = "iOS Example"
-            ReferencedContainer = "container:iOS Example.xcodeproj">
+            BlueprintIdentifier = "8B01E90E1CAF15230049F98E"
+            BuildableName = "AEConsoleDemo.app"
+            BlueprintName = "AEConsoleDemo"
+            ReferencedContainer = "container:AEConsoleDemo.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
