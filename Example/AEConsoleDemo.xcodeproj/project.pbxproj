@@ -13,21 +13,58 @@
 		8B01E91A1CAF15230049F98E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8B01E9191CAF15230049F98E /* Assets.xcassets */; };
 		8B01E91D1CAF15230049F98E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8B01E91B1CAF15230049F98E /* LaunchScreen.storyboard */; };
 		8B01E9451CAF17650049F98E /* AELog.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B01E9441CAF17650049F98E /* AELog.plist */; };
-		8B719ACB1CAF26B800BB2EC4 /* AEConsole.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B139FA41CAF26800003FC7C /* AEConsole.framework */; };
-		8B719ACC1CAF26B800BB2EC4 /* AEConsole.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B139FA41CAF26800003FC7C /* AEConsole.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8BE817941CAF342500FCBE4A /* AELog.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BE817861CAF341300FCBE4A /* AELog.framework */; };
+		8BE817951CAF342500FCBE4A /* AELog.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8BE817861CAF341300FCBE4A /* AELog.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8BE817981CAF343200FCBE4A /* AEConsole.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BE817931CAF341C00FCBE4A /* AEConsole.framework */; };
+		8BE817991CAF343200FCBE4A /* AEConsole.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8BE817931CAF341C00FCBE4A /* AEConsole.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		8B139FA31CAF26800003FC7C /* PBXContainerItemProxy */ = {
+		8BE817851CAF341300FCBE4A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8B139F9E1CAF26800003FC7C /* AEConsole.xcodeproj */;
+			containerPortal = 8BE8177E1CAF341300FCBE4A /* AELog.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8B5894651CA89F27005F0B9D;
+			remoteInfo = "AELog iOS";
+		};
+		8BE817871CAF341300FCBE4A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8BE8177E1CAF341300FCBE4A /* AELog.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8B8464CE1CAB492D0027AA52;
+			remoteInfo = "AELog OSX";
+		};
+		8BE817891CAF341300FCBE4A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8BE8177E1CAF341300FCBE4A /* AELog.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8B8464DE1CAB4B310027AA52;
+			remoteInfo = "AELog watchOS";
+		};
+		8BE8178B1CAF341300FCBE4A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8BE8177E1CAF341300FCBE4A /* AELog.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8B8464ED1CAB4B870027AA52;
+			remoteInfo = "AELog tvOS";
+		};
+		8BE817921CAF341C00FCBE4A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8BE8178D1CAF341C00FCBE4A /* AEConsole.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 8B5894D01CA9D857005F0B9D;
 			remoteInfo = AEConsole;
 		};
-		8B719ACD1CAF26B800BB2EC4 /* PBXContainerItemProxy */ = {
+		8BE817961CAF342500FCBE4A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8B139F9E1CAF26800003FC7C /* AEConsole.xcodeproj */;
+			containerPortal = 8BE8177E1CAF341300FCBE4A /* AELog.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8B5894641CA89F27005F0B9D;
+			remoteInfo = "AELog iOS";
+		};
+		8BE8179A1CAF343200FCBE4A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8BE8178D1CAF341C00FCBE4A /* AEConsole.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 8B5894CF1CA9D857005F0B9D;
 			remoteInfo = AEConsole;
@@ -41,7 +78,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				8B719ACC1CAF26B800BB2EC4 /* AEConsole.framework in Embed Frameworks */,
+				8BE817991CAF343200FCBE4A /* AEConsole.framework in Embed Frameworks */,
+				8BE817951CAF342500FCBE4A /* AELog.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -57,7 +95,8 @@
 		8B01E91C1CAF15230049F98E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8B01E91E1CAF15230049F98E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8B01E9441CAF17650049F98E /* AELog.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = AELog.plist; sourceTree = "<group>"; };
-		8B139F9E1CAF26800003FC7C /* AEConsole.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AEConsole.xcodeproj; path = ../AEConsole.xcodeproj; sourceTree = "<group>"; };
+		8BE8177E1CAF341300FCBE4A /* AELog.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AELog.xcodeproj; path = ../AELog/AELog.xcodeproj; sourceTree = "<group>"; };
+		8BE8178D1CAF341C00FCBE4A /* AEConsole.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AEConsole.xcodeproj; path = ../AEConsole.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,7 +104,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8B719ACB1CAF26B800BB2EC4 /* AEConsole.framework in Frameworks */,
+				8BE817981CAF343200FCBE4A /* AEConsole.framework in Frameworks */,
+				8BE817941CAF342500FCBE4A /* AELog.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,7 +117,8 @@
 			children = (
 				8B01E9111CAF15230049F98E /* AEConsoleDemo */,
 				8B01E9101CAF15230049F98E /* Products */,
-				8B139F9E1CAF26800003FC7C /* AEConsole.xcodeproj */,
+				8BE8177E1CAF341300FCBE4A /* AELog.xcodeproj */,
+				8BE8178D1CAF341C00FCBE4A /* AEConsole.xcodeproj */,
 			);
 			sourceTree = "<group>";
 		};
@@ -111,10 +152,21 @@
 			name = "Supporting FIles";
 			sourceTree = "<group>";
 		};
-		8B139F9F1CAF26800003FC7C /* Products */ = {
+		8BE8177F1CAF341300FCBE4A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8B139FA41CAF26800003FC7C /* AEConsole.framework */,
+				8BE817861CAF341300FCBE4A /* AELog.framework */,
+				8BE817881CAF341300FCBE4A /* AELog.framework */,
+				8BE8178A1CAF341300FCBE4A /* AELog.framework */,
+				8BE8178C1CAF341300FCBE4A /* AELog.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8BE8178E1CAF341C00FCBE4A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8BE817931CAF341C00FCBE4A /* AEConsole.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -134,7 +186,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				8B719ACE1CAF26B800BB2EC4 /* PBXTargetDependency */,
+				8BE817971CAF342500FCBE4A /* PBXTargetDependency */,
+				8BE8179B1CAF343200FCBE4A /* PBXTargetDependency */,
 			);
 			name = AEConsoleDemo;
 			productName = AEConsoleDemo;
@@ -169,8 +222,12 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 8B139F9F1CAF26800003FC7C /* Products */;
-					ProjectRef = 8B139F9E1CAF26800003FC7C /* AEConsole.xcodeproj */;
+					ProductGroup = 8BE8178E1CAF341C00FCBE4A /* Products */;
+					ProjectRef = 8BE8178D1CAF341C00FCBE4A /* AEConsole.xcodeproj */;
+				},
+				{
+					ProductGroup = 8BE8177F1CAF341300FCBE4A /* Products */;
+					ProjectRef = 8BE8177E1CAF341300FCBE4A /* AELog.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -181,11 +238,39 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		8B139FA41CAF26800003FC7C /* AEConsole.framework */ = {
+		8BE817861CAF341300FCBE4A /* AELog.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = AELog.framework;
+			remoteRef = 8BE817851CAF341300FCBE4A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8BE817881CAF341300FCBE4A /* AELog.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = AELog.framework;
+			remoteRef = 8BE817871CAF341300FCBE4A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8BE8178A1CAF341300FCBE4A /* AELog.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = AELog.framework;
+			remoteRef = 8BE817891CAF341300FCBE4A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8BE8178C1CAF341300FCBE4A /* AELog.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = AELog.framework;
+			remoteRef = 8BE8178B1CAF341300FCBE4A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8BE817931CAF341C00FCBE4A /* AEConsole.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = AEConsole.framework;
-			remoteRef = 8B139FA31CAF26800003FC7C /* PBXContainerItemProxy */;
+			remoteRef = 8BE817921CAF341C00FCBE4A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -217,10 +302,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		8B719ACE1CAF26B800BB2EC4 /* PBXTargetDependency */ = {
+		8BE817971CAF342500FCBE4A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "AELog iOS";
+			targetProxy = 8BE817961CAF342500FCBE4A /* PBXContainerItemProxy */;
+		};
+		8BE8179B1CAF343200FCBE4A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = AEConsole;
-			targetProxy = 8B719ACD1CAF26B800BB2EC4 /* PBXContainerItemProxy */;
+			targetProxy = 8BE8179A1CAF343200FCBE4A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
