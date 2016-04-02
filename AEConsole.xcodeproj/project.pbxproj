@@ -49,6 +49,9 @@
 		8B5894D51CA9D857005F0B9D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8B5894DB1CA9D86C005F0B9D /* AEConsole.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AEConsole.swift; sourceTree = "<group>"; };
 		8B8464FF1CAB51CE0027AA52 /* AELog.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AELog.xcodeproj; path = AELog/AELog.xcodeproj; sourceTree = "<group>"; };
+		8BE817AE1CAF442F00FCBE4A /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
+		8BE817AF1CAF442F00FCBE4A /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		8BE817B01CAF442F00FCBE4A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +72,9 @@
 				8B5894D21CA9D857005F0B9D /* Sources */,
 				8B5894D11CA9D857005F0B9D /* Products */,
 				8B8464FF1CAB51CE0027AA52 /* AELog.xcodeproj */,
+				8BE817AF1CAF442F00FCBE4A /* LICENSE */,
+				8BE817B01CAF442F00FCBE4A /* README.md */,
+				8BE817AE1CAF442F00FCBE4A /* CHANGELOG.md */,
 			);
 			sourceTree = "<group>";
 		};
@@ -325,6 +331,7 @@
 		8B5894D91CA9D857005F0B9D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -343,6 +350,7 @@
 		8B5894DA1CA9D857005F0B9D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
