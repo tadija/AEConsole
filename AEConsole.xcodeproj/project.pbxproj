@@ -13,6 +13,27 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		8B022D361CB071710039B5F4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8B8464FF1CAB51CE0027AA52 /* AELog.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8B04F5631CB009DD0002F869;
+			remoteInfo = "AELog iOS Tests";
+		};
+		8B022D381CB071710039B5F4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8B8464FF1CAB51CE0027AA52 /* AELog.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8B04F5721CB00AA60002F869;
+			remoteInfo = "AELog tvOS Tests";
+		};
+		8B022D3A1CB071710039B5F4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8B8464FF1CAB51CE0027AA52 /* AELog.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8B04F5821CB00B420002F869;
+			remoteInfo = "AELog OSX Tests";
+		};
 		8B8465061CAB51CE0027AA52 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8B8464FF1CAB51CE0027AA52 /* AELog.xcodeproj */;
@@ -44,11 +65,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8B022D2E1CB071710039B5F4 /* AEConsole.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = AEConsole.podspec; sourceTree = "<group>"; };
+		8B022D3C1CB071790039B5F4 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		8B5894D01CA9D857005F0B9D /* AEConsole.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AEConsole.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B5894D31CA9D857005F0B9D /* AEConsole.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AEConsole.h; sourceTree = "<group>"; };
 		8B5894D51CA9D857005F0B9D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8B5894DB1CA9D86C005F0B9D /* AEConsole.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AEConsole.swift; sourceTree = "<group>"; };
 		8B8464FF1CAB51CE0027AA52 /* AELog.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AELog.xcodeproj; path = AELog/AELog.xcodeproj; sourceTree = "<group>"; };
+		8BDFB39F1CB181A500F0F6F1 /* Cartfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
 		8BE817AE1CAF442F00FCBE4A /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
 		8BE817AF1CAF442F00FCBE4A /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		8BE817B01CAF442F00FCBE4A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -66,15 +90,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8B022D3D1CB071820039B5F4 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				8BE817AF1CAF442F00FCBE4A /* LICENSE */,
+				8BE817B01CAF442F00FCBE4A /* README.md */,
+				8BE817AE1CAF442F00FCBE4A /* CHANGELOG.md */,
+				8B022D2E1CB071710039B5F4 /* AEConsole.podspec */,
+				8BDFB39F1CB181A500F0F6F1 /* Cartfile */,
+				8B022D3C1CB071790039B5F4 /* Package.swift */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		8B5894C61CA9D857005F0B9D = {
 			isa = PBXGroup;
 			children = (
 				8B5894D21CA9D857005F0B9D /* Sources */,
 				8B5894D11CA9D857005F0B9D /* Products */,
+				8B022D3D1CB071820039B5F4 /* Supporting Files */,
 				8B8464FF1CAB51CE0027AA52 /* AELog.xcodeproj */,
-				8BE817AF1CAF442F00FCBE4A /* LICENSE */,
-				8BE817B01CAF442F00FCBE4A /* README.md */,
-				8BE817AE1CAF442F00FCBE4A /* CHANGELOG.md */,
 			);
 			sourceTree = "<group>";
 		};
@@ -108,9 +143,12 @@
 			isa = PBXGroup;
 			children = (
 				8B8465071CAB51CE0027AA52 /* AELog.framework */,
-				8B8465091CAB51CE0027AA52 /* AELog.framework */,
 				8B84650B1CAB51CE0027AA52 /* AELog.framework */,
+				8B022D371CB071710039B5F4 /* AELog iOS Tests.xctest */,
 				8B84650D1CAB51CE0027AA52 /* AELog.framework */,
+				8B022D391CB071710039B5F4 /* AELog tvOS Tests.xctest */,
+				8B8465091CAB51CE0027AA52 /* AELog.framework */,
+				8B022D3B1CB071710039B5F4 /* AELog OSX Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -185,6 +223,27 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		8B022D371CB071710039B5F4 /* AELog iOS Tests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "AELog iOS Tests.xctest";
+			remoteRef = 8B022D361CB071710039B5F4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8B022D391CB071710039B5F4 /* AELog tvOS Tests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "AELog tvOS Tests.xctest";
+			remoteRef = 8B022D381CB071710039B5F4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8B022D3B1CB071710039B5F4 /* AELog OSX Tests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "AELog OSX Tests.xctest";
+			remoteRef = 8B022D3A1CB071710039B5F4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		8B8465071CAB51CE0027AA52 /* AELog.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;

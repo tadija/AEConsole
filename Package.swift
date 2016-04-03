@@ -1,5 +1,5 @@
 //
-// AEConsole.h
+// Package.swift
 //
 // Copyright (c) 2016 Marko Tadić <tadija@me.com> http://tadija.net
 //
@@ -22,8 +22,11 @@
 // SOFTWARE.
 //
 
-#import <UIKit/UIKit.h>
-#import <AELog/AELog.h>
+import PackageDescription
 
-FOUNDATION_EXPORT double AEConsoleVersionNumber;
-FOUNDATION_EXPORT const unsigned char AEConsoleVersionString[];
+let package = Package(
+    name: "AEConsole",
+    dependencies: [
+        .Package(url: "https://github.com/tadija/AELog.git", majorVersion: 0, minor: 2)
+    ]
+)
