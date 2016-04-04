@@ -472,7 +472,7 @@ class AEConsoleView: UIView, UITableViewDataSource, UITableViewDelegate, UITextF
     private func configureColorsWithOpacity(opacity: CGFloat) {
         tableView.backgroundColor = settings.consoleBackColor.colorWithAlphaComponent(opacity)
         
-        let textOpacity = max(0.3, opacity)
+        let textOpacity = max(0.3, opacity * 1.1)
         settings.textColorWithOpacity = settings.consoleTextColor.colorWithAlphaComponent(textOpacity)
         
         let toolbarOpacity = min(0.7, opacity * 1.5)

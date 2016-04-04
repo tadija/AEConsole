@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
     s.name = 'AEConsole'
     s.version = '0.2.1'
-    s.summary = 'Customizable Console UI overlay with debug log on top of your iOS app'
+    s.summary = 'Customizable Console UI overlay with debug log on top of your iOS App'
 
     s.homepage = 'https://github.com/tadija/AEConsole'
     s.license = { :type => 'MIT', :file => 'LICENSE' }
