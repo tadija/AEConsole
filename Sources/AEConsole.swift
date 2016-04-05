@@ -45,7 +45,7 @@ public class AEConsole: AELogDelegate {
     }
     
     private func configureConsoleViewViaAppDelegate(delegate: UIApplicationDelegate) {
-        guard let window = delegate.window! else { return }
+        guard let _window = delegate.window, window = _window else { return }
         let console = AEConsoleView()
         console.frame = window.bounds
         console.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
@@ -71,10 +71,8 @@ public class AEConsole: AELogDelegate {
     public class func toggle() {
         if sharedInstance.consoleView.hidden {
             sharedInstance.activateConsoleUI()
-            sharedInstance.consoleView.toggleUI()
-        } else {
-            sharedInstance.consoleView.toggleUI()
         }
+        sharedInstance.consoleView.toggleUI()
     }
     
     // MARK: - Init
@@ -92,7 +90,7 @@ public class AEConsole: AELogDelegate {
     @objc private func activateConsoleUI() {
         guard let
             delegate = appDelegate,
-            window = delegate.window!
+            _window = delegate.window, window = _window
         else { return }
 
         window.bringSubviewToFront(consoleView)
