@@ -34,8 +34,13 @@ class ViewController: UIViewController {
     // MARK: - Actions
 
     @IBAction func didTapLogButton(sender: UIButton) {
-        aelog(sender)
-        generateLogLines(count: Int.random(max: 218))
+        let queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0)
+        dispatch_async(queue) {
+            self.generateLogLines(count: Int.random(max: 1000))
+            dispatch_async(dispatch_get_main_queue(), {
+                aelog(sender)
+            })
+        }
     }
     
     @IBAction func didTapToggleButton(sender: UIButton) {
