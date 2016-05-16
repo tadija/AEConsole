@@ -39,11 +39,17 @@ public class AEConsole: AELogDelegate {
     
     // MARK: API
     
-    /// Enable Console UI by calling this method in your AppDelegate's `didFinishLaunchingWithOptions:`
+    /**
+        Enable Console UI by calling this method in your AppDelegate's `didFinishLaunchingWithOptions:`
+     
+        - NOTE: If `AEConsole` setting "Enabled" is set to "NO" then it does nothing.
+    */
     public class func launchWithAppDelegate(delegate: UIApplicationDelegate) {
-        AELog.launchWithDelegate(sharedInstance)
-        sharedInstance.appDelegate = delegate
-        sharedInstance.brain.configureConsoleUIWithAppDelegate(delegate)
+        if AEConsoleSettings.sharedInstance.consoleEnabled {
+            AELog.launchWithDelegate(sharedInstance)
+            sharedInstance.appDelegate = delegate
+            sharedInstance.brain.configureConsoleUIWithAppDelegate(delegate)
+        }
     }
     
     /// Current state of Console UI visibility
@@ -88,15 +94,11 @@ public class AEConsole: AELogDelegate {
     /**
         Forwards latest log line from `aelog` to Console UI.
 
-        - NOTE: If `AEConsole` setting "Enabled" is set to "NO" then it does nothing.
-
         - parameter logLine: Log line which will be added to Console UI.
     */
     public func didLog(logLine: AELogLine) {
-        if settings.consoleEnabled {
-            brain.addLogLine(logLine)
-            activateConsoleUI()
-        }
+        brain.addLogLine(logLine)
+        activateConsoleUI()
     }
     
 }
