@@ -64,6 +64,7 @@ open class AEConsole: AELogDelegate {
         if !view.isOnScreen {
             shared.activateConsoleUI()
         }
+        
         view.toggleUI()
     }
     

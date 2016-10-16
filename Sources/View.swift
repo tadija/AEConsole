@@ -97,9 +97,9 @@ class View: UIView {
         }
     }
     
-    private var currentTopInset = Layout.MagicNumber
-    private var topInsetSmall = Layout.MagicNumber
-    private var topInsetLarge = Layout.MagicNumber + Layout.FilterHeight
+    fileprivate var currentTopInset = Layout.MagicNumber
+    fileprivate var topInsetSmall = Layout.MagicNumber
+    fileprivate var topInsetLarge = Layout.MagicNumber + Layout.FilterHeight
     
     // MARK: - Init
     
@@ -171,15 +171,19 @@ class View: UIView {
         }
     }
     
+}
+
+extension View {
+    
     // MARK: - Helpers
     
-    private func updateLinesCountLabels() {
+    fileprivate func updateLinesCountLabels() {
         linesTotalLabel.text = "□ \(brain.lines.count)"
         let filteredCount = brain.isFilterActive ? brain.filteredLines.count : 0
         linesFilteredLabel.text = "■ \(filteredCount)"
     }
     
-    private func updateContentLayout() {
+    fileprivate func updateContentLayout() {
         let maxWidth = max(brain.contentWidth, bounds.width)
         
         let newFrame = CGRect(x: 0.0, y: 0.0, width: maxWidth, height: bounds.height)
@@ -209,7 +213,7 @@ class View: UIView {
         tableView.flashScrollIndicators()
     }
     
-    private func scrollToBottom() {
+    fileprivate func scrollToBottom() {
         let diff = tableView.contentSize.height - tableView.bounds.size.height
         if diff > 0 {
             let offsetY = diff + Layout.MagicNumber
@@ -218,7 +222,7 @@ class View: UIView {
         }
     }
     
-    private func configureColors(with opacity: CGFloat) {
+    fileprivate func configureColors(with opacity: CGFloat) {
         tableView.backgroundColor = config.backColor.withAlphaComponent(opacity)
         
         let textOpacity = max(0.3, opacity * 1.1)
@@ -240,9 +244,9 @@ class View: UIView {
     
 }
 
-// MARK: - UI
-
 extension View {
+    
+    // MARK: - UI
     
     fileprivate func configureUI() {
         configureOutlets()
@@ -368,9 +372,9 @@ extension View {
     
 }
 
-// MARK: - Layout
-
 extension View {
+    
+    // MARK: - Layout
     
     fileprivate func configureLayout() {
         configureHierarchy()
@@ -459,9 +463,9 @@ extension View {
     
 }
 
-// MARK: - Actions
-
 extension View {
+    
+    // MARK: - Actions
     
     func didTapToggleToolbarButton(_ sender: UIButton) {
         toggleToolbar()

@@ -63,77 +63,11 @@ class Brain: NSObject {
         console.textField.delegate = self
     }
     
-    func createConsoleView(in window: UIWindow) -> View {
-        let view = View()
-        
-        view.frame = window.bounds
-        view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        view.isOnScreen = config.isAutoStartEnabled
-        window.addSubview(view)
-        
-        return view
-    }
-    
     func addLogLine(_ line: Line) {
         calculateContentWidth(for: line)
         updateFilteredLines(with: line)
         lines.append(line)
         updateInterfaceIfNeeded()
-    }
-    
-    private func calculateContentWidth(for line: Line) {
-        let calculatedLineWidth = getWidth(for: line)
-        if calculatedLineWidth > contentWidth {
-            contentWidth = calculatedLineWidth
-        }
-    }
-    
-    private func updateFilteredLines(with line: Line) {
-        if isFilterActive {
-            guard let filter = filterText else { return }
-            if line.description.contains(filter) {
-                filteredLines.append(line)
-            }
-        }
-    }
-    
-    // MARK: - Helpers
-    
-    private func updateFilter() {
-        if isFilterActive {
-            applyFilter()
-        } else {
-            clearFilter()
-        }
-    }
-    
-    private func applyFilter() {
-        guard let filter = filterText else { return }
-        aelog("Filter Lines [\(isFilterActive)] - <\(filter)>")
-        let filtered = lines.filter({ $0.description.localizedCaseInsensitiveContains(filter) })
-        filteredLines = filtered
-    }
-    
-    private func clearFilter() {
-        aelog("Filter Lines [\(isFilterActive)]")
-        filteredLines.removeAll()
-    }
-    
-    private func updateInterfaceIfNeeded() {
-        if console.isOnScreen {
-            console.updateUI()
-        }
-    }
-    
-    private func getWidth(for line: Line) -> CGFloat {
-        let text = line.description
-        let maxSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: config.rowHeight)
-        let options = NSStringDrawingOptions.usesLineFragmentOrigin
-        let attributes = [NSFontAttributeName : config.consoleFont]
-        let nsText = text as NSString
-        let size = nsText.boundingRect(with: maxSize, options: options, attributes: attributes, context: nil)
-        let width = size.width
-        return width
     }
     
     func isEmpty(_ text: String?) -> Bool {
@@ -162,7 +96,77 @@ class Brain: NSObject {
         }
     }
     
-    private func writeLog(_ log: String) {
+}
+
+extension Brain {
+    
+    // MARK: - Helpers
+    
+    fileprivate func updateFilter() {
+        if isFilterActive {
+            applyFilter()
+        } else {
+            clearFilter()
+        }
+    }
+    
+    private func applyFilter() {
+        guard let filter = filterText else { return }
+        aelog("Filter Lines [\(isFilterActive)] - <\(filter)>")
+        let filtered = lines.filter({ $0.description.localizedCaseInsensitiveContains(filter) })
+        filteredLines = filtered
+    }
+    
+    private func clearFilter() {
+        aelog("Filter Lines [\(isFilterActive)]")
+        filteredLines.removeAll()
+    }
+    
+    fileprivate func updateInterfaceIfNeeded() {
+        if console.isOnScreen {
+            console.updateUI()
+        }
+    }
+    
+    fileprivate func createConsoleView(in window: UIWindow) -> View {
+        let view = View()
+        
+        view.frame = window.bounds
+        view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.isOnScreen = config.isAutoStartEnabled
+        window.addSubview(view)
+        
+        return view
+    }
+    
+    fileprivate func calculateContentWidth(for line: Line) {
+        let calculatedLineWidth = getWidth(for: line)
+        if calculatedLineWidth > contentWidth {
+            contentWidth = calculatedLineWidth
+        }
+    }
+    
+    fileprivate func updateFilteredLines(with line: Line) {
+        if isFilterActive {
+            guard let filter = filterText else { return }
+            if line.description.contains(filter) {
+                filteredLines.append(line)
+            }
+        }
+    }
+    
+    private func getWidth(for line: Line) -> CGFloat {
+        let text = line.description
+        let maxSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: config.rowHeight)
+        let options = NSStringDrawingOptions.usesLineFragmentOrigin
+        let attributes = [NSFontAttributeName : config.consoleFont]
+        let nsText = text as NSString
+        let size = nsText.boundingRect(with: maxSize, options: options, attributes: attributes, context: nil)
+        let width = size.width
+        return width
+    }
+    
+    fileprivate func writeLog(_ log: String) {
         let filename = "\(Date().timeIntervalSince1970).aelog"
         let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
         let documentsURL = URL(fileURLWithPath: documentsPath)
