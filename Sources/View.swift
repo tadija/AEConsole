@@ -28,7 +28,7 @@ class View: UIView {
     
     // MARK: - Constants
     
-    private struct Layout {
+    fileprivate struct Layout {
         static let FilterHeight: CGFloat = 60
         static let FilterExpandedTop: CGFloat = 0
         static let FilterCollapsedTop: CGFloat = -Layout.FilterHeight
@@ -44,34 +44,31 @@ class View: UIView {
     // MARK: - Outlets
     
     let tableView = UITableView()
-    
-    private let filterView = UIView()
-    private let filterStack = UIStackView()
-    private var filterViewTop: NSLayoutConstraint!
-    
-    private let exportLogButton = UIButton()
-    private let linesCountStack = UIStackView()
-    private let linesTotalLabel = UILabel()
-    private let linesFilteredLabel = UILabel()
     let textField = UITextField()
-    private let clearFilterButton = UIButton()
     
-    private let menuView = UIView()
-    private let menuStack = UIStackView()
-    private var menuViewLeading: NSLayoutConstraint!
+    fileprivate let filterView = UIView()
+    fileprivate let filterStack = UIStackView()
+    fileprivate var filterViewTop: NSLayoutConstraint!
     
-    private let toggleToolbarButton = UIButton()
-    private let forwardTouchesButton = UIButton()
-    private let autoFollowButton = UIButton()
-    private let clearLogButton = UIButton()
+    fileprivate let exportLogButton = UIButton()
+    fileprivate let linesCountStack = UIStackView()
+    fileprivate let linesTotalLabel = UILabel()
+    fileprivate let linesFilteredLabel = UILabel()
+    fileprivate let clearFilterButton = UIButton()
     
-    private let updateOpacityGesture = UIPanGestureRecognizer()
-    private let hideConsoleGesture = UITapGestureRecognizer()
+    fileprivate let menuView = UIView()
+    fileprivate let menuStack = UIStackView()
+    fileprivate var menuViewLeading: NSLayoutConstraint!
+    
+    fileprivate let toggleToolbarButton = UIButton()
+    fileprivate let forwardTouchesButton = UIButton()
+    fileprivate let autoFollowButton = UIButton()
+    fileprivate let clearLogButton = UIButton()
+    
+    fileprivate let updateOpacityGesture = UIPanGestureRecognizer()
+    fileprivate let hideConsoleGesture = UITapGestureRecognizer()
     
     // MARK: - Properties
-    
-    private let brain = AEConsole.shared.brain
-    private let config = Config.shared
     
     var isOnScreen = false {
         didSet {
@@ -83,20 +80,73 @@ class View: UIView {
         }
     }
     
-    private var toolbarActive = false {
+    var currentOffsetX = -Layout.MagicNumber
+    
+    fileprivate let brain = AEConsole.shared.brain
+    fileprivate let config = Config.shared
+    
+    fileprivate var isToolbarActive = false {
         didSet {
-            currentTopInset = toolbarActive ? topInsetLarge : topInsetSmall
+            currentTopInset = isToolbarActive ? topInsetLarge : topInsetSmall
         }
     }
     
-    var currentOffsetX = -Layout.MagicNumber
+    fileprivate var opacity: CGFloat = 1.0 {
+        didSet {
+            configureColors(with: opacity)
+        }
+    }
+    
     private var currentTopInset = Layout.MagicNumber
     private var topInsetSmall = Layout.MagicNumber
     private var topInsetLarge = Layout.MagicNumber + Layout.FilterHeight
     
-    private var opacity: CGFloat = 1.0 {
-        didSet {
-            configureColorsWithOpacity(opacity)
+    // MARK: - Init
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        commonInit()
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        commonInit()
+    }
+    
+    private func commonInit() {
+        configureUI()
+        opacity = config.opacity
+    }
+    
+    // MARK: - Override
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        updateContentLayout()
+    }
+    
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        let hitView = super.hitTest(point, with: event)
+        
+        let filter = hitView?.superview == filterStack
+        let menu = hitView?.superview == menuStack
+        if !filter && !menu && forwardTouchesButton.isSelected {
+            return nil
+        }
+        
+        return hitView
+    }
+    
+    override var canBecomeFirstResponder : Bool {
+        return true
+    }
+    
+    override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
+        if motion == .motionShake {
+            if config.isShakeGestureEnabled {
+                toggleUI()
+            }
         }
     }
     
@@ -110,8 +160,6 @@ class View: UIView {
         }, completion:nil)
     }
     
-    // MARK: - Helpers
-    
     func updateUI() {
         tableView.reloadData()
         
@@ -122,6 +170,8 @@ class View: UIView {
             scrollToBottom()
         }
     }
+    
+    // MARK: - Helpers
     
     private func updateLinesCountLabels() {
         linesTotalLabel.text = "□ \(brain.lines.count)"
@@ -145,7 +195,7 @@ class View: UIView {
     }
     
     private func updateContentOffset() {
-        if toolbarActive {
+        if isToolbarActive {
             if tableView.contentOffset.y == -topInsetSmall {
                 let offset = CGPoint(x: tableView.contentOffset.x, y: -topInsetLarge)
                 tableView.setContentOffset(offset, animated: true)
@@ -168,7 +218,7 @@ class View: UIView {
         }
     }
     
-    private func configureColorsWithOpacity(_ opacity: CGFloat) {
+    private func configureColors(with opacity: CGFloat) {
         tableView.backgroundColor = config.backColor.withAlphaComponent(opacity)
         
         let textOpacity = max(0.3, opacity * 1.1)
@@ -188,103 +238,13 @@ class View: UIView {
         tableView.reloadData()
     }
     
-    // MARK: - Init
+}
+
+// MARK: - UI
+
+extension View {
     
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        commonInit()
-    }
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        commonInit()
-    }
-    
-    private func commonInit() {
-        configureUI()
-        opacity = config.opacity
-    }
-    
-    // MARK: - Actions
-    
-    func didTapToggleToolbarButton(_ sender: UIButton) {
-        toggleToolbar()
-    }
-    
-    func didTapForwardTouchesButton(_ sender: UIButton) {
-        forwardTouchesButton.isSelected = !forwardTouchesButton.isSelected
-        aelog("Forward Touches [\(forwardTouchesButton.isSelected)]")
-    }
-    
-    func didTapAutoFollowButton(_ sender: UIButton) {
-        autoFollowButton.isSelected = !autoFollowButton.isSelected
-        aelog("Auto Follow [\(autoFollowButton.isSelected)]")
-    }
-    
-    func didTapClearLogButton(_ sender: UIButton) {
-        brain.clearLog()
-    }
-    
-    func didTapExportButton(_ sender: UIButton) {
-        brain.exportAllLogLines()
-    }
-    
-    func didTapFilterClearButton(_ sender: UIButton) {
-        textField.resignFirstResponder()
-        if !brain.isEmpty(textField.text) {
-            brain.filterText = nil
-        }
-        textField.text = nil
-    }
-    
-    func didRecognizeUpdateOpacityGesture(_ sender: UIPanGestureRecognizer) {
-        if sender.state == .ended {
-            if toolbarActive {
-                let xTranslation = sender.translation(in: menuView).x
-                if abs(xTranslation) > (3 * Layout.MagicNumber) {
-                    let location = sender.location(in: menuView)
-                    let opacity = opacityForLocation(location)
-                    self.opacity = opacity
-                }
-            }
-        }
-    }
-    
-    func didRecognizeHideConsoleGesture(_ sender: UITapGestureRecognizer) {
-        toggleUI()
-    }
-    
-    // MARK: - Helpers
-    
-    private func opacityForLocation(_ location: CGPoint) -> CGFloat {
-        let calculatedOpacity = ((location.x * 1.0) / 300)
-        let minOpacity = max(0.1, calculatedOpacity)
-        let maxOpacity = min(0.9, minOpacity)
-        return maxOpacity
-    }
-    
-    private func toggleToolbar() {
-        filterViewTop.constant = toolbarActive ? Layout.FilterCollapsedTop : Layout.FilterExpandedTop
-        menuViewLeading.constant = toolbarActive ? Layout.MenuCollapsedLeading : Layout.MenuExpandedLeading
-        let alpha: CGFloat = toolbarActive ? 0.3 : 1.0
-        
-        UIView.animate(withDuration: 0.3, animations: {
-            self.filterView.alpha = alpha
-            self.menuView.alpha = alpha
-            self.filterView.layoutIfNeeded()
-            self.menuView.layoutIfNeeded()
-        })
-        
-        if toolbarActive {
-            textField.resignFirstResponder()
-        }
-        
-        toolbarActive = !toolbarActive
-    }
-    
-    // MARK: - UI
-    
-    private func configureUI() {
+    fileprivate func configureUI() {
         configureOutlets()
         configureLayout()
     }
@@ -352,10 +312,10 @@ class View: UIView {
     }
     
     private func configureFilterButtons() {
-        exportLogButton.setTitle("🌙", for: UIControlState())
+        exportLogButton.setTitle("🌙", for: .normal)
         exportLogButton.addTarget(self, action: #selector(didTapExportButton(_:)), for: .touchUpInside)
         
-        clearFilterButton.setTitle("🔥", for: UIControlState())
+        clearFilterButton.setTitle("🔥", for: .normal)
         clearFilterButton.addTarget(self, action: #selector(didTapFilterClearButton(_:)), for: .touchUpInside)
     }
     
@@ -374,12 +334,12 @@ class View: UIView {
     }
     
     private func configureMenuButtons() {
-        toggleToolbarButton.setTitle("☀️", for: UIControlState())
-        forwardTouchesButton.setTitle("⚡️", for: UIControlState())
+        toggleToolbarButton.setTitle("☀️", for: .normal)
+        forwardTouchesButton.setTitle("⚡️", for: .normal)
         forwardTouchesButton.setTitle("✨", for: .selected)
-        autoFollowButton.setTitle("🌟", for: UIControlState())
+        autoFollowButton.setTitle("🌟", for: .normal)
         autoFollowButton.setTitle("💫", for: .selected)
-        clearLogButton.setTitle("🔥", for: UIControlState())
+        clearLogButton.setTitle("🔥", for: .normal)
         
         autoFollowButton.isSelected = true
         
@@ -406,9 +366,13 @@ class View: UIView {
         addGestureRecognizer(hideConsoleGesture)
     }
     
-    // MARK: - Layout
+}
+
+// MARK: - Layout
+
+extension View {
     
-    private func configureLayout() {
+    fileprivate func configureLayout() {
         configureHierarchy()
         configureViewsForLayout()
         configureConstraints()
@@ -493,36 +457,85 @@ class View: UIView {
         NSLayoutConstraint.activate([leading, trailing, top, bottom])
     }
     
-    // MARK: - Override
+}
+
+// MARK: - Actions
+
+extension View {
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        updateContentLayout()
+    func didTapToggleToolbarButton(_ sender: UIButton) {
+        toggleToolbar()
     }
     
-    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        let hitView = super.hitTest(point, with: event)
-        
-        let filter = hitView?.superview == filterStack
-        let menu = hitView?.superview == menuStack
-        if !filter && !menu && forwardTouchesButton.isSelected {
-            return nil
+    func didTapForwardTouchesButton(_ sender: UIButton) {
+        forwardTouchesButton.isSelected = !forwardTouchesButton.isSelected
+        aelog("Forward Touches [\(forwardTouchesButton.isSelected)]")
+    }
+    
+    func didTapAutoFollowButton(_ sender: UIButton) {
+        autoFollowButton.isSelected = !autoFollowButton.isSelected
+        aelog("Auto Follow [\(autoFollowButton.isSelected)]")
+    }
+    
+    func didTapClearLogButton(_ sender: UIButton) {
+        brain.clearLog()
+    }
+    
+    func didTapExportButton(_ sender: UIButton) {
+        brain.exportAllLogLines()
+    }
+    
+    func didTapFilterClearButton(_ sender: UIButton) {
+        textField.resignFirstResponder()
+        if !brain.isEmpty(textField.text) {
+            brain.filterText = nil
         }
-        
-        return hitView
+        textField.text = nil
     }
     
-    override var canBecomeFirstResponder : Bool {
-        return true
-    }
-    
-    override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
-        if motion == .motionShake {
-            if config.isShakeGestureEnabled {
-                toggleUI()
+    func didRecognizeUpdateOpacityGesture(_ sender: UIPanGestureRecognizer) {
+        if sender.state == .ended {
+            if isToolbarActive {
+                let xTranslation = sender.translation(in: menuView).x
+                if abs(xTranslation) > (3 * Layout.MagicNumber) {
+                    let location = sender.location(in: menuView)
+                    let opacity = opacityForLocation(location)
+                    self.opacity = opacity
+                }
             }
         }
+    }
+    
+    func didRecognizeHideConsoleGesture(_ sender: UITapGestureRecognizer) {
+        toggleUI()
+    }
+    
+    // MARK: - Helpers
+    
+    private func opacityForLocation(_ location: CGPoint) -> CGFloat {
+        let calculatedOpacity = ((location.x * 1.0) / 300)
+        let minOpacity = max(0.1, calculatedOpacity)
+        let maxOpacity = min(0.9, minOpacity)
+        return maxOpacity
+    }
+    
+    private func toggleToolbar() {
+        filterViewTop.constant = isToolbarActive ? Layout.FilterCollapsedTop : Layout.FilterExpandedTop
+        menuViewLeading.constant = isToolbarActive ? Layout.MenuCollapsedLeading : Layout.MenuExpandedLeading
+        let alpha: CGFloat = isToolbarActive ? 0.3 : 1.0
+        
+        UIView.animate(withDuration: 0.3, animations: {
+            self.filterView.alpha = alpha
+            self.menuView.alpha = alpha
+            self.filterView.layoutIfNeeded()
+            self.menuView.layoutIfNeeded()
+        })
+        
+        if isToolbarActive {
+            textField.resignFirstResponder()
+        }
+        
+        isToolbarActive = !isToolbarActive
     }
     
 }
