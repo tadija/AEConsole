@@ -32,7 +32,7 @@ import UIKit
 
     There is `Key` struct which contains possible keys for all settings.
 */
-open class Config {
+public class Config {
     
     // MARK: - Constants
     

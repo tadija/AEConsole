@@ -24,7 +24,7 @@
 
 import UIKit
 
-class AEConsoleCell: UITableViewCell {
+class Cell: UITableViewCell {
     
     // MARK: - Constants
     

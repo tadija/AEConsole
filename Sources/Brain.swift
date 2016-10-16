@@ -24,11 +24,11 @@
 
 import UIKit
 
-class AEConsoleBrain: NSObject, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate {
+class Brain: NSObject, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate {
     
     // MARK: Outlets
     
-    var consoleView: AEConsoleView!
+    var consoleView: View!
     
     // MARK: Properties
     
@@ -57,7 +57,7 @@ class AEConsoleBrain: NSObject, UITableViewDataSource, UITableViewDelegate, UITe
     func configureConsoleUIWithAppDelegate(_ delegate: UIApplicationDelegate) {
         guard let _window = delegate.window, let window = _window else { return }
         
-        let console = AEConsoleView()
+        let console = View()
         console.frame = window.bounds
         console.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         console.isOnScreen = config.isAutoStartEnabled
@@ -162,7 +162,7 @@ class AEConsoleBrain: NSObject, UITableViewDataSource, UITableViewDelegate, UITe
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: AEConsoleCell.identifier) as! AEConsoleCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: Cell.identifier) as! Cell
         return cell
     }
     

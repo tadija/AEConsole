@@ -24,7 +24,7 @@
 
 import UIKit
 
-class AEConsoleView: UIView {
+class View: UIView {
     
     // MARK: Constants
     
@@ -301,7 +301,7 @@ class AEConsoleView: UIView {
         tableView.allowsSelection = false
         tableView.separatorStyle = .none
         
-        tableView.register(AEConsoleCell.self, forCellReuseIdentifier: AEConsoleCell.identifier)
+        tableView.register(Cell.self, forCellReuseIdentifier: Cell.identifier)
     }
     
     fileprivate func configureFilterView() {

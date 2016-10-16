@@ -32,7 +32,7 @@ open class AEConsole: AELogDelegate {
     
     static let shared = AEConsole()
     
-    let brain = AEConsoleBrain()
+    let brain = Brain()
     
     private let config = Config.shared
     private var appDelegate: UIApplicationDelegate?
