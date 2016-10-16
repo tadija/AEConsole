@@ -95,8 +95,10 @@ open class AEConsole: AELogDelegate {
     // MARK: - AELogDelegate
     
     open func didLog(line: Line) {
-        brain.addLogLine(line)
-        activateConsoleUI()
+        DispatchQueue.main.async(execute: {
+            self.brain.addLogLine(line)
+            self.activateConsoleUI()
+        })
     }
     
 }
