@@ -36,7 +36,7 @@ open class Config {
     
     // MARK: Constants
     
-    /// Setting keys which can be used in `Console` dictionary inside `AELog.plist`.
+    /// Setting keys which can be used in `AEConsole` dictionary.
     public struct Key {
         /// Boolean - Console UI enabled flag (defaults to `NO`)
         public static let Enabled = "Enabled"
