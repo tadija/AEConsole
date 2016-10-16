@@ -23,6 +23,7 @@
 //
 
 import UIKit
+import AELog
 
 class Brain: NSObject {
     
