@@ -22,7 +22,7 @@
 // SOFTWARE.
 //
 
-import Foundation
+import UIKit
 
 /**
     Helper for accessing settings from the external file.

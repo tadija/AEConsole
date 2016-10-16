@@ -22,19 +22,19 @@
 // SOFTWARE.
 //
 
-import Foundation
+import UIKit
 
 class AEConsoleCell: UITableViewCell {
     
-    // MARK: Constants
+    // MARK: - Constants
     
     static let identifier = "AEConsoleCell"
     
-    // MARK: Properties
+    // MARK: - Properties
     
-    fileprivate let config = Config.shared
+    private let config = Config.shared
     
-    // MARK: Init
+    // MARK: - Init
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -48,6 +48,7 @@ class AEConsoleCell: UITableViewCell {
     
     fileprivate func commonInit() {
         backgroundColor = UIColor.clear
+        
         guard let label = textLabel else { return }
         label.font = config.consoleFont
         label.textColor = config.textColorWithOpacity
@@ -55,15 +56,17 @@ class AEConsoleCell: UITableViewCell {
         label.textAlignment = .left
     }
     
-    // MARK: Override
+    // MARK: - Override
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        
         textLabel?.textColor = config.textColorWithOpacity
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        
         textLabel?.frame = bounds
     }
     
