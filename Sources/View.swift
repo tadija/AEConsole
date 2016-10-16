@@ -26,9 +26,9 @@ import UIKit
 
 class View: UIView {
     
-    // MARK: Constants
+    // MARK: - Constants
     
-    fileprivate struct Layout {
+    private struct Layout {
         static let FilterHeight: CGFloat = 60
         static let FilterExpandedTop: CGFloat = 0
         static let FilterCollapsedTop: CGFloat = -Layout.FilterHeight
@@ -41,37 +41,37 @@ class View: UIView {
         static let MagicNumber: CGFloat = 10
     }
     
-    // MARK: Outlets
+    // MARK: - Outlets
     
     let tableView = UITableView()
     
-    fileprivate let filterView = UIView()
-    fileprivate let filterStack = UIStackView()
-    fileprivate var filterViewTop: NSLayoutConstraint!
+    private let filterView = UIView()
+    private let filterStack = UIStackView()
+    private var filterViewTop: NSLayoutConstraint!
     
-    fileprivate let exportLogButton = UIButton()
-    fileprivate let linesCountStack = UIStackView()
-    fileprivate let linesTotalLabel = UILabel()
-    fileprivate let linesFilteredLabel = UILabel()
+    private let exportLogButton = UIButton()
+    private let linesCountStack = UIStackView()
+    private let linesTotalLabel = UILabel()
+    private let linesFilteredLabel = UILabel()
     let textField = UITextField()
-    fileprivate let clearFilterButton = UIButton()
+    private let clearFilterButton = UIButton()
     
-    fileprivate let menuView = UIView()
-    fileprivate let menuStack = UIStackView()
-    fileprivate var menuViewLeading: NSLayoutConstraint!
+    private let menuView = UIView()
+    private let menuStack = UIStackView()
+    private var menuViewLeading: NSLayoutConstraint!
     
-    fileprivate let toggleToolbarButton = UIButton()
-    fileprivate let forwardTouchesButton = UIButton()
-    fileprivate let autoFollowButton = UIButton()
-    fileprivate let clearLogButton = UIButton()
+    private let toggleToolbarButton = UIButton()
+    private let forwardTouchesButton = UIButton()
+    private let autoFollowButton = UIButton()
+    private let clearLogButton = UIButton()
     
-    fileprivate let updateOpacityGesture = UIPanGestureRecognizer()
-    fileprivate let hideConsoleGesture = UITapGestureRecognizer()
+    private let updateOpacityGesture = UIPanGestureRecognizer()
+    private let hideConsoleGesture = UITapGestureRecognizer()
     
-    // MARK: Properties
+    // MARK: - Properties
     
-    fileprivate let brain = AEConsole.shared.brain
-    fileprivate let config = Config.shared
+    private let brain = AEConsole.shared.brain
+    private let config = Config.shared
     
     var isOnScreen = false {
         didSet {
@@ -83,24 +83,24 @@ class View: UIView {
         }
     }
     
-    fileprivate var toolbarActive = false {
+    private var toolbarActive = false {
         didSet {
             currentTopInset = toolbarActive ? topInsetLarge : topInsetSmall
         }
     }
     
     var currentOffsetX = -Layout.MagicNumber
-    fileprivate var currentTopInset = Layout.MagicNumber
-    fileprivate var topInsetSmall = Layout.MagicNumber
-    fileprivate var topInsetLarge = Layout.MagicNumber + Layout.FilterHeight
+    private var currentTopInset = Layout.MagicNumber
+    private var topInsetSmall = Layout.MagicNumber
+    private var topInsetLarge = Layout.MagicNumber + Layout.FilterHeight
     
-    fileprivate var opacity: CGFloat = 1.0 {
+    private var opacity: CGFloat = 1.0 {
         didSet {
             configureColorsWithOpacity(opacity)
         }
     }
     
-    // MARK: API
+    // MARK: - API
     
     func toggleUI() {
         textField.resignFirstResponder()
@@ -110,7 +110,7 @@ class View: UIView {
         }, completion:nil)
     }
     
-    // MARK: Helpers
+    // MARK: - Helpers
     
     func updateUI() {
         tableView.reloadData()
@@ -123,13 +123,13 @@ class View: UIView {
         }
     }
     
-    fileprivate func updateLinesCountLabels() {
+    private func updateLinesCountLabels() {
         linesTotalLabel.text = "□ \(brain.lines.count)"
         let filteredCount = brain.isFilterActive ? brain.filteredLines.count : 0
         linesFilteredLabel.text = "■ \(filteredCount)"
     }
     
-    fileprivate func updateContentLayout() {
+    private func updateContentLayout() {
         let maxWidth = max(brain.contentWidth, bounds.width)
         
         let newFrame = CGRect(x: 0.0, y: 0.0, width: maxWidth, height: bounds.height)
@@ -144,7 +144,7 @@ class View: UIView {
         updateContentOffset()
     }
     
-    fileprivate func updateContentOffset() {
+    private func updateContentOffset() {
         if toolbarActive {
             if tableView.contentOffset.y == -topInsetSmall {
                 let offset = CGPoint(x: tableView.contentOffset.x, y: -topInsetLarge)
@@ -159,7 +159,7 @@ class View: UIView {
         tableView.flashScrollIndicators()
     }
     
-    fileprivate func scrollToBottom() {
+    private func scrollToBottom() {
         let diff = tableView.contentSize.height - tableView.bounds.size.height
         if diff > 0 {
             let offsetY = diff + Layout.MagicNumber
@@ -168,7 +168,7 @@ class View: UIView {
         }
     }
     
-    fileprivate func configureColorsWithOpacity(_ opacity: CGFloat) {
+    private func configureColorsWithOpacity(_ opacity: CGFloat) {
         tableView.backgroundColor = config.backColor.withAlphaComponent(opacity)
         
         let textOpacity = max(0.3, opacity * 1.1)
@@ -188,7 +188,7 @@ class View: UIView {
         tableView.reloadData()
     }
     
-    // MARK: Init
+    // MARK: - Init
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -200,12 +200,12 @@ class View: UIView {
         commonInit()
     }
     
-    fileprivate func commonInit() {
+    private func commonInit() {
         configureUI()
         opacity = config.opacity
     }
     
-    // MARK: Actions
+    // MARK: - Actions
     
     func didTapToggleToolbarButton(_ sender: UIButton) {
         toggleToolbar()
@@ -254,16 +254,16 @@ class View: UIView {
         toggleUI()
     }
     
-    // MARK: Helpers
+    // MARK: - Helpers
     
-    fileprivate func opacityForLocation(_ location: CGPoint) -> CGFloat {
+    private func opacityForLocation(_ location: CGPoint) -> CGFloat {
         let calculatedOpacity = ((location.x * 1.0) / 300)
         let minOpacity = max(0.1, calculatedOpacity)
         let maxOpacity = min(0.9, minOpacity)
         return maxOpacity
     }
     
-    fileprivate func toggleToolbar() {
+    private func toggleToolbar() {
         filterViewTop.constant = toolbarActive ? Layout.FilterCollapsedTop : Layout.FilterExpandedTop
         menuViewLeading.constant = toolbarActive ? Layout.MenuCollapsedLeading : Layout.MenuExpandedLeading
         let alpha: CGFloat = toolbarActive ? 0.3 : 1.0
@@ -282,21 +282,21 @@ class View: UIView {
         toolbarActive = !toolbarActive
     }
     
-    // MARK: UI
+    // MARK: - UI
     
-    fileprivate func configureUI() {
+    private func configureUI() {
         configureOutlets()
         configureLayout()
     }
     
-    fileprivate func configureOutlets() {
+    private func configureOutlets() {
         configureTableView()
         configureFilterView()
         configureMenuView()
         configureGestures()
     }
     
-    fileprivate func configureTableView() {
+    private func configureTableView() {
         tableView.rowHeight = config.rowHeight
         tableView.allowsSelection = false
         tableView.separatorStyle = .none
@@ -304,14 +304,14 @@ class View: UIView {
         tableView.register(Cell.self, forCellReuseIdentifier: Cell.identifier)
     }
     
-    fileprivate func configureFilterView() {
+    private func configureFilterView() {
         configureFilterStack()
         configureFilterLinesCount()
         configureFilterTextField()
         configureFilterButtons()
     }
     
-    fileprivate func configureFilterStack() {
+    private func configureFilterStack() {
         filterView.alpha = 0.3
         filterStack.axis = .horizontal
         filterStack.alignment = .fill
@@ -322,7 +322,7 @@ class View: UIView {
         filterStack.isLayoutMarginsRelativeArrangement = true
     }
     
-    fileprivate func configureFilterLinesCount() {
+    private func configureFilterLinesCount() {
         linesCountStack.axis = .vertical
         linesCountStack.alignment = .fill
         linesCountStack.distribution = .fillEqually
@@ -339,7 +339,7 @@ class View: UIView {
         linesFilteredLabel.textAlignment = .left
     }
     
-    fileprivate func configureFilterTextField() {
+    private func configureFilterTextField() {
         let textColor = config.textColor
         textField.autocapitalizationType = .none
         textField.tintColor = textColor
@@ -351,7 +351,7 @@ class View: UIView {
         textField.layer.sublayerTransform = CATransform3DMakeTranslation(Layout.MagicNumber, 0, 0)
     }
     
-    fileprivate func configureFilterButtons() {
+    private func configureFilterButtons() {
         exportLogButton.setTitle("🌙", for: UIControlState())
         exportLogButton.addTarget(self, action: #selector(didTapExportButton(_:)), for: .touchUpInside)
         
@@ -359,12 +359,12 @@ class View: UIView {
         clearFilterButton.addTarget(self, action: #selector(didTapFilterClearButton(_:)), for: .touchUpInside)
     }
     
-    fileprivate func configureMenuView() {
+    private func configureMenuView() {
         configureMenuStack()
         configureMenuButtons()
     }
     
-    fileprivate func configureMenuStack() {
+    private func configureMenuStack() {
         menuView.alpha = 0.3
         menuView.layer.cornerRadius = Layout.MagicNumber
         
@@ -373,7 +373,7 @@ class View: UIView {
         menuStack.distribution = .fillEqually
     }
     
-    fileprivate func configureMenuButtons() {
+    private func configureMenuButtons() {
         toggleToolbarButton.setTitle("☀️", for: UIControlState())
         forwardTouchesButton.setTitle("⚡️", for: UIControlState())
         forwardTouchesButton.setTitle("✨", for: .selected)
@@ -389,32 +389,32 @@ class View: UIView {
         clearLogButton.addTarget(self, action: #selector(didTapClearLogButton(_:)), for: .touchUpInside)
     }
     
-    fileprivate func configureGestures() {
+    private func configureGestures() {
         configureUpdateOpacityGesture()
         configureHideConsoleGesture()
     }
     
-    fileprivate func configureUpdateOpacityGesture() {
+    private func configureUpdateOpacityGesture() {
         updateOpacityGesture.addTarget(self, action: #selector(didRecognizeUpdateOpacityGesture(_:)))
         menuView.addGestureRecognizer(updateOpacityGesture)
     }
     
-    fileprivate func configureHideConsoleGesture() {
+    private func configureHideConsoleGesture() {
         hideConsoleGesture.numberOfTouchesRequired = 2
         hideConsoleGesture.numberOfTapsRequired = 2
         hideConsoleGesture.addTarget(self, action: #selector(didRecognizeHideConsoleGesture(_:)))
         addGestureRecognizer(hideConsoleGesture)
     }
     
-    // MARK: Layout
+    // MARK: - Layout
     
-    fileprivate func configureLayout() {
+    private func configureLayout() {
         configureHierarchy()
         configureViewsForLayout()
         configureConstraints()
     }
     
-    fileprivate func configureHierarchy() {
+    private func configureHierarchy() {
         addSubview(tableView)
         
         filterStack.addArrangedSubview(exportLogButton)
@@ -437,7 +437,7 @@ class View: UIView {
         addSubview(menuView)
     }
     
-    fileprivate func configureViewsForLayout() {
+    private func configureViewsForLayout() {
         filterView.translatesAutoresizingMaskIntoConstraints = false
         filterStack.translatesAutoresizingMaskIntoConstraints = false
         
@@ -445,7 +445,7 @@ class View: UIView {
         menuStack.translatesAutoresizingMaskIntoConstraints = false
     }
     
-    fileprivate func configureConstraints() {
+    private func configureConstraints() {
         configureFilterViewConstraints()
         configureFilterStackConstraints()
         configureFilterStackSubviewConstraints()
@@ -454,7 +454,7 @@ class View: UIView {
         configureMenuStackConstraints()
     }
     
-    fileprivate func configureFilterViewConstraints() {
+    private func configureFilterViewConstraints() {
         let leading = filterView.leadingAnchor.constraint(equalTo: leadingAnchor)
         let trailing = filterView.trailingAnchor.constraint(equalTo: trailingAnchor)
         let height = filterView.heightAnchor.constraint(equalToConstant: Layout.FilterHeight)
@@ -462,7 +462,7 @@ class View: UIView {
         NSLayoutConstraint.activate([leading, trailing, height, filterViewTop])
     }
     
-    fileprivate func configureFilterStackConstraints() {
+    private func configureFilterStackConstraints() {
         let leading = filterStack.leadingAnchor.constraint(equalTo: filterView.leadingAnchor)
         let trailing = filterStack.trailingAnchor.constraint(equalTo: filterView.trailingAnchor)
         let top = filterStack.topAnchor.constraint(equalTo: filterView.topAnchor)
@@ -470,14 +470,14 @@ class View: UIView {
         NSLayoutConstraint.activate([leading, trailing, top, bottom])
     }
     
-    fileprivate func configureFilterStackSubviewConstraints() {
+    private func configureFilterStackSubviewConstraints() {
         let exportButtonWidth = exportLogButton.widthAnchor.constraint(equalToConstant: 75)
         let linesCountWidth = linesCountStack.widthAnchor.constraint(greaterThanOrEqualToConstant: 50)
         let clearFilterButtonWidth = clearFilterButton.widthAnchor.constraint(equalToConstant: 75)
         NSLayoutConstraint.activate([exportButtonWidth, linesCountWidth, clearFilterButtonWidth])
     }
     
-    fileprivate func configureMenuViewConstraints() {
+    private func configureMenuViewConstraints() {
         let width = menuView.widthAnchor.constraint(equalToConstant: Layout.MenuWidth + Layout.MagicNumber)
         let height = menuView.heightAnchor.constraint(equalToConstant: Layout.MenuHeight)
         let centerY = menuView.centerYAnchor.constraint(equalTo: centerYAnchor)
@@ -485,7 +485,7 @@ class View: UIView {
         NSLayoutConstraint.activate([width, height, centerY, menuViewLeading])
     }
     
-    fileprivate func configureMenuStackConstraints() {
+    private func configureMenuStackConstraints() {
         let leading = menuStack.leadingAnchor.constraint(equalTo: menuView.leadingAnchor)
         let trailing = menuStack.trailingAnchor.constraint(equalTo: menuView.trailingAnchor, constant: -Layout.MagicNumber)
         let top = menuStack.topAnchor.constraint(equalTo: menuView.topAnchor)
@@ -493,7 +493,7 @@ class View: UIView {
         NSLayoutConstraint.activate([leading, trailing, top, bottom])
     }
     
-    // MARK: Override
+    // MARK: - Override
     
     override func layoutSubviews() {
         super.layoutSubviews()

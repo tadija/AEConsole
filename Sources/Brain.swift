@@ -24,7 +24,7 @@
 
 import UIKit
 
-class Brain: NSObject, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate {
+class Brain: NSObject {
     
     // MARK: - Outlets
     
@@ -154,6 +154,10 @@ class Brain: NSObject, UITableViewDataSource, UITableViewDelegate, UITextFieldDe
         }
     }
     
+}
+
+extension Brain: UITableViewDataSource, UITableViewDelegate {
+    
     // MARK: - UITableViewDataSource
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -185,6 +189,10 @@ class Brain: NSObject, UITableViewDataSource, UITableViewDelegate, UITextFieldDe
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         console.currentOffsetX = scrollView.contentOffset.x
     }
+    
+}
+
+extension Brain: UITextFieldDelegate {
     
     // MARK: - UITextFieldDelegate
     
