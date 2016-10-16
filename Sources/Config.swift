@@ -79,7 +79,7 @@ public class Config {
     static let shared = Config()
     
     lazy var textColorWithOpacity: UIColor = { [unowned self] in
-        self.consoleTextColor.withAlphaComponent(Default.Opacity)
+        self.textColor.withAlphaComponent(Default.Opacity)
     }()
     
     /// Contents of AEConsole settings (AEConsole.plist file or AEConsole dictionary from Info.plist)
@@ -100,60 +100,60 @@ public class Config {
     // MARK: - Settings
     
     lazy var consoleFont: UIFont = {
-        return UIFont.monospacedDigitSystemFont(ofSize: self.consoleFontSize, weight: UIFontWeightRegular)
+        return UIFont.monospacedDigitSystemFont(ofSize: self.fontSize, weight: UIFontWeightRegular)
     }()
     
     lazy var isEnabled: Bool = { [unowned self] in
-        guard let enabled = self.boolForKey(Key.Enabled)
+        guard let enabled = self.getBool(with: Key.Enabled)
         else { return Default.Enabled }
         return enabled
     }()
     
     lazy var isAutoStartEnabled: Bool = { [unowned self] in
-        guard let autoStart = self.boolForKey(Key.AutoStart)
+        guard let autoStart = self.getBool(with: Key.AutoStart)
         else { return Default.AutoStart }
         return autoStart
     }()
     
     lazy var isShakeGestureEnabled: Bool = { [unowned self] in
-        guard let shake = self.boolForKey(Key.ShakeGesture)
+        guard let shake = self.getBool(with: Key.ShakeGesture)
         else { return Default.ShakeGesture }
         return shake
     }()
     
-    lazy var consoleBackColor: UIColor = { [unowned self] in
-        guard let color = self.colorForKey(Key.BackColor)
+    lazy var backColor: UIColor = { [unowned self] in
+        guard let color = self.getColor(with: Key.BackColor)
         else { return Default.BackColor }
         return color
     }()
     
-    lazy var consoleTextColor: UIColor = { [unowned self] in
-        guard let color = self.colorForKey(Key.TextColor)
+    lazy var textColor: UIColor = { [unowned self] in
+        guard let color = self.getColor(with: Key.TextColor)
         else { return Default.TextColor }
         return color
     }()
     
-    lazy var consoleFontSize: CGFloat = { [unowned self] in
-        guard let fontSize = self.numberForKey(Key.FontSize)
+    lazy var fontSize: CGFloat = { [unowned self] in
+        guard let fontSize = self.getNumber(with: Key.FontSize)
         else { return Default.FontSize }
         return fontSize
     }()
     
-    lazy var consoleRowHeight: CGFloat = { [unowned self] in
-        guard let rowHeight = self.numberForKey(Key.RowHeight)
+    lazy var rowHeight: CGFloat = { [unowned self] in
+        guard let rowHeight = self.getNumber(with: Key.RowHeight)
         else { return Default.RowHeight }
         return rowHeight
     }()
     
-    lazy var consoleOpacity: CGFloat = { [unowned self] in
-        guard let opacity = self.numberForKey(Key.Opacity)
+    lazy var opacity: CGFloat = { [unowned self] in
+        guard let opacity = self.getNumber(with: Key.Opacity)
         else { return Default.Opacity }
         return opacity
     }()
     
     // MARK: - Helpers
     
-    private func boolForKey(_ key: String) -> Bool? {
+    private func getBool(with key: String) -> Bool? {
         guard let
             data = self.data,
             let bool = data[key] as? Bool
@@ -161,7 +161,7 @@ public class Config {
         return bool
     }
     
-    private func numberForKey(_ key: String) -> CGFloat? {
+    private func getNumber(with key: String) -> CGFloat? {
         guard let
             data = self.data,
             let number = data[key] as? CGFloat
@@ -169,16 +169,16 @@ public class Config {
         return number
     }
     
-    private func colorForKey(_ key: String) -> UIColor? {
+    private func getColor(with key: String) -> UIColor? {
         guard let
             data = self.data,
             let hex = data[key] as? String
         else { return nil }
-        let color = colorFromHexString(hex)
+        let color = getColor(from: hex)
         return color
     }
     
-    private func colorFromHexString(_ hex: String) -> UIColor? {
+    private func getColor(from hex: String) -> UIColor? {
         let scanner = Scanner(string: hex)
         var hexValue: UInt32 = 0
         if scanner.scanHexInt32(&hexValue) {

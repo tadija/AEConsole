@@ -125,7 +125,7 @@ class View: UIView {
     
     fileprivate func updateLinesCountLabels() {
         linesTotalLabel.text = "□ \(brain.lines.count)"
-        let filteredCount = brain.filterActive ? brain.filteredLines.count : 0
+        let filteredCount = brain.isFilterActive ? brain.filteredLines.count : 0
         linesFilteredLabel.text = "■ \(filteredCount)"
     }
     
@@ -169,19 +169,19 @@ class View: UIView {
     }
     
     fileprivate func configureColorsWithOpacity(_ opacity: CGFloat) {
-        tableView.backgroundColor = config.consoleBackColor.withAlphaComponent(opacity)
+        tableView.backgroundColor = config.backColor.withAlphaComponent(opacity)
         
         let textOpacity = max(0.3, opacity * 1.1)
-        config.textColorWithOpacity = config.consoleTextColor.withAlphaComponent(textOpacity)
+        config.textColorWithOpacity = config.textColor.withAlphaComponent(textOpacity)
         
         let toolbarOpacity = min(0.7, opacity * 1.5)
-        filterView.backgroundColor = config.consoleBackColor.withAlphaComponent(toolbarOpacity)
-        menuView.backgroundColor = config.consoleBackColor.withAlphaComponent(toolbarOpacity)
+        filterView.backgroundColor = config.backColor.withAlphaComponent(toolbarOpacity)
+        menuView.backgroundColor = config.backColor.withAlphaComponent(toolbarOpacity)
         
         let borderOpacity = toolbarOpacity / 2
-        filterView.layer.borderColor = config.consoleBackColor.withAlphaComponent(borderOpacity).cgColor
+        filterView.layer.borderColor = config.backColor.withAlphaComponent(borderOpacity).cgColor
         filterView.layer.borderWidth = 1.0
-        menuView.layer.borderColor = config.consoleBackColor.withAlphaComponent(borderOpacity).cgColor
+        menuView.layer.borderColor = config.backColor.withAlphaComponent(borderOpacity).cgColor
         menuView.layer.borderWidth = 1.0
         
         // refresh text color
@@ -202,7 +202,7 @@ class View: UIView {
     
     fileprivate func commonInit() {
         configureUI()
-        opacity = config.consoleOpacity
+        opacity = config.opacity
     }
     
     // MARK: Actions
@@ -297,7 +297,7 @@ class View: UIView {
     }
     
     fileprivate func configureTableView() {
-        tableView.rowHeight = config.consoleRowHeight
+        tableView.rowHeight = config.rowHeight
         tableView.allowsSelection = false
         tableView.separatorStyle = .none
         
@@ -331,16 +331,16 @@ class View: UIView {
         linesCountStack.isLayoutMarginsRelativeArrangement = true
         
         linesTotalLabel.font = config.consoleFont
-        linesTotalLabel.textColor = config.consoleTextColor
+        linesTotalLabel.textColor = config.textColor
         linesTotalLabel.textAlignment = .left
         
         linesFilteredLabel.font = config.consoleFont
-        linesFilteredLabel.textColor = config.consoleTextColor
+        linesFilteredLabel.textColor = config.textColor
         linesFilteredLabel.textAlignment = .left
     }
     
     fileprivate func configureFilterTextField() {
-        let textColor = config.consoleTextColor
+        let textColor = config.textColor
         textField.autocapitalizationType = .none
         textField.tintColor = textColor
         textField.font = config.consoleFont.withSize(14)

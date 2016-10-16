@@ -26,11 +26,11 @@ import UIKit
 
 class Brain: NSObject, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate {
     
-    // MARK: Outlets
+    // MARK: - Outlets
     
-    var consoleView: View!
+    var console: View!
     
-    // MARK: Properties
+    // MARK: - Properties
     
     fileprivate let config = Config.shared
     
@@ -41,75 +41,75 @@ class Brain: NSObject, UITableViewDataSource, UITableViewDelegate, UITextFieldDe
     
     var filterText: String? {
         didSet {
-            filterActive = !isEmpty(filterText)
+            isFilterActive = !isEmpty(filterText)
         }
     }
     
-    var filterActive = false {
+    var isFilterActive = false {
         didSet {
             updateFilter()
             updateInterfaceIfNeeded()
         }
     }
     
-    // MARK: API
+    // MARK: - API
     
-    func configureConsoleUIWithAppDelegate(_ delegate: UIApplicationDelegate) {
-        guard let _window = delegate.window, let window = _window else { return }
+    func configureConsole(with appDelegate: UIApplicationDelegate) {
+        guard let _window = appDelegate.window, let window = _window else { return }
         
-        let console = View()
-        console.frame = window.bounds
-        console.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        console.isOnScreen = config.isAutoStartEnabled
-        window.addSubview(console)
+        let view = View()
+        view.frame = window.bounds
+        view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.isOnScreen = config.isAutoStartEnabled
+        window.addSubview(view)
         
-        consoleView = console
-        consoleView.tableView.dataSource = self
-        consoleView.tableView.delegate = self
-        consoleView.textField.delegate = self
+        console = view
+        console.tableView.dataSource = self
+        console.tableView.delegate = self
+        console.textField.delegate = self
     }
     
-    func addLogLine(_ logLine: Line) {
-        let calculatedLineWidth = widthForLine(logLine)
+    func addLogLine(_ line: Line) {
+        let calculatedLineWidth = getWidth(for: line)
         if calculatedLineWidth > contentWidth {
             contentWidth = calculatedLineWidth
         }
         
-        if filterActive {
+        if isFilterActive {
             guard let filter = filterText else { return }
-            if logLine.description.contains(filter) {
-                filteredLines.append(logLine)
+            if line.description.contains(filter) {
+                filteredLines.append(line)
             }
         }
         
-        lines.append(logLine)
+        lines.append(line)
         
         updateInterfaceIfNeeded()
     }
     
-    // MARK: Helpers
+    // MARK: - Helpers
     
-    fileprivate func updateFilter() {
-        if filterActive {
+    private func updateFilter() {
+        if isFilterActive {
             guard let filter = filterText else { return }
-            aelog("Filter Lines [\(filterActive)] - <\(filter)>")
+            aelog("Filter Lines [\(isFilterActive)] - <\(filter)>")
             let filtered = lines.filter({ $0.description.localizedCaseInsensitiveContains(filter) })
             filteredLines = filtered
         } else {
-            aelog("Filter Lines [\(filterActive)]")
+            aelog("Filter Lines [\(isFilterActive)]")
             filteredLines.removeAll()
         }
     }
     
-    fileprivate func updateInterfaceIfNeeded() {
-        if consoleView.isOnScreen {
-            consoleView.updateUI()
+    private func updateInterfaceIfNeeded() {
+        if console.isOnScreen {
+            console.updateUI()
         }
     }
     
-    fileprivate func widthForLine(_ line: Line) -> CGFloat {
+    private func getWidth(for line: Line) -> CGFloat {
         let text = line.description
-        let maxSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: config.consoleRowHeight)
+        let maxSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: config.rowHeight)
         let options = NSStringDrawingOptions.usesLineFragmentOrigin
         let attributes = [NSFontAttributeName : config.consoleFont]
         let nsText = text as NSString
@@ -125,7 +125,7 @@ class Brain: NSObject, UITableViewDataSource, UITableViewDelegate, UITextFieldDe
         return isTextEmpty
     }
     
-    // MARK: Actions
+    // MARK: - Actions
     
     func clearLog() {
         lines.removeAll()
@@ -154,10 +154,10 @@ class Brain: NSObject, UITableViewDataSource, UITableViewDelegate, UITextFieldDe
         }
     }
     
-    // MARK: UITableViewDataSource
+    // MARK: - UITableViewDataSource
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let rows = filterActive ? filteredLines : lines
+        let rows = isFilterActive ? filteredLines : lines
         return rows.count
     }
     
@@ -166,27 +166,27 @@ class Brain: NSObject, UITableViewDataSource, UITableViewDelegate, UITextFieldDe
         return cell
     }
     
-    // MARK: UITableViewDelegate
+    // MARK: - UITableViewDelegate
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let rows = filterActive ? filteredLines : lines
+        let rows = isFilterActive ? filteredLines : lines
         let logLine = rows[indexPath.row]
         cell.textLabel?.text = logLine.description
     }
     
-    // MARK: UIScrollViewDelegate
+    // MARK: - UIScrollViewDelegate
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
-            consoleView.currentOffsetX = scrollView.contentOffset.x
+            console.currentOffsetX = scrollView.contentOffset.x
         }
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        consoleView.currentOffsetX = scrollView.contentOffset.x
+        console.currentOffsetX = scrollView.contentOffset.x
     }
     
-    // MARK: UITextFieldDelegate
+    // MARK: - UITextFieldDelegate
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()

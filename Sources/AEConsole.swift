@@ -48,23 +48,23 @@ open class AEConsole: AELogDelegate {
         if Config.shared.isEnabled {
             AELog.launch(with: shared)
             shared.appDelegate = appDelegate
-            shared.brain.configureConsoleUIWithAppDelegate(appDelegate)
+            shared.brain.configureConsole(with: appDelegate)
         }
     }
     
     /// Current state of Console UI visibility
     open class var isHidden: Bool {
-        return !shared.brain.consoleView.isOnScreen
+        return !shared.brain.console.isOnScreen
     }
     
     /// Toggle Console UI
     open class func toggle() {
-        guard let consoleView = shared.brain.consoleView else { return }
+        guard let view = shared.brain.console else { return }
         
-        if !consoleView.isOnScreen {
+        if !view.isOnScreen {
             shared.activateConsoleUI()
         }
-        consoleView.toggleUI()
+        view.toggleUI()
     }
     
     // MARK: - Init
@@ -85,9 +85,9 @@ open class AEConsole: AELogDelegate {
             let _window = delegate.window, let window = _window
         else { return }
 
-        window.bringSubview(toFront: brain.consoleView)
+        window.bringSubview(toFront: brain.console)
         if config.isShakeGestureEnabled {
-            brain.consoleView.becomeFirstResponder()
+            brain.console.becomeFirstResponder()
         }
     }
     
