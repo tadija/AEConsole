@@ -32,7 +32,7 @@ class AEConsoleCell: UITableViewCell {
     
     // MARK: Properties
     
-    fileprivate let settings = AEConsoleSettings.sharedInstance
+    fileprivate let config = Config.shared
     
     // MARK: Init
     
@@ -49,8 +49,8 @@ class AEConsoleCell: UITableViewCell {
     fileprivate func commonInit() {
         backgroundColor = UIColor.clear
         guard let label = textLabel else { return }
-        label.font = settings.consoleFont
-        label.textColor = settings.textColorWithOpacity
+        label.font = config.consoleFont
+        label.textColor = config.textColorWithOpacity
         label.numberOfLines = 1
         label.textAlignment = .left
     }
@@ -59,7 +59,7 @@ class AEConsoleCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        textLabel?.textColor = settings.textColorWithOpacity
+        textLabel?.textColor = config.textColorWithOpacity
     }
     
     override func layoutSubviews() {

@@ -10,7 +10,7 @@
 		8B5894D41CA9D857005F0B9D /* AEConsole.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B5894D31CA9D857005F0B9D /* AEConsole.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8B5894DC1CA9D86C005F0B9D /* AEConsole.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B5894DB1CA9D86C005F0B9D /* AEConsole.swift */; };
 		8B84650E1CAB51D90027AA52 /* AELog.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B8465071CAB51CE0027AA52 /* AELog.framework */; };
-		8BFBE7831DB289AA00BB4B05 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFBE7821DB289AA00BB4B05 /* Settings.swift */; };
+		8BFBE7831DB289AA00BB4B05 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFBE7821DB289AA00BB4B05 /* Config.swift */; };
 		8BFBE78C1DB289AF00BB4B05 /* Brain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFBE78B1DB289AF00BB4B05 /* Brain.swift */; };
 		8BFBE78E1DB289B600BB4B05 /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFBE78D1DB289B600BB4B05 /* View.swift */; };
 		8BFBE7901DB289C300BB4B05 /* Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFBE78F1DB289C300BB4B05 /* Cell.swift */; };
@@ -80,7 +80,7 @@
 		8BE817AE1CAF442F00FCBE4A /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
 		8BE817AF1CAF442F00FCBE4A /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		8BE817B01CAF442F00FCBE4A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		8BFBE7821DB289AA00BB4B05 /* Settings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		8BFBE7821DB289AA00BB4B05 /* Config.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		8BFBE78B1DB289AF00BB4B05 /* Brain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Brain.swift; sourceTree = "<group>"; };
 		8BFBE78D1DB289B600BB4B05 /* View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
 		8BFBE78F1DB289C300BB4B05 /* Cell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cell.swift; sourceTree = "<group>"; };
@@ -133,7 +133,7 @@
 			isa = PBXGroup;
 			children = (
 				8B5894DB1CA9D86C005F0B9D /* AEConsole.swift */,
-				8BFBE7821DB289AA00BB4B05 /* Settings.swift */,
+				8BFBE7821DB289AA00BB4B05 /* Config.swift */,
 				8BFBE78B1DB289AF00BB4B05 /* Brain.swift */,
 				8BFBE78D1DB289B600BB4B05 /* View.swift */,
 				8BFBE78F1DB289C300BB4B05 /* Cell.swift */,
@@ -303,7 +303,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8BFBE78E1DB289B600BB4B05 /* View.swift in Sources */,
-				8BFBE7831DB289AA00BB4B05 /* Settings.swift in Sources */,
+				8BFBE7831DB289AA00BB4B05 /* Config.swift in Sources */,
 				8BFBE7901DB289C300BB4B05 /* Cell.swift in Sources */,
 				8BFBE78C1DB289AF00BB4B05 /* Brain.swift in Sources */,
 				8B5894DC1CA9D86C005F0B9D /* AEConsole.swift in Sources */,

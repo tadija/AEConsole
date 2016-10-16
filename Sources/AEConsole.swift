@@ -34,7 +34,7 @@ open class AEConsole: AELogDelegate {
     
     static let sharedInstance = AEConsole()
     let brain = AEConsoleBrain()
-    fileprivate let settings = AEConsoleSettings.sharedInstance
+    fileprivate let config = Config.shared
     fileprivate var appDelegate: UIApplicationDelegate?
     
     // MARK: API
@@ -45,7 +45,7 @@ open class AEConsole: AELogDelegate {
         - NOTE: If `AEConsole` setting "Enabled" is set to "NO" then it does nothing.
     */
     open class func launchWithAppDelegate(_ delegate: UIApplicationDelegate) {
-        if AEConsoleSettings.sharedInstance.consoleEnabled {
+        if Config.shared.isEnabled {
             AELog.launch(with: sharedInstance)
             sharedInstance.appDelegate = delegate
             sharedInstance.brain.configureConsoleUIWithAppDelegate(delegate)
@@ -59,10 +59,12 @@ open class AEConsole: AELogDelegate {
     
     /// Toggle Console UI
     open class func toggle() {
-        if !sharedInstance.brain.consoleView.onScreen {
+        guard let consoleView = sharedInstance.brain.consoleView else { return }
+        
+        if !consoleView.onScreen {
             sharedInstance.activateConsoleUI()
         }
-        sharedInstance.brain.consoleView.toggleUI()
+        consoleView.toggleUI()
     }
     
     // MARK: Init
@@ -84,7 +86,7 @@ open class AEConsole: AELogDelegate {
         else { return }
 
         window.bringSubview(toFront: brain.consoleView)
-        if settings.shakeGestureEnabled {
+        if config.isShakeGestureEnabled {
             brain.consoleView.becomeFirstResponder()
         }
     }

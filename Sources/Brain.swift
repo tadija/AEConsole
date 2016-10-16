@@ -32,7 +32,7 @@ class AEConsoleBrain: NSObject, UITableViewDataSource, UITableViewDelegate, UITe
     
     // MARK: Properties
     
-    fileprivate let settings = AEConsoleSettings.sharedInstance
+    fileprivate let config = Config.shared
     
     var lines = [Line]()
     var filteredLines = [Line]()
@@ -60,7 +60,7 @@ class AEConsoleBrain: NSObject, UITableViewDataSource, UITableViewDelegate, UITe
         let console = AEConsoleView()
         console.frame = window.bounds
         console.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        console.onScreen = settings.consoleAutoStart
+        console.onScreen = config.isAutoStartEnabled
         window.addSubview(console)
         
         consoleView = console
@@ -109,9 +109,9 @@ class AEConsoleBrain: NSObject, UITableViewDataSource, UITableViewDelegate, UITe
     
     fileprivate func widthForLine(_ line: Line) -> CGFloat {
         let text = line.description
-        let maxSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: settings.consoleRowHeight)
+        let maxSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: config.consoleRowHeight)
         let options = NSStringDrawingOptions.usesLineFragmentOrigin
-        let attributes = [NSFontAttributeName : settings.consoleFont]
+        let attributes = [NSFontAttributeName : config.consoleFont]
         let nsText = text as NSString
         let size = nsText.boundingRect(with: maxSize, options: options, attributes: attributes, context: nil)
         let width = size.width

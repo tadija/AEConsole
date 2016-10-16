@@ -71,7 +71,7 @@ class AEConsoleView: UIView {
     // MARK: Properties
     
     fileprivate let brain = AEConsole.sharedInstance.brain
-    fileprivate let settings = AEConsoleSettings.sharedInstance
+    fileprivate let config = Config.shared
     
     var onScreen = false {
         didSet {
@@ -169,19 +169,19 @@ class AEConsoleView: UIView {
     }
     
     fileprivate func configureColorsWithOpacity(_ opacity: CGFloat) {
-        tableView.backgroundColor = settings.consoleBackColor.withAlphaComponent(opacity)
+        tableView.backgroundColor = config.consoleBackColor.withAlphaComponent(opacity)
         
         let textOpacity = max(0.3, opacity * 1.1)
-        settings.textColorWithOpacity = settings.consoleTextColor.withAlphaComponent(textOpacity)
+        config.textColorWithOpacity = config.consoleTextColor.withAlphaComponent(textOpacity)
         
         let toolbarOpacity = min(0.7, opacity * 1.5)
-        filterView.backgroundColor = settings.consoleBackColor.withAlphaComponent(toolbarOpacity)
-        menuView.backgroundColor = settings.consoleBackColor.withAlphaComponent(toolbarOpacity)
+        filterView.backgroundColor = config.consoleBackColor.withAlphaComponent(toolbarOpacity)
+        menuView.backgroundColor = config.consoleBackColor.withAlphaComponent(toolbarOpacity)
         
         let borderOpacity = toolbarOpacity / 2
-        filterView.layer.borderColor = settings.consoleBackColor.withAlphaComponent(borderOpacity).cgColor
+        filterView.layer.borderColor = config.consoleBackColor.withAlphaComponent(borderOpacity).cgColor
         filterView.layer.borderWidth = 1.0
-        menuView.layer.borderColor = settings.consoleBackColor.withAlphaComponent(borderOpacity).cgColor
+        menuView.layer.borderColor = config.consoleBackColor.withAlphaComponent(borderOpacity).cgColor
         menuView.layer.borderWidth = 1.0
         
         // refresh text color
@@ -202,7 +202,7 @@ class AEConsoleView: UIView {
     
     fileprivate func commonInit() {
         configureUI()
-        opacity = settings.consoleOpacity
+        opacity = config.consoleOpacity
     }
     
     // MARK: Actions
@@ -297,7 +297,7 @@ class AEConsoleView: UIView {
     }
     
     fileprivate func configureTableView() {
-        tableView.rowHeight = settings.consoleRowHeight
+        tableView.rowHeight = config.consoleRowHeight
         tableView.allowsSelection = false
         tableView.separatorStyle = .none
         
@@ -330,20 +330,20 @@ class AEConsoleView: UIView {
         linesCountStack.layoutMargins = stackInsets
         linesCountStack.isLayoutMarginsRelativeArrangement = true
         
-        linesTotalLabel.font = settings.consoleFont
-        linesTotalLabel.textColor = settings.consoleTextColor
+        linesTotalLabel.font = config.consoleFont
+        linesTotalLabel.textColor = config.consoleTextColor
         linesTotalLabel.textAlignment = .left
         
-        linesFilteredLabel.font = settings.consoleFont
-        linesFilteredLabel.textColor = settings.consoleTextColor
+        linesFilteredLabel.font = config.consoleFont
+        linesFilteredLabel.textColor = config.consoleTextColor
         linesFilteredLabel.textAlignment = .left
     }
     
     fileprivate func configureFilterTextField() {
-        let textColor = settings.consoleTextColor
+        let textColor = config.consoleTextColor
         textField.autocapitalizationType = .none
         textField.tintColor = textColor
-        textField.font = settings.consoleFont.withSize(14)
+        textField.font = config.consoleFont.withSize(14)
         textField.textColor = textColor
         let attributes = [NSForegroundColorAttributeName : textColor.withAlphaComponent(0.5)]
         let placeholderText = NSAttributedString(string: "Type here...", attributes: attributes)
@@ -519,7 +519,7 @@ class AEConsoleView: UIView {
     
     override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
         if motion == .motionShake {
-            if settings.shakeGestureEnabled {
+            if config.isShakeGestureEnabled {
                 toggleUI()
             }
         }
