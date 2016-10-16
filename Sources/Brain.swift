@@ -56,49 +56,67 @@ class Brain: NSObject {
     
     func configureConsole(with appDelegate: UIApplicationDelegate) {
         guard let _window = appDelegate.window, let window = _window else { return }
-        
-        let view = View()
-        view.frame = window.bounds
-        view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        view.isOnScreen = config.isAutoStartEnabled
-        window.addSubview(view)
-        
-        console = view
+
+        console = createConsoleView(in: window)
         console.tableView.dataSource = self
         console.tableView.delegate = self
         console.textField.delegate = self
     }
     
+    func createConsoleView(in window: UIWindow) -> View {
+        let view = View()
+        
+        view.frame = window.bounds
+        view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.isOnScreen = config.isAutoStartEnabled
+        window.addSubview(view)
+        
+        return view
+    }
+    
     func addLogLine(_ line: Line) {
+        calculateContentWidth(for: line)
+        updateFilteredLines(with: line)
+        lines.append(line)
+        updateInterfaceIfNeeded()
+    }
+    
+    private func calculateContentWidth(for line: Line) {
         let calculatedLineWidth = getWidth(for: line)
         if calculatedLineWidth > contentWidth {
             contentWidth = calculatedLineWidth
         }
-        
+    }
+    
+    private func updateFilteredLines(with line: Line) {
         if isFilterActive {
             guard let filter = filterText else { return }
             if line.description.contains(filter) {
                 filteredLines.append(line)
             }
         }
-        
-        lines.append(line)
-        
-        updateInterfaceIfNeeded()
     }
     
     // MARK: - Helpers
     
     private func updateFilter() {
         if isFilterActive {
-            guard let filter = filterText else { return }
-            aelog("Filter Lines [\(isFilterActive)] - <\(filter)>")
-            let filtered = lines.filter({ $0.description.localizedCaseInsensitiveContains(filter) })
-            filteredLines = filtered
+            applyFilter()
         } else {
-            aelog("Filter Lines [\(isFilterActive)]")
-            filteredLines.removeAll()
+            clearFilter()
         }
+    }
+    
+    private func applyFilter() {
+        guard let filter = filterText else { return }
+        aelog("Filter Lines [\(isFilterActive)] - <\(filter)>")
+        let filtered = lines.filter({ $0.description.localizedCaseInsensitiveContains(filter) })
+        filteredLines = filtered
+    }
+    
+    private func clearFilter() {
+        aelog("Filter Lines [\(isFilterActive)]")
+        filteredLines.removeAll()
     }
     
     private func updateInterfaceIfNeeded() {
@@ -140,17 +158,21 @@ class Brain: NSObject {
         if isEmpty(log) {
             aelog("Log is empty, nothing to export here.")
         } else {
-            let filename = "\(Date().timeIntervalSince1970).aelog"
-            let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
-            let documentsURL = URL(fileURLWithPath: documentsPath)
-            let fileURL = documentsURL.appendingPathComponent(filename)
-            
-            do {
-                try log.write(to: fileURL, atomically: true, encoding: String.Encoding.utf8)
-                aelog("Log is exported to path: \(fileURL)")
-            } catch {
-                aelog(error)
-            }
+            writeLog(log)
+        }
+    }
+    
+    private func writeLog(_ log: String) {
+        let filename = "\(Date().timeIntervalSince1970).aelog"
+        let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+        let documentsURL = URL(fileURLWithPath: documentsPath)
+        let fileURL = documentsURL.appendingPathComponent(filename)
+        
+        do {
+            try log.write(to: fileURL, atomically: true, encoding: String.Encoding.utf8)
+            aelog("Log is exported to path: \(fileURL)")
+        } catch {
+            aelog(error)
         }
     }
     

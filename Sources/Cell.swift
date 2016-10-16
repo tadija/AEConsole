@@ -48,8 +48,12 @@ class Cell: UITableViewCell {
     
     fileprivate func commonInit() {
         backgroundColor = UIColor.clear
-        
+        configureLabel()
+    }
+    
+    private func configureLabel() {
         guard let label = textLabel else { return }
+        
         label.font = config.consoleFont
         label.textColor = config.textColorWithOpacity
         label.numberOfLines = 1
