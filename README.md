@@ -1,7 +1,7 @@
 # AEConsole
 **Customizable Console UI overlay with debug log on top of your iOS App**
 
-[![Language Swift 2.2](https://img.shields.io/badge/Language-Swift%202.2-orange.svg?style=flat)](https://swift.org)
+[![Language Swift 3.0](https://img.shields.io/badge/Language-Swift%203.0-orange.svg?style=flat)](https://swift.org)
 [![Platforms iOS](https://img.shields.io/badge/Platforms-iOS-lightgray.svg?style=flat)](http://www.apple.com)
 [![License MIT](https://img.shields.io/badge/License-MIT-lightgrey.svg?style=flat)](https://github.com/tadija/AELog/blob/master/LICENSE)
 
@@ -40,10 +40,10 @@
 In order to enable **AEConsole** you should add this one-liner in your **AppDelegate's** `didFinishLaunchingWithOptions`:
 
 ```swift
-AEConsole.launchWithAppDelegate(self)
+AEConsole.launch(with: self)
 ```
 
-This will add `AEConsoleView` as a subview to your App's window and make it hidden by default.
+If `AEConsole` is enabled, this will add `AEConsoleView` as a subview to your App's window and make it hidden by default.
 Now, whenever you need Console UI, you just make a shake gesture and boom it's there! When you no longer need it, shake again and boom it's gone (there are no 'booms' really).
 
 The rest is up to [AELog's](https://github.com/tadija/AELog) top-level logging function. Whatever is logged with `aelog()` it will show up in `AEConsoleView`.
@@ -52,10 +52,8 @@ In case you want to **toggle Console UI via code**, you can call `AEConsole.togg
 
 ## Settings
 
-Settings for **AEConsole** should be in the same `AELog.plist` file (as settings for [AELog](https://github.com/tadija/AELog)) under the `Console` dictionary. So, if you're starting from scratch:
-
-1. Create `AELog.plist` file and add it to your target (you can also drag one from the **AEConsoleDemo** example project).
-2. Configure any possible settings (inside `Console` dictionary) the way you want:
+1. Create **AEConsole.plist** file and add it to your target or create dictionary with name **AEConsole** in your existing **Info.plist** file.
+2. Configure any setting the way you want *(don't forget to at least set `Enabled` to `YES` in order to make it work)*:
 
 	Key | Type | Description
 	------------ | ------------- | -------------
@@ -85,26 +83,28 @@ Clear Log | you can't undo this.
 Pan Gesture over Menu Toolbar | left is more transparent, right is more opaque.
 	
 ## Requirements
-- Xcode 7.3+
+- Xcode 8.0+
 - iOS 9.0+
 
 ## Installation
 
-- [CocoaPods](http://cocoapods.org/):
+- [Swift Package Manager](https://swift.org/package-manager/):
 
-	```ruby
-	pod 'AEConsole'
-	```
+    ```
+    .Package(url: "https://github.com/tadija/AEConsole.git", majorVersion: 0)
+    ```
   
 - [Carthage](https://github.com/Carthage/Carthage):
 
 	```ogdl
 	github "tadija/AEConsole"
 	```
+	
+- [CocoaPods](http://cocoapods.org/):
 
-- Manually:
-
-  Just drag **AEConsole.swift** into your project and start using it.
+	```ruby
+	pod 'AEConsole'
+	```
 
 ## License
 AEConsole is released under the MIT license. See [LICENSE](LICENSE) for details.
