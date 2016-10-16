@@ -13,24 +13,5 @@
 	<string>yyyy-MM-dd HH:mm:ss.SSS</string>
 	<key>Template</key>
 	<string>{date} -- [{thread}] {file} ({line}) -&gt; {function} &gt; {message}</string>
-	<key>Console</key>
-	<dict>
-		<key>Enabled</key>
-		<true/>
-		<key>AutoStart</key>
-		<false/>
-		<key>ShakeGesture</key>
-		<true/>
-		<key>BackColor</key>
-		<string>000000</string>
-		<key>TextColor</key>
-		<string>FFFFFF</string>
-		<key>FontSize</key>
-		<integer>12</integer>
-		<key>RowHeight</key>
-		<integer>14</integer>
-		<key>Opacity</key>
-		<real>0.7</real>
-	</dict>
 </dict>
 </plist>
