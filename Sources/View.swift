@@ -70,14 +70,14 @@ class AEConsoleView: UIView {
     
     // MARK: Properties
     
-    fileprivate let brain = AEConsole.sharedInstance.brain
+    fileprivate let brain = AEConsole.shared.brain
     fileprivate let config = Config.shared
     
-    var onScreen = false {
+    var isOnScreen = false {
         didSet {
-            isHidden = !onScreen
+            isHidden = !isOnScreen
             
-            if onScreen {
+            if isOnScreen {
                 updateUI()
             }
         }
@@ -106,7 +106,7 @@ class AEConsoleView: UIView {
         textField.resignFirstResponder()
         
         UIView.transition(with: self, duration: 0.3, options: .transitionCrossDissolve, animations: { () -> Void in
-            self.onScreen = !self.onScreen
+            self.isOnScreen = !self.isOnScreen
         }, completion:nil)
     }
     

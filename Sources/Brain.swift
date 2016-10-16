@@ -60,7 +60,7 @@ class AEConsoleBrain: NSObject, UITableViewDataSource, UITableViewDelegate, UITe
         let console = AEConsoleView()
         console.frame = window.bounds
         console.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        console.onScreen = config.isAutoStartEnabled
+        console.isOnScreen = config.isAutoStartEnabled
         window.addSubview(console)
         
         consoleView = console
@@ -102,7 +102,7 @@ class AEConsoleBrain: NSObject, UITableViewDataSource, UITableViewDelegate, UITe
     }
     
     fileprivate func updateInterfaceIfNeeded() {
-        if consoleView.onScreen {
+        if consoleView.isOnScreen {
             consoleView.updateUI()
         }
     }

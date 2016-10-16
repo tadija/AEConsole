@@ -34,7 +34,7 @@ import Foundation
 */
 open class Config {
     
-    // MARK: Constants
+    // MARK: - Constants
     
     /// Setting keys which can be used in `AEConsole` dictionary.
     public struct Key {
@@ -74,7 +74,7 @@ open class Config {
         static let Opacity: CGFloat = 0.7
     }
     
-    // MARK: Properties
+    // MARK: - Properties
     
     static let shared = Config()
     
@@ -97,7 +97,7 @@ open class Config {
         return data
     }()
     
-    // MARK: Settings
+    // MARK: - Settings
     
     lazy var consoleFont: UIFont = {
         return UIFont.monospacedDigitSystemFont(ofSize: self.consoleFontSize, weight: UIFontWeightRegular)
@@ -151,7 +151,7 @@ open class Config {
         return opacity
     }()
     
-    // MARK: Helpers
+    // MARK: - Helpers
     
     private func boolForKey(_ key: String) -> Bool? {
         guard let
