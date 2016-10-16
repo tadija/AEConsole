@@ -27,6 +27,6 @@ import PackageDescription
 let package = Package(
     name: "AEConsole",
     dependencies: [
-        .Package(url: "https://github.com/tadija/AELog.git", majorVersion: 0, minor: 2)
+        .Package(url: "https://github.com/tadija/AELog.git", majorVersion: 0, minor: 3)
     ]
 )
