@@ -12,11 +12,12 @@
 		8B01E9181CAF15230049F98E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8B01E9161CAF15230049F98E /* Main.storyboard */; };
 		8B01E91A1CAF15230049F98E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8B01E9191CAF15230049F98E /* Assets.xcassets */; };
 		8B01E91D1CAF15230049F98E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8B01E91B1CAF15230049F98E /* LaunchScreen.storyboard */; };
-		8B01E9451CAF17650049F98E /* AELog.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B01E9441CAF17650049F98E /* AELog.plist */; };
 		8BE817941CAF342500FCBE4A /* AELog.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BE817861CAF341300FCBE4A /* AELog.framework */; };
 		8BE817951CAF342500FCBE4A /* AELog.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8BE817861CAF341300FCBE4A /* AELog.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8BE817981CAF343200FCBE4A /* AEConsole.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BE817931CAF341C00FCBE4A /* AEConsole.framework */; };
 		8BE817991CAF343200FCBE4A /* AEConsole.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8BE817931CAF341C00FCBE4A /* AEConsole.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8BFBE7A81DB3A20F00BB4B05 /* AELog.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B01E9441CAF17650049F98E /* AELog.plist */; };
+		8BFBE7A91DB3A47100BB4B05 /* AEConsole.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8BFBE7A01DB3A0B400BB4B05 /* AEConsole.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +70,27 @@
 			remoteGlobalIDString = 8B5894CF1CA9D857005F0B9D;
 			remoteInfo = AEConsole;
 		};
+		8BFBE77B1DB287C600BB4B05 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8BE8177E1CAF341300FCBE4A /* AELog.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8B04F5631CB009DD0002F869;
+			remoteInfo = "AELog iOS Tests";
+		};
+		8BFBE77D1DB287C600BB4B05 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8BE8177E1CAF341300FCBE4A /* AELog.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8B04F5721CB00AA60002F869;
+			remoteInfo = "AELog tvOS Tests";
+		};
+		8BFBE77F1DB287C600BB4B05 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8BE8177E1CAF341300FCBE4A /* AELog.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8B04F5821CB00B420002F869;
+			remoteInfo = "AELog OSX Tests";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -97,6 +119,7 @@
 		8B01E9441CAF17650049F98E /* AELog.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = AELog.plist; sourceTree = "<group>"; };
 		8BE8177E1CAF341300FCBE4A /* AELog.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AELog.xcodeproj; path = ../AELog/AELog.xcodeproj; sourceTree = "<group>"; };
 		8BE8178D1CAF341C00FCBE4A /* AEConsole.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AEConsole.xcodeproj; path = ../AEConsole.xcodeproj; sourceTree = "<group>"; };
+		8BFBE7A01DB3A0B400BB4B05 /* AEConsole.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = AEConsole.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,6 +159,7 @@
 				8B01E9121CAF15230049F98E /* AppDelegate.swift */,
 				8B01E9141CAF15230049F98E /* ViewController.swift */,
 				8B01E9441CAF17650049F98E /* AELog.plist */,
+				8BFBE7A01DB3A0B400BB4B05 /* AEConsole.plist */,
 				8B01E9461CAF18030049F98E /* Supporting FIles */,
 			);
 			path = AEConsoleDemo;
@@ -156,9 +180,12 @@
 			isa = PBXGroup;
 			children = (
 				8BE817861CAF341300FCBE4A /* AELog.framework */,
-				8BE817881CAF341300FCBE4A /* AELog.framework */,
 				8BE8178A1CAF341300FCBE4A /* AELog.framework */,
+				8BFBE77C1DB287C600BB4B05 /* AELog iOS Tests.xctest */,
 				8BE8178C1CAF341300FCBE4A /* AELog.framework */,
+				8BFBE77E1DB287C600BB4B05 /* AELog tvOS Tests.xctest */,
+				8BE817881CAF341300FCBE4A /* AELog.framework */,
+				8BFBE7801DB287C600BB4B05 /* AELog OSX Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -201,11 +228,12 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 0730;
+				LastUpgradeCheck = 0810;
 				ORGANIZATIONNAME = AE;
 				TargetAttributes = {
 					8B01E90E1CAF15230049F98E = {
 						CreatedOnToolsVersion = 7.3;
+						LastSwiftMigration = 0810;
 					};
 				};
 			};
@@ -273,6 +301,27 @@
 			remoteRef = 8BE817921CAF341C00FCBE4A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		8BFBE77C1DB287C600BB4B05 /* AELog iOS Tests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "AELog iOS Tests.xctest";
+			remoteRef = 8BFBE77B1DB287C600BB4B05 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8BFBE77E1DB287C600BB4B05 /* AELog tvOS Tests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "AELog tvOS Tests.xctest";
+			remoteRef = 8BFBE77D1DB287C600BB4B05 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8BFBE7801DB287C600BB4B05 /* AELog OSX Tests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "AELog OSX Tests.xctest";
+			remoteRef = 8BFBE77F1DB287C600BB4B05 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -281,8 +330,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				8B01E91D1CAF15230049F98E /* LaunchScreen.storyboard in Resources */,
-				8B01E9451CAF17650049F98E /* AELog.plist in Resources */,
+				8BFBE7A81DB3A20F00BB4B05 /* AELog.plist in Resources */,
 				8B01E91A1CAF15230049F98E /* Assets.xcassets in Resources */,
+				8BFBE7A91DB3A47100BB4B05 /* AEConsole.plist in Resources */,
 				8B01E9181CAF15230049F98E /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -348,8 +398,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -394,8 +446,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -414,6 +468,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -422,24 +477,26 @@
 		8B01E9221CAF15230049F98E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				INFOPLIST_FILE = AEConsoleDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = net.tadija.AEConsoleDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
 		8B01E9231CAF15230049F98E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				INFOPLIST_FILE = AEConsoleDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = net.tadija.AEConsoleDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};

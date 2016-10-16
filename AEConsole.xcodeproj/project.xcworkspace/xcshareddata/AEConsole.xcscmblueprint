@@ -10,7 +10,7 @@
   "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "EE699919-42A2-4ADA-9DFE-DBDB2E372B28",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
     "6C7A04FACE692A64ED1F1DB337EFBFC23C24ABE5" : "AEConsole\/",
-    "8BAFD82C102FDED3CA031E1AC3061BE3D531C9E5" : "AELog\/"
+    "8BAFD82C102FDED3CA031E1AC3061BE3D531C9E5" : "AEConsole\/AELog\/"
   },
   "DVTSourceControlWorkspaceBlueprintNameKey" : "AEConsole",
   "DVTSourceControlWorkspaceBlueprintVersion" : 204,
