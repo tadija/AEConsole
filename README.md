@@ -57,7 +57,7 @@ In case you want to **toggle Console UI via code**, you can call `AEConsole.togg
 
 	Key | Type | Description
 	------------ | ------------- | -------------
-	Enabled | Boolean | Console UI enabled flag (defaults to `YES`)
+	Enabled | Boolean | Console UI enabled flag (defaults to `NO`)
 	AutoStart | Boolean | Console UI visible on App start flag (defaults to `NO`)
 	ShakeGesture | Boolean | Shake gesture enabled flag (defaults to `YES`)
 	BackColor | String | Hex string for Console background color (defaults to `000000`)
