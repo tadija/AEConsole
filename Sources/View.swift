@@ -468,29 +468,29 @@ extension View {
     
     // MARK: - Actions
     
-    func didTapToggleToolbarButton(_ sender: UIButton) {
+    @objc func didTapToggleToolbarButton(_ sender: UIButton) {
         toggleToolbar()
     }
     
-    func didTapForwardTouchesButton(_ sender: UIButton) {
+    @objc func didTapForwardTouchesButton(_ sender: UIButton) {
         forwardTouchesButton.isSelected = !forwardTouchesButton.isSelected
         aelog("Forward Touches [\(forwardTouchesButton.isSelected)]")
     }
     
-    func didTapAutoFollowButton(_ sender: UIButton) {
+    @objc func didTapAutoFollowButton(_ sender: UIButton) {
         autoFollowButton.isSelected = !autoFollowButton.isSelected
         aelog("Auto Follow [\(autoFollowButton.isSelected)]")
     }
     
-    func didTapClearLogButton(_ sender: UIButton) {
+    @objc func didTapClearLogButton(_ sender: UIButton) {
         brain.clearLog()
     }
     
-    func didTapExportButton(_ sender: UIButton) {
+    @objc func didTapExportButton(_ sender: UIButton) {
         brain.exportAllLogLines()
     }
     
-    func didTapFilterClearButton(_ sender: UIButton) {
+    @objc func didTapFilterClearButton(_ sender: UIButton) {
         textField.resignFirstResponder()
         if !brain.isEmpty(textField.text) {
             brain.filterText = nil
@@ -498,7 +498,7 @@ extension View {
         textField.text = nil
     }
     
-    func didRecognizeUpdateOpacityGesture(_ sender: UIPanGestureRecognizer) {
+    @objc func didRecognizeUpdateOpacityGesture(_ sender: UIPanGestureRecognizer) {
         if sender.state == .ended {
             if isToolbarActive {
                 let xTranslation = sender.translation(in: menuView).x
@@ -511,7 +511,7 @@ extension View {
         }
     }
     
-    func didRecognizeHideConsoleGesture(_ sender: UITapGestureRecognizer) {
+    @objc func didRecognizeHideConsoleGesture(_ sender: UITapGestureRecognizer) {
         toggleUI()
     }
     
