@@ -104,7 +104,8 @@ class View: UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        
+
+        updateFilterViewLayout()
         updateContentLayout()
     }
     
@@ -264,7 +265,7 @@ extension View {
     private func configureFilterStack() {
         filterView.alpha = 0.3
         filterStack.axis = .horizontal
-        filterStack.alignment = .fill
+        filterStack.alignment = .center
         filterStack.distribution = .fill
         
         let stackInsets = UIEdgeInsets(top: Layout.magicNumber, left: 0, bottom: 0, right: 0)
@@ -275,11 +276,8 @@ extension View {
     private func configureFilterLinesCount() {
         linesCountStack.axis = .vertical
         linesCountStack.alignment = .fill
-        linesCountStack.distribution = .fillEqually
-        let stackInsets = UIEdgeInsets(top: Layout.magicNumber, left: 0, bottom: Layout.magicNumber, right: 0)
-        linesCountStack.layoutMargins = stackInsets
-        linesCountStack.isLayoutMarginsRelativeArrangement = true
-        
+        linesCountStack.distribution = .equalCentering
+
         linesTotalLabel.font = settings.consoleFont
         linesTotalLabel.textColor = settings.textColor
         linesTotalLabel.textAlignment = .left
@@ -293,10 +291,10 @@ extension View {
         let textColor = settings.textColor
         textField.autocapitalizationType = .none
         textField.tintColor = textColor
-        textField.font = settings.consoleFont.withSize(14)
+        textField.font = settings.consoleFont.withSize(16)
         textField.textColor = textColor
         let attributes = [NSAttributedStringKey.foregroundColor : textColor.withAlphaComponent(0.5)]
-        let placeholderText = NSAttributedString(string: "Type here...", attributes: attributes)
+        let placeholderText = NSAttributedString(string: "Type filter here...", attributes: attributes)
         textField.attributedPlaceholder = placeholderText
         textField.layer.sublayerTransform = CATransform3DMakeTranslation(Layout.magicNumber, 0, 0)
     }
@@ -518,8 +516,7 @@ extension View {
     private func toggleToolbar() {
         isToolbarActive = !isToolbarActive
 
-        filterViewTop.constant = isToolbarActive ? 0 : -Layout.filterHeight
-        filterViewBottom.constant = isToolbarActive ? Layout.filterHeight : 0
+        updateFilterViewLayout()
 
         menuViewLeading.constant = isToolbarActive ? Layout.menuExpandedLeading : Layout.menuCollapsedLeading
         let alpha: CGFloat = isToolbarActive ? 1.0 : 0.3
@@ -533,6 +530,15 @@ extension View {
         if isToolbarActive {
             textField.resignFirstResponder()
         }
+    }
+
+    fileprivate func updateFilterViewLayout() {
+        var filterTopPadding: CGFloat = 0
+        if #available(iOS 11.0, *) {
+            filterTopPadding = safeAreaInsets.top
+        }
+        filterViewTop.constant = isToolbarActive ? 0 : -Layout.filterHeight
+        filterViewBottom.constant = isToolbarActive ? (Layout.filterHeight + filterTopPadding) : 0
     }
     
 }
