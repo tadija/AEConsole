@@ -520,12 +520,11 @@ extension View {
         filterViewTop.constant = isToolbarActive ? Layout.filterCollapsedTop : Layout.filterExpandedTop
         menuViewLeading.constant = isToolbarActive ? Layout.menuCollapsedLeading : Layout.menuExpandedLeading
         let alpha: CGFloat = isToolbarActive ? 0.3 : 1.0
-        
-        UIView.animate(withDuration: 0.3, animations: {
-            self.filterView.alpha = alpha
-            self.menuView.alpha = alpha
-            self.filterView.layoutIfNeeded()
-            self.menuView.layoutIfNeeded()
+
+        UIView.animate(withDuration: 0.3, animations: { [weak self] in
+            self?.filterView.alpha = alpha
+            self?.menuView.alpha = alpha
+            self?.layoutIfNeeded()
         })
         
         if isToolbarActive {
