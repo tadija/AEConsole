@@ -395,7 +395,7 @@ extension View {
         if #available(iOS 11.0, *) {
             filterStack.insetsLayoutMarginsFromSafeArea = false
         }
-        
+
         menuView.translatesAutoresizingMaskIntoConstraints = false
         menuStack.translatesAutoresizingMaskIntoConstraints = false
         if #available(iOS 11.0, *) {
@@ -535,7 +535,7 @@ extension View {
     fileprivate func updateFilterViewLayout() {
         var filterTopPadding: CGFloat = 0
         if #available(iOS 11.0, *) {
-            filterTopPadding = safeAreaInsets.top
+            filterTopPadding = safeAreaInsets.top / 2
         }
         filterViewTop.constant = isToolbarActive ? 0 : -Layout.filterHeight
         filterViewBottom.constant = isToolbarActive ? (Layout.filterHeight + filterTopPadding) : 0
