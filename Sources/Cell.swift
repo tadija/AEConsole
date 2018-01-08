@@ -14,7 +14,7 @@ class Cell: UITableViewCell {
     
     // MARK: - Properties
     
-    private let settings = AEConsole.shared.settings
+    private let settings = Console.shared.settings
     
     // MARK: - Init
     

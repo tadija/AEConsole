@@ -65,8 +65,8 @@ class View: UIView {
     
     var currentOffsetX = -Layout.MagicNumber
     
-    fileprivate let brain = AEConsole.shared.brain
-    fileprivate let settings = AEConsole.shared.settings
+    fileprivate let brain = Console.shared.brain
+    fileprivate let settings = Console.shared.settings
     
     fileprivate var isToolbarActive = false {
         didSet {

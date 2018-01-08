@@ -47,7 +47,7 @@ class ViewController: UIViewController {
     }
     
     @IBAction func didTapToggleButton(_ sender: UIButton) {
-        AEConsole.toggle()
+        Console.toggle()
     }
     
     // MARK: - Helpers
