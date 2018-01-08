@@ -310,7 +310,7 @@ extension View {
         textField.tintColor = textColor
         textField.font = config.consoleFont.withSize(14)
         textField.textColor = textColor
-        let attributes = [NSForegroundColorAttributeName : textColor.withAlphaComponent(0.5)]
+        let attributes = [NSAttributedStringKey.foregroundColor : textColor.withAlphaComponent(0.5)]
         let placeholderText = NSAttributedString(string: "Type here...", attributes: attributes)
         textField.attributedPlaceholder = placeholderText
         textField.layer.sublayerTransform = CATransform3DMakeTranslation(Layout.MagicNumber, 0, 0)

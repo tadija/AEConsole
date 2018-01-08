@@ -100,7 +100,7 @@ public class Config {
     // MARK: - Settings
     
     lazy var consoleFont: UIFont = {
-        return UIFont.monospacedDigitSystemFont(ofSize: self.fontSize, weight: UIFontWeightRegular)
+        return UIFont.monospacedDigitSystemFont(ofSize: self.fontSize, weight: UIFont.Weight.regular)
     }()
     
     lazy var isEnabled: Bool = { [unowned self] in
