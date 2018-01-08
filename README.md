@@ -52,16 +52,16 @@ In case you want to **toggle Console UI via code**, you can call `Console.toggle
 
 Configure all the settings with `Console.shared.settings`:
 
-	Settings | Type | Description
-	------------ | ------------- | -------------
-	isEnabled | Boolean | Console UI enabled flag (defaults to `NO`)
-	isAutoStartEnabled | Boolean | Console UI visible on App start flag (defaults to `NO`)
-	isShakeGestureEnabled | Boolean | Shake gesture enabled flag (defaults to `YES`)
-	backColor | String | Hex string for Console background color (defaults to `000000`)
-	textColor | String | Hex string for Console text color (defaults to `FFFFFF`)
-	fontSize | Number | Console UI font size (defaults to `12`)
-	rowHeight | Number | Console UI row height (defaults to `14`)
-	opacity | Number | Console UI opacity (defaults to `0.7`)
+Settings | Type | Description
+------------ | ------------- | -------------
+isEnabled | Boolean | Console UI enabled flag (defaults to `NO`)
+isAutoStartEnabled | Boolean | Console UI visible on App start flag (defaults to `NO`)
+isShakeGestureEnabled | Boolean | Shake gesture enabled flag (defaults to `YES`)
+backColor | String | Hex string for Console background color (defaults to `000000`)
+textColor | String | Hex string for Console text color (defaults to `FFFFFF`)
+fontSize | Number | Console UI font size (defaults to `12`)
+rowHeight | Number | Console UI row height (defaults to `14`)
+opacity | Number | Console UI opacity (defaults to `0.7`)
 
 ### Quick Help
 
