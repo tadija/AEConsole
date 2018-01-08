@@ -1,7 +1,7 @@
 // swift-tools-version:4.0
 
 /**
- *  https://github.com/tadija/AELog
+ *  https://github.com/tadija/AEConsole
  *  Copyright (c) Marko Tadić 2016-2018
  *  Licensed under the MIT license. See LICENSE file.
  */
