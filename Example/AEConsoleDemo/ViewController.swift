@@ -16,21 +16,21 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        aelog()
+        logToDebugger()
         generateLogLines(count: 100)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        aelog()
+        logToDebugger()
         generateLogLines(count: 200)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        aelog()
+        logToDebugger()
         generateLogLines(count: 300)
     }
     
@@ -41,7 +41,7 @@ class ViewController: UIViewController {
         queue.async {
             self.generateLogLines(count: Int.random(max: 1000))
             DispatchQueue.main.async(execute: {
-                aelog(sender)
+                logToDebugger(items: sender)
             })
         }
     }
@@ -54,7 +54,7 @@ class ViewController: UIViewController {
     
     func generateLogLines(count: Int) {
         for i in 0...count {
-            aelog("I'm just a log line #\(i).")
+            logToDebugger("I'm just a log line #\(i).")
         }
     }
     
