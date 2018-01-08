@@ -249,6 +249,10 @@ extension View {
         tableView.separatorStyle = .none
         
         tableView.register(Cell.self, forCellReuseIdentifier: Cell.identifier)
+
+        if #available(iOS 11.0, *) {
+            tableView.insetsContentViewsToSafeArea = true
+        }
     }
     
     private func configureFilterView() {
@@ -391,9 +395,15 @@ extension View {
     private func configureViewsForLayout() {
         filterView.translatesAutoresizingMaskIntoConstraints = false
         filterStack.translatesAutoresizingMaskIntoConstraints = false
+        if #available(iOS 11.0, *) {
+            filterStack.insetsLayoutMarginsFromSafeArea = false
+        }
         
         menuView.translatesAutoresizingMaskIntoConstraints = false
         menuStack.translatesAutoresizingMaskIntoConstraints = false
+        if #available(iOS 11.0, *) {
+            menuStack.insetsLayoutMarginsFromSafeArea = false
+        }
     }
     
     private func configureConstraints() {
