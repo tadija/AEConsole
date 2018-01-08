@@ -15,7 +15,7 @@ class Brain: NSObject {
     
     // MARK: - Properties
     
-    fileprivate let settings = AEConsole.shared.settings
+    fileprivate let settings = Settings.shared
 
     var lines = [Line]()
     var filteredLines = [Line]()

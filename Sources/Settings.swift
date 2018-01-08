@@ -22,6 +22,10 @@ open class Settings {
         static let opacity: CGFloat = 0.7
     }
 
+    // MARK: Singleton
+
+    static let shared = Settings()
+
     // MARK: Properties
 
     /// Console enabled flag (defaults to `true`)

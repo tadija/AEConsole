@@ -16,7 +16,7 @@ open class AEConsole: LogDelegate {
     
     let brain = Brain()
     
-    public let settings = Settings()
+    public let settings = Settings.shared
     private var appDelegate: UIApplicationDelegate?
     
     // MARK: - API
