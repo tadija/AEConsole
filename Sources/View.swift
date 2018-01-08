@@ -12,16 +12,16 @@ class View: UIView {
     // MARK: - Constants
     
     fileprivate struct Layout {
-        static let FilterHeight: CGFloat = 60
-        static let FilterExpandedTop: CGFloat = 0
-        static let FilterCollapsedTop: CGFloat = -Layout.FilterHeight
+        static let filterHeight: CGFloat = 64
+        static let filterExpandedTop: CGFloat = 0
+        static let filterCollapsedTop: CGFloat = -Layout.filterHeight
         
-        static let MenuWidth: CGFloat = 300
-        static let MenuHeight: CGFloat = 50
-        static let MenuExpandedLeading: CGFloat = -Layout.MenuWidth
-        static let MenuCollapsedLeading: CGFloat = -75
+        static let menuWidth: CGFloat = 300
+        static let menuHeight: CGFloat = 50
+        static let menuExpandedLeading: CGFloat = -Layout.menuWidth
+        static let menuCollapsedLeading: CGFloat = -75
         
-        static let MagicNumber: CGFloat = 10
+        static let magicNumber: CGFloat = 10
     }
     
     // MARK: - Outlets
@@ -63,7 +63,7 @@ class View: UIView {
         }
     }
     
-    var currentOffsetX = -Layout.MagicNumber
+    var currentOffsetX = -Layout.magicNumber
     
     fileprivate let brain = Console.shared.brain
     fileprivate let settings = Console.shared.settings
@@ -80,9 +80,9 @@ class View: UIView {
         }
     }
     
-    fileprivate var currentTopInset = Layout.MagicNumber
-    fileprivate var topInsetSmall = Layout.MagicNumber
-    fileprivate var topInsetLarge = Layout.MagicNumber + Layout.FilterHeight
+    fileprivate var currentTopInset = Layout.magicNumber
+    fileprivate var topInsetSmall = Layout.magicNumber
+    fileprivate var topInsetLarge = Layout.magicNumber + Layout.filterHeight
     
     // MARK: - Init
     
@@ -173,7 +173,7 @@ extension View {
         tableView.frame = newFrame
         
         UIView.animate(withDuration: 0.3, animations: { [unowned self] () -> Void in
-            let inset = Layout.MagicNumber
+            let inset = Layout.magicNumber
             let newInset = UIEdgeInsets(top: self.currentTopInset, left: inset, bottom: inset, right: maxWidth)
             self.tableView.contentInset = newInset
         })
@@ -199,7 +199,7 @@ extension View {
     fileprivate func scrollToBottom() {
         let diff = tableView.contentSize.height - tableView.bounds.size.height
         if diff > 0 {
-            let offsetY = diff + Layout.MagicNumber
+            let offsetY = diff + Layout.magicNumber
             let bottomOffset = CGPoint(x: currentOffsetX, y: offsetY)
             tableView.setContentOffset(bottomOffset, animated: false)
         }
@@ -268,7 +268,7 @@ extension View {
         filterStack.alignment = .fill
         filterStack.distribution = .fill
         
-        let stackInsets = UIEdgeInsets(top: Layout.MagicNumber, left: 0, bottom: 0, right: 0)
+        let stackInsets = UIEdgeInsets(top: Layout.magicNumber, left: 0, bottom: 0, right: 0)
         filterStack.layoutMargins = stackInsets
         filterStack.isLayoutMarginsRelativeArrangement = true
     }
@@ -277,7 +277,7 @@ extension View {
         linesCountStack.axis = .vertical
         linesCountStack.alignment = .fill
         linesCountStack.distribution = .fillEqually
-        let stackInsets = UIEdgeInsets(top: Layout.MagicNumber, left: 0, bottom: Layout.MagicNumber, right: 0)
+        let stackInsets = UIEdgeInsets(top: Layout.magicNumber, left: 0, bottom: Layout.magicNumber, right: 0)
         linesCountStack.layoutMargins = stackInsets
         linesCountStack.isLayoutMarginsRelativeArrangement = true
         
@@ -299,7 +299,7 @@ extension View {
         let attributes = [NSAttributedStringKey.foregroundColor : textColor.withAlphaComponent(0.5)]
         let placeholderText = NSAttributedString(string: "Type here...", attributes: attributes)
         textField.attributedPlaceholder = placeholderText
-        textField.layer.sublayerTransform = CATransform3DMakeTranslation(Layout.MagicNumber, 0, 0)
+        textField.layer.sublayerTransform = CATransform3DMakeTranslation(Layout.magicNumber, 0, 0)
     }
     
     private func configureFilterButtons() {
@@ -317,7 +317,7 @@ extension View {
     
     private func configureMenuStack() {
         menuView.alpha = 0.3
-        menuView.layer.cornerRadius = Layout.MagicNumber
+        menuView.layer.cornerRadius = Layout.magicNumber
         
         menuStack.axis = .horizontal
         menuStack.alignment = .fill
@@ -418,8 +418,8 @@ extension View {
     private func configureFilterViewConstraints() {
         let leading = filterView.leadingAnchor.constraint(equalTo: leadingAnchor)
         let trailing = filterView.trailingAnchor.constraint(equalTo: trailingAnchor)
-        let height = filterView.heightAnchor.constraint(equalToConstant: Layout.FilterHeight)
-        filterViewTop = filterView.topAnchor.constraint(equalTo: topAnchor, constant: Layout.FilterCollapsedTop)
+        let height = filterView.heightAnchor.constraint(equalToConstant: Layout.filterHeight)
+        filterViewTop = filterView.topAnchor.constraint(equalTo: topAnchor, constant: Layout.filterCollapsedTop)
         NSLayoutConstraint.activate([leading, trailing, height, filterViewTop])
     }
     
@@ -439,16 +439,16 @@ extension View {
     }
     
     private func configureMenuViewConstraints() {
-        let width = menuView.widthAnchor.constraint(equalToConstant: Layout.MenuWidth + Layout.MagicNumber)
-        let height = menuView.heightAnchor.constraint(equalToConstant: Layout.MenuHeight)
+        let width = menuView.widthAnchor.constraint(equalToConstant: Layout.menuWidth + Layout.magicNumber)
+        let height = menuView.heightAnchor.constraint(equalToConstant: Layout.menuHeight)
         let centerY = menuView.centerYAnchor.constraint(equalTo: centerYAnchor)
-        menuViewLeading = menuView.leadingAnchor.constraint(equalTo: trailingAnchor, constant: Layout.MenuCollapsedLeading)
+        menuViewLeading = menuView.leadingAnchor.constraint(equalTo: trailingAnchor, constant: Layout.menuCollapsedLeading)
         NSLayoutConstraint.activate([width, height, centerY, menuViewLeading])
     }
     
     private func configureMenuStackConstraints() {
         let leading = menuStack.leadingAnchor.constraint(equalTo: menuView.leadingAnchor)
-        let trailing = menuStack.trailingAnchor.constraint(equalTo: menuView.trailingAnchor, constant: -Layout.MagicNumber)
+        let trailing = menuStack.trailingAnchor.constraint(equalTo: menuView.trailingAnchor, constant: -Layout.magicNumber)
         let top = menuStack.topAnchor.constraint(equalTo: menuView.topAnchor)
         let bottom = menuStack.bottomAnchor.constraint(equalTo: menuView.bottomAnchor)
         NSLayoutConstraint.activate([leading, trailing, top, bottom])
@@ -494,7 +494,7 @@ extension View {
         if sender.state == .ended {
             if isToolbarActive {
                 let xTranslation = sender.translation(in: menuView).x
-                if abs(xTranslation) > (3 * Layout.MagicNumber) {
+                if abs(xTranslation) > (3 * Layout.magicNumber) {
                     let location = sender.location(in: menuView)
                     let opacity = opacityForLocation(location)
                     self.opacity = opacity
@@ -517,8 +517,8 @@ extension View {
     }
     
     private func toggleToolbar() {
-        filterViewTop.constant = isToolbarActive ? Layout.FilterCollapsedTop : Layout.FilterExpandedTop
-        menuViewLeading.constant = isToolbarActive ? Layout.MenuCollapsedLeading : Layout.MenuExpandedLeading
+        filterViewTop.constant = isToolbarActive ? Layout.filterCollapsedTop : Layout.filterExpandedTop
+        menuViewLeading.constant = isToolbarActive ? Layout.menuCollapsedLeading : Layout.menuExpandedLeading
         let alpha: CGFloat = isToolbarActive ? 0.3 : 1.0
         
         UIView.animate(withDuration: 0.3, animations: {
