@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8B0F80522003F98600928F0F /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B0F80512003F98600928F0F /* Settings.swift */; };
 		8B5894D41CA9D857005F0B9D /* AEConsole.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B5894D31CA9D857005F0B9D /* AEConsole.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		8B5894DC1CA9D86C005F0B9D /* AEConsole.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B5894DB1CA9D86C005F0B9D /* AEConsole.swift */; };
+		8B5894DC1CA9D86C005F0B9D /* Console.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B5894DB1CA9D86C005F0B9D /* Console.swift */; };
 		8B84650E1CAB51D90027AA52 /* AELog.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B8465071CAB51CE0027AA52 /* AELog.framework */; };
-		8BFBE7831DB289AA00BB4B05 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFBE7821DB289AA00BB4B05 /* Config.swift */; };
 		8BFBE78C1DB289AF00BB4B05 /* Brain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFBE78B1DB289AF00BB4B05 /* Brain.swift */; };
 		8BFBE78E1DB289B600BB4B05 /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFBE78D1DB289B600BB4B05 /* View.swift */; };
 		8BFBE7901DB289C300BB4B05 /* Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFBE78F1DB289C300BB4B05 /* Cell.swift */; };
@@ -71,16 +71,16 @@
 /* Begin PBXFileReference section */
 		8B022D2E1CB071710039B5F4 /* AEConsole.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = AEConsole.podspec; sourceTree = "<group>"; };
 		8B022D3C1CB071790039B5F4 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
+		8B0F80512003F98600928F0F /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		8B5894D01CA9D857005F0B9D /* AEConsole.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AEConsole.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B5894D31CA9D857005F0B9D /* AEConsole.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AEConsole.h; sourceTree = "<group>"; };
 		8B5894D51CA9D857005F0B9D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8B5894DB1CA9D86C005F0B9D /* AEConsole.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AEConsole.swift; sourceTree = "<group>"; };
+		8B5894DB1CA9D86C005F0B9D /* Console.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Console.swift; sourceTree = "<group>"; };
 		8B8464FF1CAB51CE0027AA52 /* AELog.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AELog.xcodeproj; path = AELog/AELog.xcodeproj; sourceTree = "<group>"; };
 		8BDFB39F1CB181A500F0F6F1 /* Cartfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
 		8BE817AE1CAF442F00FCBE4A /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
 		8BE817AF1CAF442F00FCBE4A /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		8BE817B01CAF442F00FCBE4A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		8BFBE7821DB289AA00BB4B05 /* Config.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		8BFBE78B1DB289AF00BB4B05 /* Brain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Brain.swift; sourceTree = "<group>"; };
 		8BFBE78D1DB289B600BB4B05 /* View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
 		8BFBE78F1DB289C300BB4B05 /* Cell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cell.swift; sourceTree = "<group>"; };
@@ -104,9 +104,8 @@
 				8BE817AF1CAF442F00FCBE4A /* LICENSE */,
 				8BE817B01CAF442F00FCBE4A /* README.md */,
 				8BE817AE1CAF442F00FCBE4A /* CHANGELOG.md */,
-				8B022D2E1CB071710039B5F4 /* AEConsole.podspec */,
 				8BDFB39F1CB181A500F0F6F1 /* Cartfile */,
-				8B022D3C1CB071790039B5F4 /* Package.swift */,
+				8B022D2E1CB071710039B5F4 /* AEConsole.podspec */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -114,6 +113,7 @@
 		8B5894C61CA9D857005F0B9D = {
 			isa = PBXGroup;
 			children = (
+				8B022D3C1CB071790039B5F4 /* Package.swift */,
 				8B5894D21CA9D857005F0B9D /* Sources */,
 				8B5894D11CA9D857005F0B9D /* Products */,
 				8B022D3D1CB071820039B5F4 /* Supporting Files */,
@@ -132,8 +132,8 @@
 		8B5894D21CA9D857005F0B9D /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				8B5894DB1CA9D86C005F0B9D /* AEConsole.swift */,
-				8BFBE7821DB289AA00BB4B05 /* Config.swift */,
+				8B5894DB1CA9D86C005F0B9D /* Console.swift */,
+				8B0F80512003F98600928F0F /* Settings.swift */,
 				8BFBE78B1DB289AF00BB4B05 /* Brain.swift */,
 				8BFBE78D1DB289B600BB4B05 /* View.swift */,
 				8BFBE78F1DB289C300BB4B05 /* Cell.swift */,
@@ -203,12 +203,12 @@
 		8B5894C71CA9D857005F0B9D /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0810;
+				LastUpgradeCheck = 0920;
 				ORGANIZATIONNAME = AE;
 				TargetAttributes = {
 					8B5894CF1CA9D857005F0B9D = {
 						CreatedOnToolsVersion = 7.3;
-						LastSwiftMigration = 0810;
+						LastSwiftMigration = 0920;
 					};
 				};
 			};
@@ -302,11 +302,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B0F80522003F98600928F0F /* Settings.swift in Sources */,
 				8BFBE78E1DB289B600BB4B05 /* View.swift in Sources */,
-				8BFBE7831DB289AA00BB4B05 /* Config.swift in Sources */,
 				8BFBE7901DB289C300BB4B05 /* Cell.swift in Sources */,
 				8BFBE78C1DB289AF00BB4B05 /* Brain.swift in Sources */,
-				8B5894DC1CA9D86C005F0B9D /* AEConsole.swift in Sources */,
+				8B5894DC1CA9D86C005F0B9D /* Console.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -322,14 +322,20 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -374,14 +380,20 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -428,6 +440,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -447,6 +460,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = net.tadija.AEConsole;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};

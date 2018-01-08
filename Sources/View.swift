@@ -1,26 +1,8 @@
-//
-// View.swift
-//
-// Copyright (c) 2016 Marko Tadić <tadija@me.com> http://tadija.net
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-//
+/**
+ *  https://github.com/tadija/AEConsole
+ *  Copyright (c) Marko Tadić 2016-2018
+ *  Licensed under the MIT license. See LICENSE file.
+ */
 
 import UIKit
 import AELog
@@ -83,8 +65,8 @@ class View: UIView {
     
     var currentOffsetX = -Layout.MagicNumber
     
-    fileprivate let brain = AEConsole.shared.brain
-    fileprivate let config = Config.shared
+    fileprivate let brain = Console.shared.brain
+    fileprivate let settings = Console.shared.settings
     
     fileprivate var isToolbarActive = false {
         didSet {
@@ -116,7 +98,7 @@ class View: UIView {
     
     private func commonInit() {
         configureUI()
-        opacity = config.opacity
+        opacity = settings.opacity
     }
     
     // MARK: - Override
@@ -145,7 +127,7 @@ class View: UIView {
     
     override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
         if motion == .motionShake {
-            if config.isShakeGestureEnabled {
+            if settings.isShakeGestureEnabled {
                 toggleUI()
             }
         }
@@ -224,19 +206,19 @@ extension View {
     }
     
     fileprivate func configureColors(with opacity: CGFloat) {
-        tableView.backgroundColor = config.backColor.withAlphaComponent(opacity)
+        tableView.backgroundColor = settings.backColor.withAlphaComponent(opacity)
         
         let textOpacity = max(0.3, opacity * 1.1)
-        config.textColorWithOpacity = config.textColor.withAlphaComponent(textOpacity)
+        settings.textColorWithOpacity = settings.textColor.withAlphaComponent(textOpacity)
         
         let toolbarOpacity = min(0.7, opacity * 1.5)
-        filterView.backgroundColor = config.backColor.withAlphaComponent(toolbarOpacity)
-        menuView.backgroundColor = config.backColor.withAlphaComponent(toolbarOpacity)
+        filterView.backgroundColor = settings.backColor.withAlphaComponent(toolbarOpacity)
+        menuView.backgroundColor = settings.backColor.withAlphaComponent(toolbarOpacity)
         
         let borderOpacity = toolbarOpacity / 2
-        filterView.layer.borderColor = config.backColor.withAlphaComponent(borderOpacity).cgColor
+        filterView.layer.borderColor = settings.backColor.withAlphaComponent(borderOpacity).cgColor
         filterView.layer.borderWidth = 1.0
-        menuView.layer.borderColor = config.backColor.withAlphaComponent(borderOpacity).cgColor
+        menuView.layer.borderColor = settings.backColor.withAlphaComponent(borderOpacity).cgColor
         menuView.layer.borderWidth = 1.0
         
         // refresh text color
@@ -262,7 +244,7 @@ extension View {
     }
     
     private func configureTableView() {
-        tableView.rowHeight = config.rowHeight
+        tableView.rowHeight = settings.rowHeight
         tableView.allowsSelection = false
         tableView.separatorStyle = .none
         
@@ -295,22 +277,22 @@ extension View {
         linesCountStack.layoutMargins = stackInsets
         linesCountStack.isLayoutMarginsRelativeArrangement = true
         
-        linesTotalLabel.font = config.consoleFont
-        linesTotalLabel.textColor = config.textColor
+        linesTotalLabel.font = settings.consoleFont
+        linesTotalLabel.textColor = settings.textColor
         linesTotalLabel.textAlignment = .left
         
-        linesFilteredLabel.font = config.consoleFont
-        linesFilteredLabel.textColor = config.textColor
+        linesFilteredLabel.font = settings.consoleFont
+        linesFilteredLabel.textColor = settings.textColor
         linesFilteredLabel.textAlignment = .left
     }
     
     private func configureFilterTextField() {
-        let textColor = config.textColor
+        let textColor = settings.textColor
         textField.autocapitalizationType = .none
         textField.tintColor = textColor
-        textField.font = config.consoleFont.withSize(14)
+        textField.font = settings.consoleFont.withSize(14)
         textField.textColor = textColor
-        let attributes = [NSForegroundColorAttributeName : textColor.withAlphaComponent(0.5)]
+        let attributes = [NSAttributedStringKey.foregroundColor : textColor.withAlphaComponent(0.5)]
         let placeholderText = NSAttributedString(string: "Type here...", attributes: attributes)
         textField.attributedPlaceholder = placeholderText
         textField.layer.sublayerTransform = CATransform3DMakeTranslation(Layout.MagicNumber, 0, 0)
@@ -474,12 +456,12 @@ extension View {
     
     @objc func didTapForwardTouchesButton(_ sender: UIButton) {
         forwardTouchesButton.isSelected = !forwardTouchesButton.isSelected
-        aelog("Forward Touches [\(forwardTouchesButton.isSelected)]")
+        logToDebugger("Forward Touches [\(forwardTouchesButton.isSelected)]")
     }
     
     @objc func didTapAutoFollowButton(_ sender: UIButton) {
         autoFollowButton.isSelected = !autoFollowButton.isSelected
-        aelog("Auto Follow [\(autoFollowButton.isSelected)]")
+        logToDebugger("Auto Follow [\(autoFollowButton.isSelected)]")
     }
     
     @objc func didTapClearLogButton(_ sender: UIButton) {

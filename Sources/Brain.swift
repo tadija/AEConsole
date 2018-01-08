@@ -1,26 +1,8 @@
-//
-// Brain.swift
-//
-// Copyright (c) 2016 Marko Tadić <tadija@me.com> http://tadija.net
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-//
+/**
+ *  https://github.com/tadija/AEConsole
+ *  Copyright (c) Marko Tadić 2016-2018
+ *  Licensed under the MIT license. See LICENSE file.
+ */
 
 import UIKit
 import AELog
@@ -33,8 +15,8 @@ class Brain: NSObject {
     
     // MARK: - Properties
     
-    fileprivate let config = Config.shared
-    
+    fileprivate let settings = Settings.shared
+
     var lines = [Line]()
     var filteredLines = [Line]()
     
@@ -91,7 +73,7 @@ class Brain: NSObject {
         let log = stringLines.joined(separator: "\n")
         
         if isEmpty(log) {
-            aelog("Log is empty, nothing to export here.")
+            logToDebugger("Log is empty, nothing to export here.")
         } else {
             writeLog(log)
         }
@@ -113,13 +95,13 @@ extension Brain {
     
     private func applyFilter() {
         guard let filter = filterText else { return }
-        aelog("Filter Lines [\(isFilterActive)] - <\(filter)>")
+        logToDebugger("Filter Lines [\(isFilterActive)] - <\(filter)>")
         let filtered = lines.filter({ $0.description.localizedCaseInsensitiveContains(filter) })
         filteredLines = filtered
     }
     
     private func clearFilter() {
-        aelog("Filter Lines [\(isFilterActive)]")
+        logToDebugger("Filter Lines [\(isFilterActive)]")
         filteredLines.removeAll()
     }
     
@@ -134,7 +116,7 @@ extension Brain {
         
         view.frame = window.bounds
         view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        view.isOnScreen = config.isAutoStartEnabled
+        view.isOnScreen = settings.isAutoStartEnabled
         window.addSubview(view)
         
         return view
@@ -158,9 +140,9 @@ extension Brain {
     
     private func getWidth(for line: Line) -> CGFloat {
         let text = line.description
-        let maxSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: config.rowHeight)
+        let maxSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: settings.rowHeight)
         let options = NSStringDrawingOptions.usesLineFragmentOrigin
-        let attributes = [NSFontAttributeName : config.consoleFont]
+        let attributes = [NSAttributedStringKey.font : settings.consoleFont]
         let nsText = text as NSString
         let size = nsText.boundingRect(with: maxSize, options: options, attributes: attributes, context: nil)
         let width = size.width
@@ -175,9 +157,9 @@ extension Brain {
         
         do {
             try log.write(to: fileURL, atomically: true, encoding: String.Encoding.utf8)
-            aelog("Log is exported to path: \(fileURL)")
+            logToDebugger("Log is exported to path: \(fileURL)")
         } catch {
-            aelog(error)
+            logToDebugger("\(error)")
         }
     }
     
