@@ -13,9 +13,7 @@ class View: UIView {
     
     fileprivate struct Layout {
         static let filterHeight: CGFloat = 64
-        static let filterExpandedTop: CGFloat = 0
-        static let filterCollapsedTop: CGFloat = -Layout.filterHeight
-        
+
         static let menuWidth: CGFloat = 300
         static let menuHeight: CGFloat = 50
         static let menuExpandedLeading: CGFloat = -Layout.menuWidth
@@ -32,6 +30,7 @@ class View: UIView {
     fileprivate let filterView = UIView()
     fileprivate let filterStack = UIStackView()
     fileprivate var filterViewTop: NSLayoutConstraint!
+    fileprivate var filterViewBottom: NSLayoutConstraint!
     
     fileprivate let exportLogButton = UIButton()
     fileprivate let linesCountStack = UIStackView()
@@ -418,9 +417,9 @@ extension View {
     private func configureFilterViewConstraints() {
         let leading = filterView.leadingAnchor.constraint(equalTo: leadingAnchor)
         let trailing = filterView.trailingAnchor.constraint(equalTo: trailingAnchor)
-        let height = filterView.heightAnchor.constraint(equalToConstant: Layout.filterHeight)
-        filterViewTop = filterView.topAnchor.constraint(equalTo: topAnchor, constant: Layout.filterCollapsedTop)
-        NSLayoutConstraint.activate([leading, trailing, height, filterViewTop])
+        filterViewTop = filterView.topAnchor.constraint(equalTo: topAnchor, constant: -Layout.filterHeight)
+        filterViewBottom = filterView.bottomAnchor.constraint(equalTo: topAnchor)
+        NSLayoutConstraint.activate([leading, trailing, filterViewTop, filterViewBottom])
     }
     
     private func configureFilterStackConstraints() {
@@ -517,9 +516,13 @@ extension View {
     }
     
     private func toggleToolbar() {
-        filterViewTop.constant = isToolbarActive ? Layout.filterCollapsedTop : Layout.filterExpandedTop
-        menuViewLeading.constant = isToolbarActive ? Layout.menuCollapsedLeading : Layout.menuExpandedLeading
-        let alpha: CGFloat = isToolbarActive ? 0.3 : 1.0
+        isToolbarActive = !isToolbarActive
+
+        filterViewTop.constant = isToolbarActive ? 0 : -Layout.filterHeight
+        filterViewBottom.constant = isToolbarActive ? Layout.filterHeight : 0
+
+        menuViewLeading.constant = isToolbarActive ? Layout.menuExpandedLeading : Layout.menuCollapsedLeading
+        let alpha: CGFloat = isToolbarActive ? 1.0 : 0.3
 
         UIView.animate(withDuration: 0.3, animations: { [weak self] in
             self?.filterView.alpha = alpha
@@ -530,8 +533,6 @@ extension View {
         if isToolbarActive {
             textField.resignFirstResponder()
         }
-        
-        isToolbarActive = !isToolbarActive
     }
     
 }
