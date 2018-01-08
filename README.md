@@ -54,9 +54,9 @@ Configure all the settings with `Console.shared.settings`:
 
 Settings | Type | Description
 ------------ | ------------- | -------------
-isEnabled | Boolean | Console UI enabled flag (defaults to `NO`)
-isAutoStartEnabled | Boolean | Console UI visible on App start flag (defaults to `NO`)
-isShakeGestureEnabled | Boolean | Shake gesture enabled flag (defaults to `YES`)
+isEnabled | Boolean | Console UI enabled flag (defaults to `true`)
+isAutoStartEnabled | Boolean | Console UI visible on App start flag (defaults to `false`)
+isShakeGestureEnabled | Boolean | Shake gesture enabled flag (defaults to `true`)
 backColor | String | Hex string for Console background color (defaults to `000000`)
 textColor | String | Hex string for Console text color (defaults to `FFFFFF`)
 fontSize | Number | Console UI font size (defaults to `12`)
