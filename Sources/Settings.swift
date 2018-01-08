@@ -12,7 +12,7 @@ open class Settings {
     // MARK: Constants
 
     private struct Defaults {
-        static let isEnabled = false
+        static let isEnabled = true
         static let isAutoStartEnabled = false
         static let isShakeGestureEnabled = true
         static let backColor = UIColor.black
@@ -47,5 +47,15 @@ open class Settings {
 
     /// Console opacity
     public var opacity = Defaults.opacity
+
+    // MARK: Helpers
+
+    lazy var consoleFont: UIFont = {
+        return UIFont.monospacedDigitSystemFont(ofSize: self.fontSize, weight: UIFont.Weight.regular)
+    }()
+
+    lazy var textColorWithOpacity: UIColor = { [unowned self] in
+        self.textColor.withAlphaComponent(Defaults.opacity)
+    }()
 
 }

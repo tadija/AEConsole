@@ -16,7 +16,7 @@ open class AEConsole: LogDelegate {
     
     let brain = Brain()
     
-    private let config = Config.shared
+    public let settings = Settings()
     private var appDelegate: UIApplicationDelegate?
     
     // MARK: - API
@@ -27,7 +27,7 @@ open class AEConsole: LogDelegate {
         - NOTE: If `AEConsole` setting "Enabled" is set to "NO" then it does nothing.
     */
     open class func launch(with appDelegate: UIApplicationDelegate) {
-        if Config.shared.isEnabled {
+        if shared.settings.isEnabled {
             Log.shared.delegate = shared
             shared.appDelegate = appDelegate
             shared.brain.configureConsole(with: appDelegate)
@@ -69,7 +69,7 @@ open class AEConsole: LogDelegate {
         else { return }
 
         window.bringSubview(toFront: brain.console)
-        if config.isShakeGestureEnabled {
+        if settings.isShakeGestureEnabled {
             brain.console.becomeFirstResponder()
         }
     }

@@ -15,8 +15,8 @@ class Brain: NSObject {
     
     // MARK: - Properties
     
-    fileprivate let config = Config.shared
-    
+    fileprivate let settings = AEConsole.shared.settings
+
     var lines = [Line]()
     var filteredLines = [Line]()
     
@@ -116,7 +116,7 @@ extension Brain {
         
         view.frame = window.bounds
         view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        view.isOnScreen = config.isAutoStartEnabled
+        view.isOnScreen = settings.isAutoStartEnabled
         window.addSubview(view)
         
         return view
@@ -140,9 +140,9 @@ extension Brain {
     
     private func getWidth(for line: Line) -> CGFloat {
         let text = line.description
-        let maxSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: config.rowHeight)
+        let maxSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: settings.rowHeight)
         let options = NSStringDrawingOptions.usesLineFragmentOrigin
-        let attributes = [NSAttributedStringKey.font : config.consoleFont]
+        let attributes = [NSAttributedStringKey.font : settings.consoleFont]
         let nsText = text as NSString
         let size = nsText.boundingRect(with: maxSize, options: options, attributes: attributes, context: nil)
         let width = size.width
