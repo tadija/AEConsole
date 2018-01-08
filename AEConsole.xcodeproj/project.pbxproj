@@ -104,9 +104,8 @@
 				8BE817AF1CAF442F00FCBE4A /* LICENSE */,
 				8BE817B01CAF442F00FCBE4A /* README.md */,
 				8BE817AE1CAF442F00FCBE4A /* CHANGELOG.md */,
-				8B022D2E1CB071710039B5F4 /* AEConsole.podspec */,
 				8BDFB39F1CB181A500F0F6F1 /* Cartfile */,
-				8B022D3C1CB071790039B5F4 /* Package.swift */,
+				8B022D2E1CB071710039B5F4 /* AEConsole.podspec */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -114,6 +113,7 @@
 		8B5894C61CA9D857005F0B9D = {
 			isa = PBXGroup;
 			children = (
+				8B022D3C1CB071790039B5F4 /* Package.swift */,
 				8B5894D21CA9D857005F0B9D /* Sources */,
 				8B5894D11CA9D857005F0B9D /* Products */,
 				8B022D3D1CB071820039B5F4 /* Supporting Files */,

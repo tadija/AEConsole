@@ -12,10 +12,8 @@ Pod::Spec.new do |s|
     s.source = { :git => 'https://github.com/tadija/AEConsole.git', :tag => s.version }
     s.source_files = 'Sources/*.swift'
 
-    s.pod_target_xcconfig = { 'SWIFT_VERSION' => '3.0' }
-
     s.ios.deployment_target = '9.0'
 
-    s.dependency 'AELog', '~> 0.3'
+    s.dependency 'AELog', '~> 0.5'
 
 end
