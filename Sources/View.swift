@@ -474,12 +474,12 @@ extension View {
     
     @objc func didTapForwardTouchesButton(_ sender: UIButton) {
         forwardTouchesButton.isSelected = !forwardTouchesButton.isSelected
-        aelog("Forward Touches [\(forwardTouchesButton.isSelected)]")
+        logToDebugger("Forward Touches [\(forwardTouchesButton.isSelected)]")
     }
     
     @objc func didTapAutoFollowButton(_ sender: UIButton) {
         autoFollowButton.isSelected = !autoFollowButton.isSelected
-        aelog("Auto Follow [\(autoFollowButton.isSelected)]")
+        logToDebugger("Auto Follow [\(autoFollowButton.isSelected)]")
     }
     
     @objc func didTapClearLogButton(_ sender: UIButton) {

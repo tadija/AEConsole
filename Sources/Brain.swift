@@ -91,7 +91,7 @@ class Brain: NSObject {
         let log = stringLines.joined(separator: "\n")
         
         if isEmpty(log) {
-            aelog("Log is empty, nothing to export here.")
+            logToDebugger("Log is empty, nothing to export here.")
         } else {
             writeLog(log)
         }
@@ -113,13 +113,13 @@ extension Brain {
     
     private func applyFilter() {
         guard let filter = filterText else { return }
-        aelog("Filter Lines [\(isFilterActive)] - <\(filter)>")
+        logToDebugger("Filter Lines [\(isFilterActive)] - <\(filter)>")
         let filtered = lines.filter({ $0.description.localizedCaseInsensitiveContains(filter) })
         filteredLines = filtered
     }
     
     private func clearFilter() {
-        aelog("Filter Lines [\(isFilterActive)]")
+        logToDebugger("Filter Lines [\(isFilterActive)]")
         filteredLines.removeAll()
     }
     
@@ -175,9 +175,9 @@ extension Brain {
         
         do {
             try log.write(to: fileURL, atomically: true, encoding: String.Encoding.utf8)
-            aelog("Log is exported to path: \(fileURL)")
+            logToDebugger("Log is exported to path: \(fileURL)")
         } catch {
-            aelog(error)
+            logToDebugger("\(error)")
         }
     }
     
