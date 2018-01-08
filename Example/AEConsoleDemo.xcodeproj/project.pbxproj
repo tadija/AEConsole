@@ -16,8 +16,6 @@
 		8BE817951CAF342500FCBE4A /* AELog.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8BE817861CAF341300FCBE4A /* AELog.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8BE817981CAF343200FCBE4A /* AEConsole.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BE817931CAF341C00FCBE4A /* AEConsole.framework */; };
 		8BE817991CAF343200FCBE4A /* AEConsole.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8BE817931CAF341C00FCBE4A /* AEConsole.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8BFBE7A81DB3A20F00BB4B05 /* AELog.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B01E9441CAF17650049F98E /* AELog.plist */; };
-		8BFBE7A91DB3A47100BB4B05 /* AEConsole.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8BFBE7A01DB3A0B400BB4B05 /* AEConsole.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -116,10 +114,8 @@
 		8B01E9191CAF15230049F98E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8B01E91C1CAF15230049F98E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8B01E91E1CAF15230049F98E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8B01E9441CAF17650049F98E /* AELog.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = AELog.plist; sourceTree = "<group>"; };
 		8BE8177E1CAF341300FCBE4A /* AELog.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AELog.xcodeproj; path = ../AELog/AELog.xcodeproj; sourceTree = "<group>"; };
 		8BE8178D1CAF341C00FCBE4A /* AEConsole.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AEConsole.xcodeproj; path = ../AEConsole.xcodeproj; sourceTree = "<group>"; };
-		8BFBE7A01DB3A0B400BB4B05 /* AEConsole.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = AEConsole.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -158,8 +154,6 @@
 			children = (
 				8B01E9121CAF15230049F98E /* AppDelegate.swift */,
 				8B01E9141CAF15230049F98E /* ViewController.swift */,
-				8B01E9441CAF17650049F98E /* AELog.plist */,
-				8BFBE7A01DB3A0B400BB4B05 /* AEConsole.plist */,
 				8B01E9461CAF18030049F98E /* Supporting FIles */,
 			);
 			path = AEConsoleDemo;
@@ -330,9 +324,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8B01E91D1CAF15230049F98E /* LaunchScreen.storyboard in Resources */,
-				8BFBE7A81DB3A20F00BB4B05 /* AELog.plist in Resources */,
 				8B01E91A1CAF15230049F98E /* Assets.xcassets in Resources */,
-				8BFBE7A91DB3A47100BB4B05 /* AEConsole.plist in Resources */,
 				8B01E9181CAF15230049F98E /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
