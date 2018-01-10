@@ -14,11 +14,11 @@ class View: UIView {
     fileprivate struct Layout {
         static let filterHeight: CGFloat = 64
 
-        static let menuWidth: CGFloat = 300
         static let menuHeight: CGFloat = 50
-        static let menuExpandedLeading: CGFloat = -Layout.menuWidth
-        static let menuCollapsedLeading: CGFloat = -75
-        
+        static let expandedMenuWidth: CGFloat = 300
+        static let collapsedMenuWidth: CGFloat = 75
+        static let collapsedMenuHiddenWidth: CGFloat = expandedMenuWidth - collapsedMenuWidth
+
         static let magicNumber: CGFloat = 10
     }
     
@@ -41,6 +41,7 @@ class View: UIView {
     fileprivate let menuView = UIView()
     fileprivate let menuStack = UIStackView()
     fileprivate var menuViewLeading: NSLayoutConstraint!
+    fileprivate var menuViewTrailing: NSLayoutConstraint!
     
     fileprivate let toggleToolbarButton = UIButton()
     fileprivate let forwardTouchesButton = UIButton()
@@ -106,6 +107,7 @@ class View: UIView {
         super.layoutSubviews()
 
         updateFilterViewLayout()
+        updateMenuViewLayout()
         updateContentLayout()
     }
     
@@ -436,11 +438,11 @@ extension View {
     }
     
     private func configureMenuViewConstraints() {
-        let width = menuView.widthAnchor.constraint(equalToConstant: Layout.menuWidth + Layout.magicNumber)
-        let height = menuView.heightAnchor.constraint(equalToConstant: Layout.menuHeight)
+        menuViewLeading = menuView.leadingAnchor.constraint(equalTo: trailingAnchor, constant: -Layout.collapsedMenuWidth)
+        menuViewTrailing = menuView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: Layout.collapsedMenuHiddenWidth)
         let centerY = menuView.centerYAnchor.constraint(equalTo: centerYAnchor)
-        menuViewLeading = menuView.leadingAnchor.constraint(equalTo: trailingAnchor, constant: Layout.menuCollapsedLeading)
-        NSLayoutConstraint.activate([width, height, centerY, menuViewLeading])
+        let height = menuView.heightAnchor.constraint(equalToConstant: Layout.menuHeight)
+        NSLayoutConstraint.activate([menuViewLeading, menuViewTrailing, centerY, height])
     }
     
     private func configureMenuStackConstraints() {
@@ -517,10 +519,9 @@ extension View {
         isToolbarActive = !isToolbarActive
 
         updateFilterViewLayout()
+        updateMenuViewLayout()
 
-        menuViewLeading.constant = isToolbarActive ? Layout.menuExpandedLeading : Layout.menuCollapsedLeading
         let alpha: CGFloat = isToolbarActive ? 1.0 : 0.3
-
         UIView.animate(withDuration: 0.3, animations: { [weak self] in
             self?.filterView.alpha = alpha
             self?.menuView.alpha = alpha
@@ -539,6 +540,29 @@ extension View {
         }
         filterViewTop.constant = isToolbarActive ? 0 : -Layout.filterHeight
         filterViewBottom.constant = isToolbarActive ? (Layout.filterHeight + filterTopPadding) : 0
+    }
+
+    fileprivate func updateMenuViewLayout() {
+        var menuTrailingPadding: CGFloat = 0
+        if #available(iOS 11.0, *) {
+            menuTrailingPadding = safeAreaInsets.right / 2
+        }
+        if isToolbarActive {
+            menuViewLeading.constant = -Layout.expandedMenuWidth
+            if UIDevice.current.orientation == .landscapeRight {
+                let hasSafeArea = menuTrailingPadding > Layout.magicNumber
+                menuViewTrailing.constant = hasSafeArea ? -menuTrailingPadding : Layout.magicNumber
+            } else {
+                menuViewTrailing.constant = Layout.magicNumber
+            }
+        } else {
+            menuViewTrailing.constant = Layout.collapsedMenuHiddenWidth
+            if UIDevice.current.orientation == .landscapeRight {
+                menuViewLeading.constant = -(Layout.collapsedMenuWidth + menuTrailingPadding + Layout.magicNumber)
+            } else {
+                menuViewLeading.constant = -Layout.collapsedMenuWidth
+            }
+        }
     }
     
 }
