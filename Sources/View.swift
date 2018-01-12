@@ -12,16 +12,14 @@ class View: UIView {
     // MARK: - Constants
     
     fileprivate struct Layout {
-        static let FilterHeight: CGFloat = 60
-        static let FilterExpandedTop: CGFloat = 0
-        static let FilterCollapsedTop: CGFloat = -Layout.FilterHeight
-        
-        static let MenuWidth: CGFloat = 300
-        static let MenuHeight: CGFloat = 50
-        static let MenuExpandedLeading: CGFloat = -Layout.MenuWidth
-        static let MenuCollapsedLeading: CGFloat = -75
-        
-        static let MagicNumber: CGFloat = 10
+        static let filterHeight: CGFloat = 64
+
+        static let menuHeight: CGFloat = 50
+        static let expandedMenuWidth: CGFloat = 300
+        static let collapsedMenuWidth: CGFloat = 75
+        static let collapsedMenuHiddenWidth: CGFloat = expandedMenuWidth - collapsedMenuWidth
+
+        static let magicNumber: CGFloat = 10
     }
     
     // MARK: - Outlets
@@ -32,6 +30,7 @@ class View: UIView {
     fileprivate let filterView = UIView()
     fileprivate let filterStack = UIStackView()
     fileprivate var filterViewTop: NSLayoutConstraint!
+    fileprivate var filterViewBottom: NSLayoutConstraint!
     
     fileprivate let exportLogButton = UIButton()
     fileprivate let linesCountStack = UIStackView()
@@ -42,6 +41,7 @@ class View: UIView {
     fileprivate let menuView = UIView()
     fileprivate let menuStack = UIStackView()
     fileprivate var menuViewLeading: NSLayoutConstraint!
+    fileprivate var menuViewTrailing: NSLayoutConstraint!
     
     fileprivate let toggleToolbarButton = UIButton()
     fileprivate let forwardTouchesButton = UIButton()
@@ -55,15 +55,14 @@ class View: UIView {
     
     var isOnScreen = false {
         didSet {
-            isHidden = !isOnScreen
-            
             if isOnScreen {
-                updateUI()
+                self.updateUI()
             }
+            isHidden = !isOnScreen
         }
     }
     
-    var currentOffsetX = -Layout.MagicNumber
+    var currentOffsetX = -Layout.magicNumber
     
     fileprivate let brain = Console.shared.brain
     fileprivate let settings = Console.shared.settings
@@ -73,16 +72,16 @@ class View: UIView {
             currentTopInset = isToolbarActive ? topInsetLarge : topInsetSmall
         }
     }
-    
+
     fileprivate var opacity: CGFloat = 1.0 {
         didSet {
             configureColors(with: opacity)
         }
     }
     
-    fileprivate var currentTopInset = Layout.MagicNumber
-    fileprivate var topInsetSmall = Layout.MagicNumber
-    fileprivate var topInsetLarge = Layout.MagicNumber + Layout.FilterHeight
+    fileprivate var currentTopInset = Layout.magicNumber
+    fileprivate var topInsetSmall = Layout.magicNumber
+    fileprivate var topInsetLarge = Layout.magicNumber + Layout.filterHeight
     
     // MARK: - Init
     
@@ -105,7 +104,9 @@ class View: UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        
+
+        updateFilterViewLayout()
+        updateMenuViewLayout()
         updateContentLayout()
     }
     
@@ -145,6 +146,7 @@ class View: UIView {
     
     func updateUI() {
         tableView.reloadData()
+        tableView.layoutIfNeeded()
         
         updateLinesCountLabels()
         updateContentLayout()
@@ -171,13 +173,11 @@ extension View {
         
         let newFrame = CGRect(x: 0.0, y: 0.0, width: maxWidth, height: bounds.height)
         tableView.frame = newFrame
-        
-        UIView.animate(withDuration: 0.3, animations: { [unowned self] () -> Void in
-            let inset = Layout.MagicNumber
-            let newInset = UIEdgeInsets(top: self.currentTopInset, left: inset, bottom: inset, right: maxWidth)
-            self.tableView.contentInset = newInset
-        })
-        
+
+        let inset = Layout.magicNumber
+        let newInset = UIEdgeInsets(top: self.currentTopInset, left: inset, bottom: inset, right: maxWidth)
+        self.tableView.contentInset = newInset
+
         updateContentOffset()
     }
     
@@ -185,23 +185,22 @@ extension View {
         if isToolbarActive {
             if tableView.contentOffset.y == -topInsetSmall {
                 let offset = CGPoint(x: tableView.contentOffset.x, y: -topInsetLarge)
-                tableView.setContentOffset(offset, animated: true)
+                tableView.contentOffset = offset
             }
         } else {
             if tableView.contentOffset.y == -topInsetLarge {
                 let offset = CGPoint(x: tableView.contentOffset.x, y: -topInsetSmall)
-                tableView.setContentOffset(offset, animated: true)
+                tableView.contentOffset = offset
             }
         }
         tableView.flashScrollIndicators()
     }
     
     fileprivate func scrollToBottom() {
-        let diff = tableView.contentSize.height - tableView.bounds.size.height
-        if diff > 0 {
-            let offsetY = diff + Layout.MagicNumber
-            let bottomOffset = CGPoint(x: currentOffsetX, y: offsetY)
-            tableView.setContentOffset(bottomOffset, animated: false)
+        let rowIndex = tableView.numberOfRows(inSection: 0) - 1
+        if rowIndex >= 0 {
+            let indexPath = IndexPath(row: rowIndex, section: 0)
+            tableView.scrollToRow(at: indexPath, at: .bottom, animated: false)
         }
     }
     
@@ -249,6 +248,10 @@ extension View {
         tableView.separatorStyle = .none
         
         tableView.register(Cell.self, forCellReuseIdentifier: Cell.identifier)
+
+        if #available(iOS 11.0, *) {
+            tableView.insetsContentViewsToSafeArea = true
+        }
     }
     
     private func configureFilterView() {
@@ -261,10 +264,10 @@ extension View {
     private func configureFilterStack() {
         filterView.alpha = 0.3
         filterStack.axis = .horizontal
-        filterStack.alignment = .fill
+        filterStack.alignment = .center
         filterStack.distribution = .fill
         
-        let stackInsets = UIEdgeInsets(top: Layout.MagicNumber, left: 0, bottom: 0, right: 0)
+        let stackInsets = UIEdgeInsets(top: Layout.magicNumber, left: 0, bottom: 0, right: 0)
         filterStack.layoutMargins = stackInsets
         filterStack.isLayoutMarginsRelativeArrangement = true
     }
@@ -272,11 +275,8 @@ extension View {
     private func configureFilterLinesCount() {
         linesCountStack.axis = .vertical
         linesCountStack.alignment = .fill
-        linesCountStack.distribution = .fillEqually
-        let stackInsets = UIEdgeInsets(top: Layout.MagicNumber, left: 0, bottom: Layout.MagicNumber, right: 0)
-        linesCountStack.layoutMargins = stackInsets
-        linesCountStack.isLayoutMarginsRelativeArrangement = true
-        
+        linesCountStack.distribution = .equalCentering
+
         linesTotalLabel.font = settings.consoleFont
         linesTotalLabel.textColor = settings.textColor
         linesTotalLabel.textAlignment = .left
@@ -290,12 +290,12 @@ extension View {
         let textColor = settings.textColor
         textField.autocapitalizationType = .none
         textField.tintColor = textColor
-        textField.font = settings.consoleFont.withSize(14)
+        textField.font = settings.consoleFont.withSize(16)
         textField.textColor = textColor
         let attributes = [NSAttributedStringKey.foregroundColor : textColor.withAlphaComponent(0.5)]
-        let placeholderText = NSAttributedString(string: "Type here...", attributes: attributes)
+        let placeholderText = NSAttributedString(string: "Type filter here...", attributes: attributes)
         textField.attributedPlaceholder = placeholderText
-        textField.layer.sublayerTransform = CATransform3DMakeTranslation(Layout.MagicNumber, 0, 0)
+        textField.layer.sublayerTransform = CATransform3DMakeTranslation(Layout.magicNumber, 0, 0)
     }
     
     private func configureFilterButtons() {
@@ -313,7 +313,7 @@ extension View {
     
     private func configureMenuStack() {
         menuView.alpha = 0.3
-        menuView.layer.cornerRadius = Layout.MagicNumber
+        menuView.layer.cornerRadius = Layout.magicNumber
         
         menuStack.axis = .horizontal
         menuStack.alignment = .fill
@@ -391,9 +391,15 @@ extension View {
     private func configureViewsForLayout() {
         filterView.translatesAutoresizingMaskIntoConstraints = false
         filterStack.translatesAutoresizingMaskIntoConstraints = false
-        
+        if #available(iOS 11.0, *) {
+            filterStack.insetsLayoutMarginsFromSafeArea = false
+        }
+
         menuView.translatesAutoresizingMaskIntoConstraints = false
         menuStack.translatesAutoresizingMaskIntoConstraints = false
+        if #available(iOS 11.0, *) {
+            menuStack.insetsLayoutMarginsFromSafeArea = false
+        }
     }
     
     private func configureConstraints() {
@@ -408,9 +414,9 @@ extension View {
     private func configureFilterViewConstraints() {
         let leading = filterView.leadingAnchor.constraint(equalTo: leadingAnchor)
         let trailing = filterView.trailingAnchor.constraint(equalTo: trailingAnchor)
-        let height = filterView.heightAnchor.constraint(equalToConstant: Layout.FilterHeight)
-        filterViewTop = filterView.topAnchor.constraint(equalTo: topAnchor, constant: Layout.FilterCollapsedTop)
-        NSLayoutConstraint.activate([leading, trailing, height, filterViewTop])
+        filterViewTop = filterView.topAnchor.constraint(equalTo: topAnchor, constant: -Layout.filterHeight)
+        filterViewBottom = filterView.bottomAnchor.constraint(equalTo: topAnchor)
+        NSLayoutConstraint.activate([leading, trailing, filterViewTop, filterViewBottom])
     }
     
     private func configureFilterStackConstraints() {
@@ -429,16 +435,16 @@ extension View {
     }
     
     private func configureMenuViewConstraints() {
-        let width = menuView.widthAnchor.constraint(equalToConstant: Layout.MenuWidth + Layout.MagicNumber)
-        let height = menuView.heightAnchor.constraint(equalToConstant: Layout.MenuHeight)
+        menuViewLeading = menuView.leadingAnchor.constraint(equalTo: trailingAnchor, constant: -Layout.collapsedMenuWidth)
+        menuViewTrailing = menuView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: Layout.collapsedMenuHiddenWidth)
         let centerY = menuView.centerYAnchor.constraint(equalTo: centerYAnchor)
-        menuViewLeading = menuView.leadingAnchor.constraint(equalTo: trailingAnchor, constant: Layout.MenuCollapsedLeading)
-        NSLayoutConstraint.activate([width, height, centerY, menuViewLeading])
+        let height = menuView.heightAnchor.constraint(equalToConstant: Layout.menuHeight)
+        NSLayoutConstraint.activate([menuViewLeading, menuViewTrailing, centerY, height])
     }
     
     private func configureMenuStackConstraints() {
         let leading = menuStack.leadingAnchor.constraint(equalTo: menuView.leadingAnchor)
-        let trailing = menuStack.trailingAnchor.constraint(equalTo: menuView.trailingAnchor, constant: -Layout.MagicNumber)
+        let trailing = menuStack.trailingAnchor.constraint(equalTo: menuView.trailingAnchor, constant: -Layout.magicNumber)
         let top = menuStack.topAnchor.constraint(equalTo: menuView.topAnchor)
         let bottom = menuStack.bottomAnchor.constraint(equalTo: menuView.bottomAnchor)
         NSLayoutConstraint.activate([leading, trailing, top, bottom])
@@ -484,7 +490,7 @@ extension View {
         if sender.state == .ended {
             if isToolbarActive {
                 let xTranslation = sender.translation(in: menuView).x
-                if abs(xTranslation) > (3 * Layout.MagicNumber) {
+                if abs(xTranslation) > (3 * Layout.magicNumber) {
                     let location = sender.location(in: menuView)
                     let opacity = opacityForLocation(location)
                     self.opacity = opacity
@@ -507,22 +513,53 @@ extension View {
     }
     
     private func toggleToolbar() {
-        filterViewTop.constant = isToolbarActive ? Layout.FilterCollapsedTop : Layout.FilterExpandedTop
-        menuViewLeading.constant = isToolbarActive ? Layout.MenuCollapsedLeading : Layout.MenuExpandedLeading
-        let alpha: CGFloat = isToolbarActive ? 0.3 : 1.0
-        
-        UIView.animate(withDuration: 0.3, animations: {
-            self.filterView.alpha = alpha
-            self.menuView.alpha = alpha
-            self.filterView.layoutIfNeeded()
-            self.menuView.layoutIfNeeded()
+        isToolbarActive = !isToolbarActive
+
+        updateFilterViewLayout()
+        updateMenuViewLayout()
+
+        let alpha: CGFloat = isToolbarActive ? 1.0 : 0.3
+        UIView.animate(withDuration: 0.3, animations: { [weak self] in
+            self?.filterView.alpha = alpha
+            self?.menuView.alpha = alpha
+            self?.layoutIfNeeded()
         })
         
         if isToolbarActive {
             textField.resignFirstResponder()
         }
-        
-        isToolbarActive = !isToolbarActive
+    }
+
+    fileprivate func updateFilterViewLayout() {
+        var filterTopPadding: CGFloat = 0
+        if #available(iOS 11.0, *) {
+            filterTopPadding = safeAreaInsets.top / 2
+        }
+        filterViewTop.constant = isToolbarActive ? 0 : -Layout.filterHeight
+        filterViewBottom.constant = isToolbarActive ? (Layout.filterHeight + filterTopPadding) : 0
+    }
+
+    fileprivate func updateMenuViewLayout() {
+        var menuTrailingPadding: CGFloat = 0
+        if #available(iOS 11.0, *) {
+            menuTrailingPadding = safeAreaInsets.right / 2
+        }
+        if isToolbarActive {
+            menuViewLeading.constant = -Layout.expandedMenuWidth
+            if UIDevice.current.orientation == .landscapeRight {
+                let hasSafeArea = menuTrailingPadding > Layout.magicNumber
+                menuViewTrailing.constant = hasSafeArea ? -menuTrailingPadding : Layout.magicNumber
+            } else {
+                menuViewTrailing.constant = Layout.magicNumber
+            }
+        } else {
+            menuViewTrailing.constant = Layout.collapsedMenuHiddenWidth
+            if UIDevice.current.orientation == .landscapeRight {
+                menuViewLeading.constant = -(Layout.collapsedMenuWidth + menuTrailingPadding + Layout.magicNumber)
+            } else {
+                menuViewLeading.constant = -Layout.collapsedMenuWidth
+            }
+        }
     }
     
 }
