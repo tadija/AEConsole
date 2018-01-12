@@ -55,11 +55,10 @@ class View: UIView {
     
     var isOnScreen = false {
         didSet {
-            isHidden = !isOnScreen
-            
             if isOnScreen {
-                updateUI()
+                self.updateUI()
             }
+            isHidden = !isOnScreen
         }
     }
     
@@ -147,6 +146,7 @@ class View: UIView {
     
     func updateUI() {
         tableView.reloadData()
+        tableView.layoutIfNeeded()
         
         updateLinesCountLabels()
         updateContentLayout()
@@ -173,13 +173,11 @@ extension View {
         
         let newFrame = CGRect(x: 0.0, y: 0.0, width: maxWidth, height: bounds.height)
         tableView.frame = newFrame
-        
-        UIView.animate(withDuration: 0.3, animations: { [unowned self] () -> Void in
-            let inset = Layout.magicNumber
-            let newInset = UIEdgeInsets(top: self.currentTopInset, left: inset, bottom: inset, right: maxWidth)
-            self.tableView.contentInset = newInset
-        })
-        
+
+        let inset = Layout.magicNumber
+        let newInset = UIEdgeInsets(top: self.currentTopInset, left: inset, bottom: inset, right: maxWidth)
+        self.tableView.contentInset = newInset
+
         updateContentOffset()
     }
     
@@ -187,12 +185,12 @@ extension View {
         if isToolbarActive {
             if tableView.contentOffset.y == -topInsetSmall {
                 let offset = CGPoint(x: tableView.contentOffset.x, y: -topInsetLarge)
-                tableView.setContentOffset(offset, animated: true)
+                tableView.contentOffset = offset
             }
         } else {
             if tableView.contentOffset.y == -topInsetLarge {
                 let offset = CGPoint(x: tableView.contentOffset.x, y: -topInsetSmall)
-                tableView.setContentOffset(offset, animated: true)
+                tableView.contentOffset = offset
             }
         }
         tableView.flashScrollIndicators()
@@ -203,7 +201,7 @@ extension View {
         if diff > 0 {
             let offsetY = diff + Layout.magicNumber
             let bottomOffset = CGPoint(x: currentOffsetX, y: offsetY)
-            tableView.setContentOffset(bottomOffset, animated: false)
+            tableView.contentOffset = bottomOffset
         }
     }
     
