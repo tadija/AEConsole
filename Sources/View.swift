@@ -72,7 +72,7 @@ class View: UIView {
             currentTopInset = isToolbarActive ? topInsetLarge : topInsetSmall
         }
     }
-    
+
     fileprivate var opacity: CGFloat = 1.0 {
         didSet {
             configureColors(with: opacity)
@@ -197,11 +197,10 @@ extension View {
     }
     
     fileprivate func scrollToBottom() {
-        let diff = tableView.contentSize.height - tableView.bounds.size.height
-        if diff > 0 {
-            let offsetY = diff + Layout.magicNumber
-            let bottomOffset = CGPoint(x: currentOffsetX, y: offsetY)
-            tableView.contentOffset = bottomOffset
+        let rowIndex = tableView.numberOfRows(inSection: 0) - 1
+        if rowIndex >= 0 {
+            let indexPath = IndexPath(row: rowIndex, section: 0)
+            tableView.scrollToRow(at: indexPath, at: .bottom, animated: false)
         }
     }
     
