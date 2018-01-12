@@ -36,10 +36,9 @@ class Brain: NSObject {
     }
     
     // MARK: - API
-    
-    func configureConsole(with appDelegate: UIApplicationDelegate) {
-        guard let _window = appDelegate.window, let window = _window else { return }
 
+    func configureConsole(in window: UIWindow?) {
+        guard let window = window else { return }
         console = createConsoleView(in: window)
         console.tableView.dataSource = self
         console.tableView.delegate = self

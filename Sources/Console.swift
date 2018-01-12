@@ -17,21 +17,17 @@ open class Console: LogDelegate {
     let brain = Brain()
     
     public let settings = Settings.shared
-    private var appDelegate: UIApplicationDelegate?
+    private var window: UIWindow?
     
     // MARK: - API
-    
-    /**
-        Enable Console UI by calling this method in your AppDelegate's `didFinishLaunchingWithOptions:`
-     
-        - NOTE: If `AEConsole` setting "Enabled" is set to "NO" then it does nothing.
-    */
-    open class func launch(with appDelegate: UIApplicationDelegate) {
-        if shared.settings.isEnabled {
-            Log.shared.delegate = shared
-            shared.appDelegate = appDelegate
-            shared.brain.configureConsole(with: appDelegate)
-        }
+
+    /// Enable Console UI by calling this method in your AppDelegate's `didFinishLaunchingWithOptions:`
+    ///
+    /// - Parameter window: Main window for the app (AppDelegate's window).
+    open class func launch(in window: UIWindow?) {
+        Log.shared.delegate = shared
+        shared.window = window
+        shared.brain.configureConsole(in: window)
     }
     
     /// Current state of Console UI visibility
@@ -63,11 +59,7 @@ open class Console: LogDelegate {
     }
     
     @objc fileprivate func activateConsoleUI() {
-        guard let
-            delegate = appDelegate,
-            let _window = delegate.window, let window = _window
-        else { return }
-
+        guard let window = window else { return }
         window.bringSubview(toFront: brain.console)
         if settings.isShakeGestureEnabled {
             brain.console.becomeFirstResponder()
