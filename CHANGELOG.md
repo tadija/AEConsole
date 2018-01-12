@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.4.1
+
+- Added support for iPhone X
+- Improvements and bug fixes
+
 ## Version 0.4.0
 
 - Migrated to Swift 4 and recommended settings with Xcode 9.2
