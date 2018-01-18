@@ -20,10 +20,6 @@ open class Settings {
         static let opacity: CGFloat = 0.7
     }
 
-    // MARK: Singleton
-
-    static let shared = Settings()
-
     // MARK: Properties
 
     /// Shake gesture flag (defaults to `true`)
@@ -46,11 +42,11 @@ open class Settings {
 
     // MARK: Helpers
 
-    lazy var consoleFont: UIFont = {
-        return UIFont.monospacedDigitSystemFont(ofSize: fontSize, weight: .regular)
+    internal lazy var consoleFont: UIFont = {
+        return .monospacedDigitSystemFont(ofSize: fontSize, weight: .regular)
     }()
 
-    lazy var textColorWithOpacity: UIColor = {
+    internal lazy var textColorWithOpacity: UIColor = {
         textColor.withAlphaComponent(Defaults.opacity)
     }()
 

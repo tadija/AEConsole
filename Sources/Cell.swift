@@ -6,11 +6,11 @@
 
 import UIKit
 
-class Cell: UITableViewCell {
+internal final class Cell: UITableViewCell {
     
     // MARK: - Constants
     
-    static let identifier = "AEConsoleCell"
+    internal static let identifier = "AEConsoleCell"
     
     // MARK: - Properties
     
@@ -18,12 +18,12 @@ class Cell: UITableViewCell {
     
     // MARK: - Init
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    internal override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         commonInit()
     }
     
-    required init?(coder aDecoder: NSCoder) {
+    internal required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         commonInit()
     }
@@ -34,8 +34,9 @@ class Cell: UITableViewCell {
     }
     
     private func configureLabel() {
-        guard let label = textLabel else { return }
-        
+        guard let label = textLabel else {
+            return
+        }
         label.font = settings.consoleFont
         label.textColor = settings.textColorWithOpacity
         label.numberOfLines = 1
@@ -44,13 +45,13 @@ class Cell: UITableViewCell {
     
     // MARK: - Override
     
-    override func prepareForReuse() {
+    internal override func prepareForReuse() {
         super.prepareForReuse()
         
         textLabel?.textColor = settings.textColorWithOpacity
     }
     
-    override func layoutSubviews() {
+    internal override func layoutSubviews() {
         super.layoutSubviews()
         
         textLabel?.frame = bounds

@@ -7,28 +7,28 @@
 import UIKit
 import AELog
 
-class Brain: NSObject {
+internal final class Brain: NSObject {
     
     // MARK: - Outlets
     
-    var console: View!
+    internal var console: View!
     
     // MARK: - Properties
     
-    fileprivate let settings = Settings.shared
+    fileprivate let settings = Console.shared.settings
 
-    var lines = [Line]()
-    var filteredLines = [Line]()
+    internal var lines = [Line]()
+    internal var filteredLines = [Line]()
     
-    var contentWidth: CGFloat = 0.0
+    internal var contentWidth: CGFloat = 0.0
     
-    var filterText: String? {
+    internal var filterText: String? {
         didSet {
             isFilterActive = !isEmpty(filterText)
         }
     }
     
-    var isFilterActive = false {
+    internal var isFilterActive = false {
         didSet {
             updateFilter()
             updateInterfaceIfNeeded()
@@ -37,7 +37,7 @@ class Brain: NSObject {
     
     // MARK: - API
 
-    func configureConsole(in window: UIWindow?) {
+    internal func configureConsole(in window: UIWindow?) {
         guard let window = window else { return }
         console = createConsoleView(in: window)
         console.tableView.dataSource = self
@@ -45,14 +45,14 @@ class Brain: NSObject {
         console.textField.delegate = self
     }
     
-    func addLogLine(_ line: Line) {
+    internal func addLogLine(_ line: Line) {
         calculateContentWidth(for: line)
         updateFilteredLines(with: line)
         lines.append(line)
         updateInterfaceIfNeeded()
     }
     
-    func isEmpty(_ text: String?) -> Bool {
+    internal func isEmpty(_ text: String?) -> Bool {
         guard let text = text else { return true }
         let characterSet = CharacterSet.whitespacesAndNewlines
         let isTextEmpty = text.trimmingCharacters(in: characterSet).isEmpty
@@ -61,13 +61,13 @@ class Brain: NSObject {
     
     // MARK: - Actions
     
-    func clearLog() {
+    internal func clearLog() {
         lines.removeAll()
         filteredLines.removeAll()
         updateInterfaceIfNeeded()
     }
     
-    func exportAllLogLines() {
+    internal func exportAllLogLines() {
         let stringLines = lines.map({ $0.description })
         let log = stringLines.joined(separator: "\n")
         
@@ -168,19 +168,19 @@ extension Brain: UITableViewDataSource, UITableViewDelegate {
     
     // MARK: - UITableViewDataSource
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    internal func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let rows = isFilterActive ? filteredLines : lines
         return rows.count
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: Cell.identifier) as! Cell
         return cell
     }
     
     // MARK: - UITableViewDelegate
     
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    internal func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         let rows = isFilterActive ? filteredLines : lines
         let logLine = rows[indexPath.row]
         cell.textLabel?.text = logLine.description
@@ -188,13 +188,13 @@ extension Brain: UITableViewDataSource, UITableViewDelegate {
     
     // MARK: - UIScrollViewDelegate
     
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+    internal func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
             console.currentOffsetX = scrollView.contentOffset.x
         }
     }
     
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+    internal func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         console.currentOffsetX = scrollView.contentOffset.x
     }
     
@@ -204,7 +204,7 @@ extension Brain: UITextFieldDelegate {
     
     // MARK: - UITextFieldDelegate
     
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    internal func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         if !isEmpty(textField.text) {
             filterText = textField.text
