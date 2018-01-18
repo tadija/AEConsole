@@ -11,12 +11,14 @@ import AELog
 open class Console: LogDelegate {
     
     // MARK: - Properties
-    
-    static let shared = Console()
-    
-    let brain = Brain()
-    
+
+    /// Singleton
+    public static let shared = Console()
+
+    /// Console Settings
     public let settings = Settings.shared
+
+    internal let brain = Brain()
     private var window: UIWindow?
     
     // MARK: - API
