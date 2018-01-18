@@ -47,11 +47,11 @@ open class Settings {
     // MARK: Helpers
 
     lazy var consoleFont: UIFont = {
-        return UIFont.monospacedDigitSystemFont(ofSize: self.fontSize, weight: UIFont.Weight.regular)
+        return UIFont.monospacedDigitSystemFont(ofSize: fontSize, weight: .regular)
     }()
 
-    lazy var textColorWithOpacity: UIColor = { [unowned self] in
-        self.textColor.withAlphaComponent(Defaults.opacity)
+    lazy var textColorWithOpacity: UIColor = {
+        textColor.withAlphaComponent(Defaults.opacity)
     }()
 
 }

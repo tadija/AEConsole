@@ -56,7 +56,7 @@ class View: UIView {
     var isOnScreen = false {
         didSet {
             if isOnScreen {
-                self.updateUI()
+                updateUI()
             }
             isHidden = !isOnScreen
         }

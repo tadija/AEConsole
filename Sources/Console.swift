@@ -39,21 +39,19 @@ open class Console: LogDelegate {
     
     /// Toggle Console UI
     open class func toggle() {
-        guard let view = shared.brain.console else { return }
-        
-        if !view.isOnScreen {
-            shared.activateConsoleUI()
+        if let view = shared.brain.console {
+            if !view.isOnScreen {
+                shared.activateConsoleUI()
+            }
+            view.toggleUI()
         }
-        
-        view.toggleUI()
     }
     
     // MARK: - Init
     
     fileprivate init() {
-        let center = NotificationCenter.default
-        let notification = NSNotification.Name.UIApplicationDidBecomeActive
-        center.addObserver(self, selector: #selector(activateConsoleUI), name: notification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(activateConsoleUI),
+                                               name: .UIApplicationDidBecomeActive, object: nil)
     }
     
     deinit {
@@ -61,20 +59,21 @@ open class Console: LogDelegate {
     }
     
     @objc fileprivate func activateConsoleUI() {
-        guard let window = window else { return }
-        window.bringSubview(toFront: brain.console)
-        if settings.isShakeGestureEnabled {
-            brain.console.becomeFirstResponder()
+        if let window = window {
+            window.bringSubview(toFront: brain.console)
+            if settings.isShakeGestureEnabled {
+                brain.console.becomeFirstResponder()
+            }
         }
     }
     
     // MARK: - LogDelegate
 
     open func didLog(line: Line, mode: Log.Mode) {
-        DispatchQueue.main.async(execute: {
-            self.brain.addLogLine(line)
-            self.activateConsoleUI()
-        })
+        DispatchQueue.main.async { [weak self] in
+            self?.brain.addLogLine(line)
+            self?.activateConsoleUI()
+        }
     }
     
 }
