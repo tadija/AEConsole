@@ -46,6 +46,11 @@ open class Console: LogDelegate {
             view.toggleUI()
         }
     }
+
+    /// This will make {timestamp}.aelog file inside your App's Documents directory.
+    open class func exportLogFile() {
+        shared.brain.exportLogFile()
+    }
     
     // MARK: - Init
     
@@ -58,7 +63,8 @@ open class Console: LogDelegate {
         NotificationCenter.default.removeObserver(self)
     }
     
-    @objc fileprivate func activateConsoleUI() {
+    @objc
+    fileprivate func activateConsoleUI() {
         if let window = window {
             window.bringSubview(toFront: brain.console)
             if settings.isShakeGestureEnabled {

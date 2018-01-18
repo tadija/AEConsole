@@ -67,7 +67,7 @@ internal final class Brain: NSObject {
         updateInterfaceIfNeeded()
     }
     
-    internal func exportAllLogLines() {
+    internal func exportLogFile() {
         let stringLines = lines.map({ $0.description })
         let log = stringLines.joined(separator: "\n")
         

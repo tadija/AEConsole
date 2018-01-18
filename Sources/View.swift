@@ -480,7 +480,7 @@ extension View {
     
     @objc
     internal func didTapExportButton(_ sender: UIButton) {
-        brain.exportAllLogLines()
+        brain.exportLogFile()
     }
     
     @objc
