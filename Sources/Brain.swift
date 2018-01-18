@@ -17,8 +17,8 @@ internal final class Brain: NSObject {
     
     internal let settings: Settings
 
-    internal var lines = [Line]()
-    internal var filteredLines = [Line]()
+    internal var lines = [CustomStringConvertible]()
+    internal var filteredLines = [CustomStringConvertible]()
     
     internal var contentWidth: CGFloat = 0.0
     
@@ -51,7 +51,7 @@ internal final class Brain: NSObject {
         console.textField.delegate = self
     }
     
-    internal func addLogLine(_ line: Line) {
+    internal func addLogLine(_ line: CustomStringConvertible) {
         calculateContentWidth(for: line)
         updateFilteredLines(with: line)
         lines.append(line)
@@ -127,14 +127,14 @@ extension Brain {
         return view
     }
     
-    fileprivate func calculateContentWidth(for line: Line) {
+    fileprivate func calculateContentWidth(for line: CustomStringConvertible) {
         let calculatedLineWidth = getWidth(for: line)
         if calculatedLineWidth > contentWidth {
             contentWidth = calculatedLineWidth
         }
     }
     
-    fileprivate func updateFilteredLines(with line: Line) {
+    fileprivate func updateFilteredLines(with line: CustomStringConvertible) {
         if isFilterActive {
             guard let filter = filterText else { return }
             if line.description.contains(filter) {
@@ -143,7 +143,7 @@ extension Brain {
         }
     }
     
-    private func getWidth(for line: Line) -> CGFloat {
+    private func getWidth(for line: CustomStringConvertible) -> CGFloat {
         let text = line.description
         let maxSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: settings.rowHeight)
         let options = NSStringDrawingOptions.usesLineFragmentOrigin
