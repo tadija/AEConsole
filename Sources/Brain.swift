@@ -74,7 +74,7 @@ class Brain: NSObject {
         if isEmpty(log) {
             logToDebugger("Log is empty, nothing to export here.")
         } else {
-            writeLog(log)
+            exportLog(log)
         }
     }
     
@@ -115,7 +115,7 @@ extension Brain {
         
         view.frame = window.bounds
         view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        view.isOnScreen = settings.isAutoStartEnabled
+        view.isOnScreen = false
         window.addSubview(view)
         
         return view
@@ -148,7 +148,7 @@ extension Brain {
         return width
     }
     
-    fileprivate func writeLog(_ log: String) {
+    fileprivate func exportLog(_ log: String) {
         let filename = "\(Date().timeIntervalSince1970).aelog"
         let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
         let documentsURL = URL(fileURLWithPath: documentsPath)

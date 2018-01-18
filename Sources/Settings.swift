@@ -12,8 +12,6 @@ open class Settings {
     // MARK: Constants
 
     private struct Defaults {
-        static let isEnabled = true
-        static let isAutoStartEnabled = false
         static let isShakeGestureEnabled = true
         static let backColor = UIColor.black
         static let textColor = UIColor.white
@@ -27,12 +25,6 @@ open class Settings {
     static let shared = Settings()
 
     // MARK: Properties
-
-    /// Console enabled flag (defaults to `true`)
-    public var isEnabled = Defaults.isEnabled
-
-    /// Auto start flag (defaults to `false`)
-    public var isAutoStartEnabled = Defaults.isAutoStartEnabled
 
     /// Shake gesture flag (defaults to `true`)
     public var isShakeGestureEnabled = Defaults.isShakeGestureEnabled

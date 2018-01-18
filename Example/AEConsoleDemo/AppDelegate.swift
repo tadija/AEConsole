@@ -17,14 +17,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool
     {
-        /// - Note: Access log settings
+        /// - Note: Access console settings
         let settings = Console.shared.settings
 
-        /// - Note: It's recommended to disable logging for public release (defaults to enabled).
-        settings.isEnabled = true
-
         /// - Note: Customize console settings like this, these are defaults:
-        settings.isAutoStartEnabled = false
         settings.isShakeGestureEnabled = true
         settings.backColor = UIColor.black
         settings.textColor = UIColor.white
@@ -32,7 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         settings.rowHeight = 14.0
         settings.opacity = 0.7
 
-        /// - Note: Launch console in app window
+        /// - Note: Launch console in app window (it's recommended to skip this for public release)
         Console.launch(in: window)
 
         logToDebugger()

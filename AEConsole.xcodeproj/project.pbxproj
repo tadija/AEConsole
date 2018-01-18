@@ -133,10 +133,10 @@
 			isa = PBXGroup;
 			children = (
 				8B5894DB1CA9D86C005F0B9D /* Console.swift */,
-				8B0F80512003F98600928F0F /* Settings.swift */,
 				8BFBE78B1DB289AF00BB4B05 /* Brain.swift */,
 				8BFBE78D1DB289B600BB4B05 /* View.swift */,
 				8BFBE78F1DB289C300BB4B05 /* Cell.swift */,
+				8B0F80512003F98600928F0F /* Settings.swift */,
 				8B5894DD1CA9D8A2005F0B9D /* Supporting Files */,
 			);
 			path = Sources;
