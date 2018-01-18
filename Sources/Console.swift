@@ -16,9 +16,11 @@ open class Console: LogDelegate {
     public static let shared = Console()
 
     /// Console Settings
-    public let settings = Settings()
+    public var settings: Settings {
+        return brain.settings
+    }
 
-    internal let brain = Brain()
+    internal let brain = Brain(with: Settings())
     private var window: UIWindow?
     
     // MARK: - API

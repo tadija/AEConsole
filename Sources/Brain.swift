@@ -15,7 +15,7 @@ internal final class Brain: NSObject {
     
     // MARK: - Properties
     
-    fileprivate let settings = Console.shared.settings
+    internal let settings: Settings
 
     internal var lines = [Line]()
     internal var filteredLines = [Line]()
@@ -33,6 +33,12 @@ internal final class Brain: NSObject {
             updateFilter()
             updateInterfaceIfNeeded()
         }
+    }
+
+    // MARK: Init
+
+    internal init(with settings: Settings) {
+        self.settings = settings
     }
     
     // MARK: - API
