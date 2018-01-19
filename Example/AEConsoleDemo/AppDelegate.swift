@@ -28,13 +28,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         settings.rowHeight = 14.0
         settings.opacity = 0.7
 
-        /// - Note: Launch console in app window (it's recommended to skip this for public release)
+        /// - Note: Configure console in app window (it's recommended to skip this for public release)
         Console.shared.configure(in: window)
 
         /// - Note: Add any log line manually (lines from AELog will automatically be added)
         Console.shared.addLogLine(line: "Hello!")
 
+        /// - Note: Log something with AELog
         logToDebugger()
+
         return true
     }
     
