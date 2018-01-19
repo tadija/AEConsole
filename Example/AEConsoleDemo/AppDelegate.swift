@@ -29,7 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         settings.opacity = 0.7
 
         /// - Note: Launch console in app window (it's recommended to skip this for public release)
-        Console.launch(in: window)
+        Console.shared.configure(in: window)
 
         logToDebugger()
         return true

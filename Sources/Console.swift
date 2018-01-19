@@ -28,30 +28,30 @@ open class Console: LogDelegate {
     /// Enable Console UI by calling this method in your AppDelegate's `didFinishLaunchingWithOptions:`
     ///
     /// - Parameter window: Main window for the app (AppDelegate's window).
-    open class func launch(in window: UIWindow?) {
-        Log.shared.delegate = shared
-        shared.window = window
-        shared.brain.configureConsole(in: window)
+    open func configure(in window: UIWindow?) {
+        Log.shared.delegate = self
+        self.window = window
+        self.brain.configureConsole(in: window)
     }
     
     /// Current state of Console UI visibility
-    open class var isHidden: Bool {
-        return !shared.brain.console.isOnScreen
+    open var isHidden: Bool {
+        return !brain.console.isOnScreen
     }
     
     /// Toggle Console UI
-    open class func toggle() {
-        if let view = shared.brain.console {
+    open func toggle() {
+        if let view = brain.console {
             if !view.isOnScreen {
-                shared.activateConsoleUI()
+                activateConsoleUI()
             }
             view.toggleUI()
         }
     }
 
     /// This will make {timestamp}.aelog file inside your App's Documents directory.
-    open class func exportLogFile() {
-        shared.brain.exportLogFile()
+    open func exportLogFile() {
+        brain.exportLogFile()
     }
     
     // MARK: - Init
