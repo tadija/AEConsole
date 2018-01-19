@@ -7,7 +7,7 @@
 import UIKit
 import AELog
 
-class View: UIView {
+internal final class View: UIView {
     
     // MARK: - Constants
     
@@ -24,8 +24,8 @@ class View: UIView {
     
     // MARK: - Outlets
     
-    let tableView = UITableView()
-    let textField = UITextField()
+    internal let tableView = UITableView()
+    internal let textField = UITextField()
     
     fileprivate let filterView = UIView()
     fileprivate let filterStack = UIStackView()
@@ -53,16 +53,16 @@ class View: UIView {
     
     // MARK: - Properties
     
-    var isOnScreen = false {
+    internal var isOnScreen = false {
         didSet {
             if isOnScreen {
-                self.updateUI()
+                updateUI()
             }
             isHidden = !isOnScreen
         }
     }
     
-    var currentOffsetX = -Layout.magicNumber
+    internal var currentOffsetX = -Layout.magicNumber
     
     fileprivate let brain = Console.shared.brain
     fileprivate let settings = Console.shared.settings
@@ -85,12 +85,12 @@ class View: UIView {
     
     // MARK: - Init
     
-    required init?(coder aDecoder: NSCoder) {
+    internal required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         commonInit()
     }
     
-    override init(frame: CGRect) {
+    internal override init(frame: CGRect) {
         super.init(frame: frame)
         commonInit()
     }
@@ -102,7 +102,7 @@ class View: UIView {
     
     // MARK: - Override
     
-    override func layoutSubviews() {
+    internal override func layoutSubviews() {
         super.layoutSubviews()
 
         updateFilterViewLayout()
@@ -110,7 +110,7 @@ class View: UIView {
         updateContentLayout()
     }
     
-    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+    internal override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         let hitView = super.hitTest(point, with: event)
         
         let filter = hitView?.superview == filterStack
@@ -122,11 +122,11 @@ class View: UIView {
         return hitView
     }
     
-    override var canBecomeFirstResponder : Bool {
+    internal override var canBecomeFirstResponder : Bool {
         return true
     }
     
-    override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
+    internal override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
         if motion == .motionShake {
             if settings.isShakeGestureEnabled {
                 toggleUI()
@@ -136,7 +136,7 @@ class View: UIView {
     
     // MARK: - API
     
-    func toggleUI() {
+    internal func toggleUI() {
         textField.resignFirstResponder()
         
         UIView.transition(with: self, duration: 0.3, options: .transitionCrossDissolve, animations: { () -> Void in
@@ -144,7 +144,7 @@ class View: UIView {
         }, completion:nil)
     }
     
-    func updateUI() {
+    internal func updateUI() {
         tableView.reloadData()
         tableView.layoutIfNeeded()
         
@@ -456,29 +456,35 @@ extension View {
     
     // MARK: - Actions
     
-    @objc func didTapToggleToolbarButton(_ sender: UIButton) {
+    @objc
+    internal func didTapToggleToolbarButton(_ sender: UIButton) {
         toggleToolbar()
     }
     
-    @objc func didTapForwardTouchesButton(_ sender: UIButton) {
+    @objc
+    internal func didTapForwardTouchesButton(_ sender: UIButton) {
         forwardTouchesButton.isSelected = !forwardTouchesButton.isSelected
         logToDebugger("Forward Touches [\(forwardTouchesButton.isSelected)]")
     }
     
-    @objc func didTapAutoFollowButton(_ sender: UIButton) {
+    @objc
+    internal func didTapAutoFollowButton(_ sender: UIButton) {
         autoFollowButton.isSelected = !autoFollowButton.isSelected
         logToDebugger("Auto Follow [\(autoFollowButton.isSelected)]")
     }
     
-    @objc func didTapClearLogButton(_ sender: UIButton) {
+    @objc
+    internal func didTapClearLogButton(_ sender: UIButton) {
         brain.clearLog()
     }
     
-    @objc func didTapExportButton(_ sender: UIButton) {
-        brain.exportAllLogLines()
+    @objc
+    internal func didTapExportButton(_ sender: UIButton) {
+        brain.exportLogFile()
     }
     
-    @objc func didTapFilterClearButton(_ sender: UIButton) {
+    @objc
+    internal func didTapFilterClearButton(_ sender: UIButton) {
         textField.resignFirstResponder()
         if !brain.isEmpty(textField.text) {
             brain.filterText = nil
@@ -486,7 +492,8 @@ extension View {
         textField.text = nil
     }
     
-    @objc func didRecognizeUpdateOpacityGesture(_ sender: UIPanGestureRecognizer) {
+    @objc
+    internal func didRecognizeUpdateOpacityGesture(_ sender: UIPanGestureRecognizer) {
         if sender.state == .ended {
             if isToolbarActive {
                 let xTranslation = sender.translation(in: menuView).x
@@ -499,7 +506,8 @@ extension View {
         }
     }
     
-    @objc func didRecognizeHideConsoleGesture(_ sender: UITapGestureRecognizer) {
+    @objc
+    internal func didRecognizeHideConsoleGesture(_ sender: UITapGestureRecognizer) {
         toggleUI()
     }
     

@@ -15,9 +15,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     
     func application(_ application: UIApplication,
-                     didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        Console.launch(with: self)
+                     didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool
+    {
+        /// - Note: Access console settings
+        let settings = Console.shared.settings
+
+        /// - Note: Customize console settings like this, these are defaults:
+        settings.isShakeGestureEnabled = true
+        settings.backColor = UIColor.black
+        settings.textColor = UIColor.white
+        settings.fontSize = 12.0
+        settings.rowHeight = 14.0
+        settings.opacity = 0.7
+
+        /// - Note: Configure console in app window (it's recommended to skip this for public release)
+        Console.shared.configure(in: window)
+
+        /// - Note: Add any log line manually (lines from AELog will automatically be added)
+        Console.shared.addLogLine(line: "Hello!")
+
+        /// - Note: Log something with AELog
         logToDebugger()
+
         return true
     }
     

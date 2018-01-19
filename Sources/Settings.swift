@@ -12,8 +12,6 @@ open class Settings {
     // MARK: Constants
 
     private struct Defaults {
-        static let isEnabled = true
-        static let isAutoStartEnabled = false
         static let isShakeGestureEnabled = true
         static let backColor = UIColor.black
         static let textColor = UIColor.white
@@ -22,17 +20,7 @@ open class Settings {
         static let opacity: CGFloat = 0.7
     }
 
-    // MARK: Singleton
-
-    static let shared = Settings()
-
     // MARK: Properties
-
-    /// Console enabled flag (defaults to `true`)
-    public var isEnabled = Defaults.isEnabled
-
-    /// Auto start flag (defaults to `false`)
-    public var isAutoStartEnabled = Defaults.isAutoStartEnabled
 
     /// Shake gesture flag (defaults to `true`)
     public var isShakeGestureEnabled = Defaults.isShakeGestureEnabled
@@ -54,12 +42,12 @@ open class Settings {
 
     // MARK: Helpers
 
-    lazy var consoleFont: UIFont = {
-        return UIFont.monospacedDigitSystemFont(ofSize: self.fontSize, weight: UIFont.Weight.regular)
+    internal lazy var consoleFont: UIFont = {
+        return .monospacedDigitSystemFont(ofSize: fontSize, weight: .regular)
     }()
 
-    lazy var textColorWithOpacity: UIColor = { [unowned self] in
-        self.textColor.withAlphaComponent(Defaults.opacity)
+    internal lazy var textColorWithOpacity: UIColor = {
+        textColor.withAlphaComponent(Defaults.opacity)
     }()
 
 }

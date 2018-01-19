@@ -18,8 +18,7 @@
 ## Index
 - [Features](#features)
 - [Usage](#usage)
-	- [Settings](#settings)
-	- [Quick Help](#quick-help)
+- [Quick Help](#quick-help)
 - [Installation](#installation)
 - [License](#license)
 
@@ -35,35 +34,53 @@
 
 ## Usage
 
-In order to enable **AEConsole** you should add this one-liner in your **AppDelegate's** `didFinishLaunchingWithOptions`:
-
-```swift
-Console.launch(with: self)
-```
-
-If `AEConsole` is enabled, this will add `AEConsoleView` as a subview to your App's window and make it hidden by default.
+Calling `Console.shared.configure(in: window)` will add `Console.View` as a subview to your App's window and make it hidden by default.
 Whenever you need Console UI, you just make a shake gesture and it's there! When you no longer need it, shake again and it's gone.
 
-The rest is up to [AELog's](https://github.com/tadija/AELog) logging functionality. Whatever is logged with it, will show up in `AEConsole.View`.
+The rest is up to [AELog's](https://github.com/tadija/AELog) logging functionality. Whatever is logged with it, will show up in `Console.View`.
 
-In case you want to **toggle Console UI via code**, you can call `Console.toggle()`, also you can **check its current state** with `Console.hidden` property. So that's it about **API**, let's go through all the **customization settings**:
+```swift
+func application(_ application: UIApplication,
+                 didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool
+{
+    /// - Note: Access console settings
+    let settings = Console.shared.settings
 
-### Settings
+    /// - Note: Customize console settings like this, these are defaults:
+    settings.isShakeGestureEnabled = true
+    settings.backColor = UIColor.black
+    settings.textColor = UIColor.white
+    settings.fontSize = 12.0
+    settings.rowHeight = 14.0
+    settings.opacity = 0.7
 
-Configure all the settings with `Console.shared.settings`:
+    /// - Note: Configure console in app window (it's recommended to skip this for public release)
+    Console.shared.configure(in: window)
 
-Settings | Type | Description
------------- | ------------- | -------------
-isEnabled | Boolean | Console UI enabled flag (defaults to `true`)
-isAutoStartEnabled | Boolean | Console UI visible on App start flag (defaults to `false`)
-isShakeGestureEnabled | Boolean | Shake gesture enabled flag (defaults to `true`)
-backColor | String | Hex string for Console background color (defaults to `000000`)
-textColor | String | Hex string for Console text color (defaults to `FFFFFF`)
-fontSize | Number | Console UI font size (defaults to `12`)
-rowHeight | Number | Console UI row height (defaults to `14`)
-opacity | Number | Console UI opacity (defaults to `0.7`)
+    /// - Note: Log something with AELog
+    logToDebugger()
 
-### Quick Help
+    return true
+}
+```
+
+```swift
+// MARK: - Additional Console API
+
+/// - Note: Check if Console is hidden
+Console.shared.isHidden
+
+/// - Note: Toggle Console visibility
+Console.shared.toggle()
+
+/// - Note: Add any log line manually
+Console.shared.addLogLine(line: "Hello!")
+
+/// - Note: Export log file manually
+Console.shared.exportLogFile()
+```
+
+## Quick Help
 
 This should explain all the features of Console UI:
 
