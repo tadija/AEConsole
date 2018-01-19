@@ -40,13 +40,15 @@ Whenever you need Console UI, you just make a shake gesture and it's there! When
 The rest is up to [AELog's](https://github.com/tadija/AELog) logging functionality. Whatever is logged with it, will show up in `Console.View`.
 
 ```swift
+// MARK: - Console configuration
+
 func application(_ application: UIApplication,
                  didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool
 {
-    /// - Note: Access console settings
+    /// - Note: Access Console settings
     let settings = Console.shared.settings
 
-    /// - Note: Customize console settings like this, these are defaults:
+    /// - Note: Customize Console settings like this, these are defaults:
     settings.isShakeGestureEnabled = true
     settings.backColor = UIColor.black
     settings.textColor = UIColor.white
@@ -54,7 +56,7 @@ func application(_ application: UIApplication,
     settings.rowHeight = 14.0
     settings.opacity = 0.7
 
-    /// - Note: Configure console in app window (it's recommended to skip this for public release)
+    /// - Note: Configure Console in app window (it's recommended to skip this for public release)
     Console.shared.configure(in: window)
 
     /// - Note: Log something with AELog
