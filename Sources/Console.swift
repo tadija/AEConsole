@@ -74,13 +74,12 @@ open class Console: LogDelegate {
             }
         }
     }
-    
+
     // MARK: - LogDelegate
 
     open func didLog(line: Line, mode: Log.Mode) {
         DispatchQueue.main.async { [weak self] in
             self?.brain.addLogLine(line)
-            self?.activateConsoleUI()
         }
     }
     
