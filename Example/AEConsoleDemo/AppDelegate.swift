@@ -31,6 +31,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         /// - Note: Launch console in app window (it's recommended to skip this for public release)
         Console.shared.configure(in: window)
 
+        /// - Note: Add any log line manually (lines from AELog will automatically be added)
+        Console.shared.addLogLine(line: "Hello!")
+
         logToDebugger()
         return true
     }

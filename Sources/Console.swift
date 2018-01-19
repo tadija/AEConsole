@@ -49,6 +49,13 @@ open class Console: LogDelegate {
         }
     }
 
+    /// Add any log line manually (lines from AELog will automatically be added)
+    open func addLogLine(line: CustomStringConvertible) {
+        DispatchQueue.main.async { [weak self] in
+            self?.brain.addLogLine(line)
+        }
+    }
+
     /// This will make {timestamp}.aelog file inside your App's Documents directory.
     open func exportLogFile() {
         brain.exportLogFile()
@@ -78,9 +85,7 @@ open class Console: LogDelegate {
     // MARK: - LogDelegate
 
     open func didLog(line: Line, mode: Log.Mode) {
-        DispatchQueue.main.async { [weak self] in
-            self?.brain.addLogLine(line)
-        }
+        addLogLine(line: line)
     }
     
 }
