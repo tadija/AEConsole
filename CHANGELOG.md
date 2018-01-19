@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.5.0
+
+- Fixed issues #2, #3, #4, #5
+- Improvements and refactoring
+- Updated AELog dependency to 0.5.1
+
 ## Version 0.4.1
 
 - Added support for iPhone X
