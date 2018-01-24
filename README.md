@@ -60,7 +60,7 @@ func application(_ application: UIApplication,
     Console.shared.configure(in: window)
 
     /// - Note: Log something with AELog
-    logToDebugger()
+    aelog()
 
     return true
 }

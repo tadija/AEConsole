@@ -14,7 +14,7 @@ let package = Package(
         .library(name: "AEConsole", targets: ["AEConsole"])
     ],
     dependencies: [
-        .package(url: "https://github.com/tadija/AELog.git", .upToNextMinor(from: "0.5.1"))
+        .package(url: "https://github.com/tadija/AELog.git", .upToNextMinor(from: "0.5.5"))
     ],
     targets: [
         .target(
