@@ -14,6 +14,6 @@ Pod::Spec.new do |s|
 
     s.ios.deployment_target = '9.0'
 
-    s.dependency 'AELog', '~> 0.5.1'
+    s.dependency 'AELog', '~> 0.5.5'
 
 end
