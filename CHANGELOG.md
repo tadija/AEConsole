@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.5.5
+
+- Updated AELog dependency to 0.5.5
+
 ## Version 0.5.0
 
 - Fixed issues #2, #3, #4, #5
