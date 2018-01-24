@@ -35,29 +35,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Console.shared.addLogLine(line: "Hello!")
 
         /// - Note: Log something with AELog
-        logToDebugger()
+        aelog()
 
         return true
     }
     
     func applicationWillResignActive(_ application: UIApplication) {
-        logToDebugger()
+        aelog()
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {
-        logToDebugger()
+        aelog()
     }
     
     func applicationWillEnterForeground(_ application: UIApplication) {
-        logToDebugger()
+        aelog()
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
-        logToDebugger()
+        aelog()
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
-        logToDebugger()
+        aelog()
     }
 
 }
