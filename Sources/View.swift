@@ -33,6 +33,7 @@ internal final class View: UIView {
     fileprivate var filterViewBottom: NSLayoutConstraint!
     
     fileprivate let exportLogButton = UIButton()
+    fileprivate let exportLogSpinner = UIActivityIndicatorView(activityIndicatorStyle: .white)
     fileprivate let linesCountStack = UIStackView()
     fileprivate let linesTotalLabel = UILabel()
     fileprivate let linesFilteredLabel = UILabel()
@@ -367,9 +368,10 @@ extension View {
     
     private func configureHierarchy() {
         addSubview(tableView)
-        
+
+        filterStack.addArrangedSubview(exportLogSpinner)
         filterStack.addArrangedSubview(exportLogButton)
-        
+
         linesCountStack.addArrangedSubview(linesTotalLabel)
         linesCountStack.addArrangedSubview(linesFilteredLabel)
         filterStack.addArrangedSubview(linesCountStack)
@@ -429,9 +431,10 @@ extension View {
     
     private func configureFilterStackSubviewConstraints() {
         let exportButtonWidth = exportLogButton.widthAnchor.constraint(equalToConstant: 75)
+        let exportSpinnerWidth = exportLogSpinner.widthAnchor.constraint(equalToConstant: 75)
         let linesCountWidth = linesCountStack.widthAnchor.constraint(greaterThanOrEqualToConstant: 50)
         let clearFilterButtonWidth = clearFilterButton.widthAnchor.constraint(equalToConstant: 75)
-        NSLayoutConstraint.activate([exportButtonWidth, linesCountWidth, clearFilterButtonWidth])
+        NSLayoutConstraint.activate([exportButtonWidth, exportSpinnerWidth, linesCountWidth, clearFilterButtonWidth])
     }
     
     private func configureMenuViewConstraints() {
@@ -480,12 +483,17 @@ extension View {
     
     @objc
     internal func didTapExportButton(_ sender: UIButton) {
+        exportLogButton.isHidden = true
+        exportLogSpinner.startAnimating()
+
         brain.exportLogFile { [weak self] (url) in
             if let url = try? url() {
                 aelog("Initiated sharing of log file at url: \(url)")
                 DispatchQueue.main.async {
                     self?.shareLogFile(at: url) { (_, _, _, _) in
                         self?.toggleUI()
+                        self?.exportLogButton.isHidden = false
+                        self?.exportLogSpinner.stopAnimating()
                     }
                 }
             }
