@@ -95,7 +95,7 @@ internal final class Brain: NSObject {
                 aelog("Log is exported to path: \(fileURL)")
                 return fileURL
             } catch {
-                aelog("\(error)")
+                aelog("Log exporting failed with error: \(error)")
                 throw error
             }
         }
