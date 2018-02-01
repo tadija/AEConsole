@@ -480,14 +480,18 @@ extension View {
     
     @objc
     internal func didTapExportButton(_ sender: UIButton) {
-        do {
-            let url = try brain.exportLogFile()
-            aelog("Initiated sharing of log file at url: \(url)")
-            shareLogFile(at: url) { [weak self] (_, _, _, _) in
-                self?.toggleUI()
+        brain.exportLogFile { [weak self] (url) in
+            do {
+                let url = try url()
+                aelog("Initiated sharing of log file at url: \(url)")
+                DispatchQueue.main.async {
+                    self?.shareLogFile(at: url) { [weak self] (_, _, _, _) in
+                        self?.toggleUI()
+                    }
+                }
+            } catch {
+                aelog("Log export failed with error: \(error)")
             }
-        } catch {
-            aelog("Log export failed with error: \(error)")
         }
     }
     

@@ -73,10 +73,18 @@ internal final class Brain: NSObject {
         updateInterfaceIfNeeded()
     }
     
-    internal func exportLogFile() throws -> URL {
+    internal func exportLogFile(completion: @escaping (() throws -> URL) -> Void) {
+        DispatchQueue.global().async { [unowned self] in
+            completion {
+                try self.writeLogFile()
+            }
+        }
+    }
+
+    private func writeLogFile() throws -> URL {
         let stringLines = lines.map({ $0.description })
         let log = stringLines.joined(separator: "\n")
-        
+
         if isEmpty(log) {
             aelog("Log is empty, nothing to export here.")
             throw NSError(domain: "net.tadija.AEConsole/Brain", code: 0, userInfo: nil)
