@@ -11,6 +11,10 @@ internal final class Cell: UITableViewCell {
     // MARK: - Constants
     
     internal static let identifier = "AEConsoleCell"
+
+    // MARK: Outlets
+
+    let label = UILabel()
     
     // MARK: - Properties
     
@@ -24,22 +28,31 @@ internal final class Cell: UITableViewCell {
     }
     
     internal required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        commonInit()
+        fatalError("init(coder:) has not been implemented")
     }
     
     fileprivate func commonInit() {
         backgroundColor = UIColor.clear
+        configureLayout()
         configureLabel()
+    }
+
+    private func configureLayout() {
+        contentView.addSubview(label)
+        label.translatesAutoresizingMaskIntoConstraints = false
+
+        let leading = label.leadingAnchor.constraint(equalTo: contentView.leadingAnchor)
+        let trailing = label.trailingAnchor.constraint(equalTo: contentView.trailingAnchor)
+        let top = label.topAnchor.constraint(equalTo: contentView.topAnchor)
+        let bottom = label.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+
+        NSLayoutConstraint.activate([leading, trailing, top, bottom])
     }
     
     private func configureLabel() {
-        guard let label = textLabel else {
-            return
-        }
         label.font = settings.consoleFont
         label.textColor = settings.textColorWithOpacity
-        label.numberOfLines = 1
+        label.numberOfLines = 0
         label.textAlignment = .left
     }
     
@@ -48,13 +61,7 @@ internal final class Cell: UITableViewCell {
     internal override func prepareForReuse() {
         super.prepareForReuse()
         
-        textLabel?.textColor = settings.textColorWithOpacity
+        label.textColor = settings.textColorWithOpacity
     }
-    
-    internal override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        textLabel?.frame = bounds
-    }
-    
+
 }
