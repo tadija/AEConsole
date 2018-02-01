@@ -43,7 +43,7 @@ internal final class Cell: UITableViewCell {
 
         let leading = label.leadingAnchor.constraint(equalTo: contentView.leadingAnchor)
         let trailing = label.trailingAnchor.constraint(equalTo: contentView.trailingAnchor)
-        let top = label.topAnchor.constraint(equalTo: contentView.topAnchor)
+        let top = label.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4)
         let bottom = label.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
 
         NSLayoutConstraint.activate([leading, trailing, top, bottom])
