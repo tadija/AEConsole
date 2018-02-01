@@ -313,7 +313,7 @@ extension View {
     }
     
     private func configureMenuStack() {
-        menuView.alpha = 0.3
+        menuView.alpha = 0.7
         menuView.layer.cornerRadius = Layout.magicNumber
         
         menuStack.axis = .horizontal
@@ -568,7 +568,7 @@ extension View {
         updateFilterViewLayout()
         updateMenuViewLayout()
 
-        let alpha: CGFloat = isToolbarActive ? 1.0 : 0.3
+        let alpha: CGFloat = isToolbarActive ? 1.0 : 0.7
         UIView.animate(withDuration: 0.3, animations: { [weak self] in
             self?.filterView.alpha = alpha
             self?.menuView.alpha = alpha
