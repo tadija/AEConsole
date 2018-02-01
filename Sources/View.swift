@@ -483,18 +483,19 @@ extension View {
     
     @objc
     internal func didTapExportButton(_ sender: UIButton) {
-        exportLogButton.isHidden = true
-        exportLogSpinner.startAnimating()
-
+        showExporting()
         brain.exportLogFile { [weak self] (url) in
-            if let url = try? url() {
+            do {
+                let url = try url()
                 aelog("Initiated sharing of log file at url: \(url)")
                 DispatchQueue.main.async {
                     self?.shareLogFile(at: url) { (_, _, _, _) in
                         self?.toggleUI()
-                        self?.exportLogButton.isHidden = false
-                        self?.exportLogSpinner.stopAnimating()
                     }
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self?.hideExporting()
                 }
             }
         }
@@ -529,6 +530,16 @@ extension View {
     }
     
     // MARK: - Helpers
+
+    private func showExporting() {
+        exportLogButton.isHidden = true
+        exportLogSpinner.startAnimating()
+    }
+
+    private func hideExporting() {
+        exportLogButton.isHidden = false
+        exportLogSpinner.stopAnimating()
+    }
     
     private func shareLogFile(at url: URL, completion: UIActivityViewControllerCompletionWithItemsHandler? = nil) {
         let sharingSheet = UIActivityViewController(activityItems: [url], applicationActivities: nil)
@@ -538,8 +549,10 @@ extension View {
         sharingSheet.popoverPresentationController?.sourceRect = exportLogButton.bounds
         sharingSheet.completionWithItemsHandler = completion
         
-        window?.rootViewController?.present(sharingSheet, animated: true, completion: nil)
-        toggleUI()
+        window?.rootViewController?.present(sharingSheet, animated: true) { [weak self] in
+            self?.toggleUI()
+            self?.hideExporting()
+        }
     }
     
     private func opacityForLocation(_ location: CGPoint) -> CGFloat {
