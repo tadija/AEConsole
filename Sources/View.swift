@@ -482,8 +482,10 @@ extension View {
     internal func didTapExportButton(_ sender: UIButton) {
         do {
             let url = try brain.exportLogFile()
-            /// - TODO: implement later
-            aelog("share log file from url: \(url)")
+            aelog("Initiated sharing of log file at url: \(url)")
+            shareLogFile(at: url) { [weak self] (_, _, _, _) in
+                self?.toggleUI()
+            }
         } catch {
             aelog("Log export failed with error: \(error)")
         }
@@ -518,6 +520,18 @@ extension View {
     }
     
     // MARK: - Helpers
+    
+    private func shareLogFile(at url: URL, completion: UIActivityViewControllerCompletionWithItemsHandler? = nil) {
+        let sharingSheet = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        /// - Note: Support for iPad
+        sharingSheet.popoverPresentationController?.sourceView = exportLogButton
+        sharingSheet.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.any
+        sharingSheet.popoverPresentationController?.sourceRect = exportLogButton.bounds
+        sharingSheet.completionWithItemsHandler = completion
+        
+        window?.rootViewController?.present(sharingSheet, animated: true, completion: nil)
+        toggleUI()
+    }
     
     private func opacityForLocation(_ location: CGPoint) -> CGFloat {
         let calculatedOpacity = ((location.x * 1.0) / 300)
