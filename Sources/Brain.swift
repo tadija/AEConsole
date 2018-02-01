@@ -81,8 +81,24 @@ internal final class Brain: NSObject {
             aelog("Log is empty, nothing to export here.")
             throw NSError(domain: "net.tadija.AEConsole/Brain", code: 0, userInfo: nil)
         } else {
-            return try exportLog(log)
+            do {
+                let fileURL = logFileURL
+                try log.write(to: fileURL, atomically: true, encoding: String.Encoding.utf8)
+                aelog("Log is exported to path: \(fileURL)")
+                return fileURL
+            } catch {
+                aelog("\(error)")
+                throw error
+            }
         }
+    }
+
+    private var logFileURL: URL {
+        let filename = "AELog_\(Date().timeIntervalSince1970).txt"
+        let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+        let documentsURL = URL(fileURLWithPath: documentsPath)
+        let fileURL = documentsURL.appendingPathComponent(filename)
+        return fileURL
     }
     
 }
@@ -153,22 +169,6 @@ extension Brain {
         let size = nsText.boundingRect(with: maxSize, options: options, attributes: attributes, context: nil)
         let width = size.width
         return width
-    }
-    
-    fileprivate func exportLog(_ log: String) throws -> URL {
-        let filename = "\(Date().timeIntervalSince1970).aelog"
-        let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
-        let documentsURL = URL(fileURLWithPath: documentsPath)
-        let fileURL = documentsURL.appendingPathComponent(filename)
-        
-        do {
-            try log.write(to: fileURL, atomically: true, encoding: String.Encoding.utf8)
-            aelog("Log is exported to path: \(fileURL)")
-            return fileURL
-        } catch {
-            aelog("\(error)")
-            throw error
-        }
     }
     
 }
