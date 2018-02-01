@@ -25,7 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         settings.backColor = UIColor.black
         settings.textColor = UIColor.white
         settings.fontSize = 12.0
-        settings.rowHeight = 14.0
+        settings.rowSpacing = 4.0
         settings.opacity = 0.7
 
         /// - Note: Configure Console in app window (it's recommended to skip this for public release)

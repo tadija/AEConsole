@@ -244,7 +244,7 @@ extension View {
     }
     
     private func configureTableView() {
-        tableView.estimatedRowHeight = settings.rowHeight
+        tableView.estimatedRowHeight = settings.estimatedRowHeight
         tableView.rowHeight = UITableViewAutomaticDimension
 
         tableView.allowsSelection = false

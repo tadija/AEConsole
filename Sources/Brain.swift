@@ -170,7 +170,7 @@ extension Brain {
     
     private func getWidth(for line: CustomStringConvertible) -> CGFloat {
         let text = line.description
-        let maxSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: settings.rowHeight)
+        let maxSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: settings.estimatedRowHeight)
         let options = NSStringDrawingOptions.usesLineFragmentOrigin
         let attributes = [NSAttributedStringKey.font : settings.consoleFont]
         let nsText = text as NSString
