@@ -10,7 +10,7 @@
 [![Swift Package Manager compatible](https://img.shields.io/badge/Swift%20Package%20Manager-compatible-brightgreen.svg)](https://github.com/apple/swift-package-manager)
 
 **AEConsole** is built on top of [AELog](https://github.com/tadija/AELog), so you should probably see that first.
-> I cought myself wanting to see what's happening 'under the hood' while testing some app AFK (ex. outside).  
+> I wanted to see what's happening 'under the hood' while testing some app AFK (ex. outside).
 > Then I made it possible. Hope you'll like it too, happy coding!
 
 ![AEConsole](http://tadija.net/projects/AEConsole/AEConsole.png)
@@ -25,11 +25,13 @@
 ## Features
 - **All the things** from [AELog](https://github.com/tadija/AELog) plus:
 - Console UI overlay **on top of your App**
-- See **debug log directly on device** in real time
+- **Debug log on device** in real time
+- **Automatic row height** for all log lines
 - **Forward touches** to your App
 - **Shake to toggle** Console UI
 - **Filter log** to find exactly what you need
 - **Export log** to file if you need it for later
+- **Share log file** easily via system sharing sheet
 - **Customize look** as you like it
 
 ## Usage
@@ -53,7 +55,7 @@ func application(_ application: UIApplication,
     settings.backColor = UIColor.black
     settings.textColor = UIColor.white
     settings.fontSize = 12.0
-    settings.rowHeight = 14.0
+    settings.rowSpacing = 4.0
     settings.opacity = 0.7
 
     /// - Note: Configure Console in app window (it's recommended to skip this for public release)
@@ -79,7 +81,14 @@ Console.shared.toggle()
 Console.shared.addLogLine(line: "Hello!")
 
 /// - Note: Export log file manually
-Console.shared.exportLogFile()
+Console.shared.exportLogFile { (fileURL) in
+    do {
+        let url = try fileURL()
+        /// - Note: do something with a log file at given file URL...
+    } catch {
+        print(error)
+    }
+}
 ```
 
 ## Quick Help
@@ -90,7 +99,7 @@ This should explain all the features of Console UI:
 
 Feature | Description
 ------------ | -------------
-Export Log | will make `{timestamp}.aelog` file inside your App's Documents directory.
+Export Log | will make `AELog_{timestamp}.txt` file in Application Documents directory and present sharing sheet.
 Filter Log | filter is not case sensitive.
 Toggle Toolbar | works for both filter and menu toolbars simultaneously.
 Toggle Forward Touches | when active you can interact with your App, otherwise you can interact with the log.

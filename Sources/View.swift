@@ -33,6 +33,7 @@ internal final class View: UIView {
     fileprivate var filterViewBottom: NSLayoutConstraint!
     
     fileprivate let exportLogButton = UIButton()
+    fileprivate let exportLogSpinner = UIActivityIndicatorView(activityIndicatorStyle: .white)
     fileprivate let linesCountStack = UIStackView()
     fileprivate let linesTotalLabel = UILabel()
     fileprivate let linesFilteredLabel = UILabel()
@@ -243,7 +244,9 @@ extension View {
     }
     
     private func configureTableView() {
-        tableView.rowHeight = settings.rowHeight
+        tableView.estimatedRowHeight = settings.estimatedRowHeight
+        tableView.rowHeight = UITableViewAutomaticDimension
+
         tableView.allowsSelection = false
         tableView.separatorStyle = .none
         
@@ -312,7 +315,7 @@ extension View {
     }
     
     private func configureMenuStack() {
-        menuView.alpha = 0.3
+        menuView.alpha = 0.7
         menuView.layer.cornerRadius = Layout.magicNumber
         
         menuStack.axis = .horizontal
@@ -367,9 +370,10 @@ extension View {
     
     private func configureHierarchy() {
         addSubview(tableView)
-        
+
+        filterStack.addArrangedSubview(exportLogSpinner)
         filterStack.addArrangedSubview(exportLogButton)
-        
+
         linesCountStack.addArrangedSubview(linesTotalLabel)
         linesCountStack.addArrangedSubview(linesFilteredLabel)
         filterStack.addArrangedSubview(linesCountStack)
@@ -429,9 +433,10 @@ extension View {
     
     private func configureFilterStackSubviewConstraints() {
         let exportButtonWidth = exportLogButton.widthAnchor.constraint(equalToConstant: 75)
+        let exportSpinnerWidth = exportLogSpinner.widthAnchor.constraint(equalToConstant: 75)
         let linesCountWidth = linesCountStack.widthAnchor.constraint(greaterThanOrEqualToConstant: 50)
         let clearFilterButtonWidth = clearFilterButton.widthAnchor.constraint(equalToConstant: 75)
-        NSLayoutConstraint.activate([exportButtonWidth, linesCountWidth, clearFilterButtonWidth])
+        NSLayoutConstraint.activate([exportButtonWidth, exportSpinnerWidth, linesCountWidth, clearFilterButtonWidth])
     }
     
     private func configureMenuViewConstraints() {
@@ -480,7 +485,22 @@ extension View {
     
     @objc
     internal func didTapExportButton(_ sender: UIButton) {
-        brain.exportLogFile()
+        showExporting()
+        brain.exportLogFile { [weak self] (url) in
+            do {
+                let url = try url()
+                aelog("Initiated sharing of log file at url: \(url)")
+                DispatchQueue.main.async {
+                    self?.shareLogFile(at: url) { (_, _, _, _) in
+                        self?.toggleUI()
+                    }
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self?.hideExporting()
+                }
+            }
+        }
     }
     
     @objc
@@ -512,6 +532,30 @@ extension View {
     }
     
     // MARK: - Helpers
+
+    private func showExporting() {
+        exportLogButton.isHidden = true
+        exportLogSpinner.startAnimating()
+    }
+
+    private func hideExporting() {
+        exportLogButton.isHidden = false
+        exportLogSpinner.stopAnimating()
+    }
+    
+    private func shareLogFile(at url: URL, completion: UIActivityViewControllerCompletionWithItemsHandler? = nil) {
+        let sharingSheet = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        /// - Note: Support for iPad
+        sharingSheet.popoverPresentationController?.sourceView = exportLogButton
+        sharingSheet.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.any
+        sharingSheet.popoverPresentationController?.sourceRect = exportLogButton.bounds
+        sharingSheet.completionWithItemsHandler = completion
+        
+        window?.rootViewController?.present(sharingSheet, animated: true) { [weak self] in
+            self?.toggleUI()
+            self?.hideExporting()
+        }
+    }
     
     private func opacityForLocation(_ location: CGPoint) -> CGFloat {
         let calculatedOpacity = ((location.x * 1.0) / 300)
@@ -526,7 +570,7 @@ extension View {
         updateFilterViewLayout()
         updateMenuViewLayout()
 
-        let alpha: CGFloat = isToolbarActive ? 1.0 : 0.3
+        let alpha: CGFloat = isToolbarActive ? 1.0 : 0.7
         UIView.animate(withDuration: 0.3, animations: { [weak self] in
             self?.filterView.alpha = alpha
             self?.menuView.alpha = alpha

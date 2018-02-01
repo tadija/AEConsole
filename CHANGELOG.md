@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 0.6.0
+
+- Added sharing of exported log file
+- Automatic row height for all log lines
+- Replaced `rowHeight` with `rowSpacing` in `Settings`
+- Other improvements and refactoring
+
 ## Version 0.5.5
 
 - Updated AELog dependency to 0.5.5

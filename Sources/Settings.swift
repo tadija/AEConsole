@@ -16,7 +16,7 @@ open class Settings {
         static let backColor = UIColor.black
         static let textColor = UIColor.white
         static let fontSize: CGFloat = 12.0
-        static let rowHeight: CGFloat = 14.0
+        static let rowSpacing: CGFloat = 4.0
         static let opacity: CGFloat = 0.7
     }
 
@@ -35,7 +35,7 @@ open class Settings {
     public var fontSize = Defaults.fontSize
 
     /// Row height
-    public var rowHeight = Defaults.rowHeight
+    public var rowSpacing = Defaults.rowSpacing
 
     /// Console opacity
     public var opacity = Defaults.opacity
@@ -49,5 +49,9 @@ open class Settings {
     internal lazy var textColorWithOpacity: UIColor = {
         textColor.withAlphaComponent(Defaults.opacity)
     }()
+
+    internal var estimatedRowHeight: CGFloat {
+        return fontSize + rowSpacing
+    }
 
 }

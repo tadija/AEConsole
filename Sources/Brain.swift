@@ -73,15 +73,40 @@ internal final class Brain: NSObject {
         updateInterfaceIfNeeded()
     }
     
-    internal func exportLogFile() {
+    internal func exportLogFile(completion: @escaping (() throws -> URL) -> Void) {
+        DispatchQueue.global().async { [unowned self] in
+            completion {
+                try self.writeLogFile()
+            }
+        }
+    }
+
+    private func writeLogFile() throws -> URL {
         let stringLines = lines.map({ $0.description })
         let log = stringLines.joined(separator: "\n")
-        
+
         if isEmpty(log) {
             aelog("Log is empty, nothing to export here.")
+            throw NSError(domain: "net.tadija.AEConsole/Brain", code: 0, userInfo: nil)
         } else {
-            exportLog(log)
+            do {
+                let fileURL = logFileURL
+                try log.write(to: fileURL, atomically: true, encoding: String.Encoding.utf8)
+                aelog("Log is exported to path: \(fileURL)")
+                return fileURL
+            } catch {
+                aelog("Log exporting failed with error: \(error)")
+                throw error
+            }
         }
+    }
+
+    private var logFileURL: URL {
+        let filename = "AELog_\(Date().timeIntervalSince1970).txt"
+        let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+        let documentsURL = URL(fileURLWithPath: documentsPath)
+        let fileURL = documentsURL.appendingPathComponent(filename)
+        return fileURL
     }
     
 }
@@ -145,27 +170,13 @@ extension Brain {
     
     private func getWidth(for line: CustomStringConvertible) -> CGFloat {
         let text = line.description
-        let maxSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: settings.rowHeight)
+        let maxSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: settings.estimatedRowHeight)
         let options = NSStringDrawingOptions.usesLineFragmentOrigin
         let attributes = [NSAttributedStringKey.font : settings.consoleFont]
         let nsText = text as NSString
         let size = nsText.boundingRect(with: maxSize, options: options, attributes: attributes, context: nil)
         let width = size.width
         return width
-    }
-    
-    fileprivate func exportLog(_ log: String) {
-        let filename = "\(Date().timeIntervalSince1970).aelog"
-        let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
-        let documentsURL = URL(fileURLWithPath: documentsPath)
-        let fileURL = documentsURL.appendingPathComponent(filename)
-        
-        do {
-            try log.write(to: fileURL, atomically: true, encoding: String.Encoding.utf8)
-            aelog("Log is exported to path: \(fileURL)")
-        } catch {
-            aelog("\(error)")
-        }
     }
     
 }
@@ -181,17 +192,14 @@ extension Brain: UITableViewDataSource, UITableViewDelegate {
     
     internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: Cell.identifier) as! Cell
-        return cell
-    }
-    
-    // MARK: - UITableViewDelegate
-    
-    internal func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+
         let rows = isFilterActive ? filteredLines : lines
         let logLine = rows[indexPath.row]
-        cell.textLabel?.text = logLine.description
+        cell.label.text = logLine.description
+
+        return cell
     }
-    
+
     // MARK: - UIScrollViewDelegate
     
     internal func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
