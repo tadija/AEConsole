@@ -57,8 +57,8 @@ open class Console: LogDelegate {
     }
 
     /// This will make {timestamp}.aelog file inside your App's Documents directory.
-    open func exportLogFile() {
-        brain.exportLogFile()
+    open func exportLogFile() throws -> URL {
+        return try brain.exportLogFile()
     }
     
     // MARK: - Init

@@ -73,14 +73,15 @@ internal final class Brain: NSObject {
         updateInterfaceIfNeeded()
     }
     
-    internal func exportLogFile() {
+    internal func exportLogFile() throws -> URL {
         let stringLines = lines.map({ $0.description })
         let log = stringLines.joined(separator: "\n")
         
         if isEmpty(log) {
             aelog("Log is empty, nothing to export here.")
+            throw NSError(domain: "net.tadija.AEConsole/Brain", code: 0, userInfo: nil)
         } else {
-            exportLog(log)
+            return try exportLog(log)
         }
     }
     
@@ -154,7 +155,7 @@ extension Brain {
         return width
     }
     
-    fileprivate func exportLog(_ log: String) {
+    fileprivate func exportLog(_ log: String) throws -> URL {
         let filename = "\(Date().timeIntervalSince1970).aelog"
         let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
         let documentsURL = URL(fileURLWithPath: documentsPath)
@@ -163,8 +164,10 @@ extension Brain {
         do {
             try log.write(to: fileURL, atomically: true, encoding: String.Encoding.utf8)
             aelog("Log is exported to path: \(fileURL)")
+            return fileURL
         } catch {
             aelog("\(error)")
+            throw error
         }
     }
     
