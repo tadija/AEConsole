@@ -170,7 +170,7 @@ extension Brain {
     
     private func getWidth(for line: CustomStringConvertible) -> CGFloat {
         let text = line.description
-        let maxSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: settings.rowHeight)
+        let maxSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: settings.estimatedRowHeight)
         let options = NSStringDrawingOptions.usesLineFragmentOrigin
         let attributes = [NSAttributedStringKey.font : settings.consoleFont]
         let nsText = text as NSString
@@ -192,17 +192,14 @@ extension Brain: UITableViewDataSource, UITableViewDelegate {
     
     internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: Cell.identifier) as! Cell
-        return cell
-    }
-    
-    // MARK: - UITableViewDelegate
-    
-    internal func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+
         let rows = isFilterActive ? filteredLines : lines
         let logLine = rows[indexPath.row]
-        cell.textLabel?.text = logLine.description
+        cell.label.text = logLine.description
+
+        return cell
     }
-    
+
     // MARK: - UIScrollViewDelegate
     
     internal func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {

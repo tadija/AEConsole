@@ -25,14 +25,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         settings.backColor = UIColor.black
         settings.textColor = UIColor.white
         settings.fontSize = 12.0
-        settings.rowHeight = 14.0
+        settings.rowSpacing = 4.0
         settings.opacity = 0.7
 
         /// - Note: Configure Console in app window (it's recommended to skip this for public release)
         Console.shared.configure(in: window)
 
         /// - Note: Add any log line manually (lines from AELog will automatically be added)
-        Console.shared.addLogLine(line: "Hello!")
+        Console.shared.addLogLine(line: "Hello!\n")
 
         /// - Note: Log something with AELog
         aelog()
@@ -53,7 +53,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
-        aelog()
+        let text =  """
+        \n
+        > Calling Console.shared.configure(in: window) will add Console.View
+        > as a subview to your App's window and make it hidden by default.
+        > Whenever you need Console UI, you just make a shake gesture and it's there!
+        > When you no longer need it, shake again and it's gone.
+        > The rest is up to AELog's logging functionality.
+        > Whatever is logged with it, will show up in Console.View.
+        """
+        aelog(text)
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
