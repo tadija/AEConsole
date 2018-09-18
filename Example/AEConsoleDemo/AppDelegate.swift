@@ -1,10 +1,8 @@
-//
-//  AppDelegate.swift
-//  AEConsoleDemo
-//
-//  Created by Marko Tadic on 4/1/16.
-//  Copyright © 2016 AE. All rights reserved.
-//
+/**
+ *  https://github.com/tadija/AEConsole
+ *  Copyright (c) Marko Tadić 2016-2018
+ *  Licensed under the MIT license. See LICENSE file.
+ */
 
 import UIKit
 import AEConsole
@@ -15,7 +13,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     
     func application(_ application: UIApplication,
-                     didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool
+                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool
     {
         /// - Note: Access Console settings
         let settings = Console.shared.settings
