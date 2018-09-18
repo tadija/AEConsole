@@ -33,7 +33,7 @@ internal final class View: UIView {
     fileprivate var filterViewBottom: NSLayoutConstraint!
     
     fileprivate let exportLogButton = UIButton()
-    fileprivate let exportLogSpinner = UIActivityIndicatorView(activityIndicatorStyle: .white)
+    fileprivate let exportLogSpinner = UIActivityIndicatorView(style: .white)
     fileprivate let linesCountStack = UIStackView()
     fileprivate let linesTotalLabel = UILabel()
     fileprivate let linesFilteredLabel = UILabel()
@@ -127,7 +127,7 @@ internal final class View: UIView {
         return true
     }
     
-    internal override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
+    internal override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
         if motion == .motionShake {
             if settings.isShakeGestureEnabled {
                 toggleUI()
@@ -245,7 +245,7 @@ extension View {
     
     private func configureTableView() {
         tableView.estimatedRowHeight = settings.estimatedRowHeight
-        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.rowHeight = UITableView.automaticDimension
 
         tableView.allowsSelection = false
         tableView.separatorStyle = .none
@@ -295,7 +295,7 @@ extension View {
         textField.tintColor = textColor
         textField.font = settings.consoleFont.withSize(16)
         textField.textColor = textColor
-        let attributes = [NSAttributedStringKey.foregroundColor : textColor.withAlphaComponent(0.5)]
+        let attributes = [NSAttributedString.Key.foregroundColor : textColor.withAlphaComponent(0.5)]
         let placeholderText = NSAttributedString(string: "Type filter here...", attributes: attributes)
         textField.attributedPlaceholder = placeholderText
         textField.layer.sublayerTransform = CATransform3DMakeTranslation(Layout.magicNumber, 0, 0)
@@ -543,7 +543,7 @@ extension View {
         exportLogSpinner.stopAnimating()
     }
     
-    private func shareLogFile(at url: URL, completion: UIActivityViewControllerCompletionWithItemsHandler? = nil) {
+    private func shareLogFile(at url: URL, completion: UIActivityViewController.CompletionWithItemsHandler? = nil) {
         let sharingSheet = UIActivityViewController(activityItems: [url], applicationActivities: nil)
         /// - Note: Support for iPad
         sharingSheet.popoverPresentationController?.sourceView = exportLogButton

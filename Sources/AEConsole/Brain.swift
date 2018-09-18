@@ -172,7 +172,7 @@ extension Brain {
         let text = line.description
         let maxSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: settings.estimatedRowHeight)
         let options = NSStringDrawingOptions.usesLineFragmentOrigin
-        let attributes = [NSAttributedStringKey.font : settings.consoleFont]
+        let attributes = [NSAttributedString.Key.font : settings.consoleFont]
         let nsText = text as NSString
         let size = nsText.boundingRect(with: maxSize, options: options, attributes: attributes, context: nil)
         let width = size.width

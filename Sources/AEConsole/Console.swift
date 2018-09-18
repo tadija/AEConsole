@@ -65,7 +65,7 @@ open class Console: LogDelegate {
     
     fileprivate init() {
         NotificationCenter.default.addObserver(self, selector: #selector(activateConsoleUI),
-                                               name: .UIApplicationDidBecomeActive, object: nil)
+                                               name: UIApplication.didBecomeActiveNotification, object: nil)
     }
     
     deinit {
@@ -75,7 +75,7 @@ open class Console: LogDelegate {
     @objc
     fileprivate func activateConsoleUI() {
         if let window = window {
-            window.bringSubview(toFront: brain.console)
+            window.bringSubviewToFront(brain.console)
             if settings.isShakeGestureEnabled {
                 brain.console.becomeFirstResponder()
             }

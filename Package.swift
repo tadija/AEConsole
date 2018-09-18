@@ -1,4 +1,4 @@
-// swift-tools-version:4.0
+// swift-tools-version:4.2
 
 /**
  *  https://github.com/tadija/AEConsole
@@ -14,15 +14,14 @@ let package = Package(
         .library(name: "AEConsole", targets: ["AEConsole"])
     ],
     dependencies: [
-        .package(url: "https://github.com/tadija/AELog.git", .upToNextMinor(from: "0.5.5"))
+        .package(url: "https://github.com/tadija/AELog.git", .upToNextMinor(from: "0.5.6"))
     ],
     targets: [
         .target(
             name: "AEConsole",
             dependencies: [
                 "AELog"
-            ],
-            path: "Sources"
+            ]
         )
     ]
 )

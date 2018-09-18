@@ -1,7 +1,7 @@
 # AEConsole
 **Customizable Console UI overlay with debug log on top of your iOS App**
 
-[![Language Swift 4.0](https://img.shields.io/badge/Language-Swift%204.0-orange.svg?style=flat)](https://swift.org)
+[![Language Swift 4.2](https://img.shields.io/badge/Language-Swift%204.2-orange.svg?style=flat)](https://swift.org)
 [![Platforms iOS](https://img.shields.io/badge/Platforms-iOS-lightgray.svg?style=flat)](http://www.apple.com)
 [![License MIT](https://img.shields.io/badge/License-MIT-lightgrey.svg?style=flat)](https://github.com/tadija/AELog/blob/master/LICENSE)
 
