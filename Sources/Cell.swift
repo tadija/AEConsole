@@ -22,7 +22,7 @@ internal final class Cell: UITableViewCell {
     
     // MARK: - Init
     
-    internal override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    internal override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         commonInit()
     }

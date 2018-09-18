@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "AELog",
+        "repositoryURL": "https://github.com/tadija/AELog.git",
+        "state": {
+          "branch": null,
+          "revision": "c960d9b36de25c342bac2052ca21acf9c7083029",
+          "version": "0.5.6"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
