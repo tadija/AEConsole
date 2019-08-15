@@ -4,7 +4,7 @@
  *  Licensed under the MIT license. See LICENSE file.
  */
 
-import Foundation
+import UIKit
 
 /// Console settings
 open class Settings {
