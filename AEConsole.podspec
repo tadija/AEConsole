@@ -16,7 +16,7 @@ s.ios.deployment_target = '10.0'
 #NOTE: this should work when v0.6.0 becomes available for Swift 5
 s.dependency 'AELog', '~> 0.6.0'
 
-s.homepage = 'https://github.comtadija//AEConsole'
+s.homepage = 'https://github.com/tadija/AEConsole'
 s.author = { 'tadija' => 'tadija@me.com' }
 s.social_media_url = 'http://twitter.com/tadija'
 
