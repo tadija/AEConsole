@@ -1,0 +1,22 @@
+PODS:
+  - AELog (0.6.0)
+
+DEPENDENCIES:
+  - AELog (from `https://github.com/devcarlos/AELog.git`, commit `56609f8cf1e94426ff30d606d8a94852ceb200c1`)
+
+EXTERNAL SOURCES:
+  AELog:
+    :commit: 56609f8cf1e94426ff30d606d8a94852ceb200c1
+    :git: https://github.com/devcarlos/AELog.git
+
+CHECKOUT OPTIONS:
+  AELog:
+    :commit: 56609f8cf1e94426ff30d606d8a94852ceb200c1
+    :git: https://github.com/devcarlos/AELog.git
+
+SPEC CHECKSUMS:
+  AELog: c909410d8e5d1f361c4120a775d85653f5e98cd4
+
+PODFILE CHECKSUM: 5662d7bdf8a941e5c7fd2eaf01eaa81cfe5e8ab3
+
+COCOAPODS: 1.7.5

@@ -5,7 +5,6 @@
  */
 
 #import <UIKit/UIKit.h>
-#import <AELog/AELog.h>
 
 FOUNDATION_EXPORT double AEConsoleVersionNumber;
 FOUNDATION_EXPORT const unsigned char AEConsoleVersionString[];

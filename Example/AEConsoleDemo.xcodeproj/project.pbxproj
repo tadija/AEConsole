@@ -7,89 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		52F95064E71A4E05206A7036 /* Pods_AEConsoleDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4333162D2C1105BCDFBF8AE /* Pods_AEConsoleDemo.framework */; };
 		8B01E9131CAF15230049F98E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B01E9121CAF15230049F98E /* AppDelegate.swift */; };
 		8B01E9151CAF15230049F98E /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B01E9141CAF15230049F98E /* ViewController.swift */; };
 		8B01E9181CAF15230049F98E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8B01E9161CAF15230049F98E /* Main.storyboard */; };
 		8B01E91A1CAF15230049F98E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8B01E9191CAF15230049F98E /* Assets.xcassets */; };
 		8B01E91D1CAF15230049F98E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8B01E91B1CAF15230049F98E /* LaunchScreen.storyboard */; };
-		8BE817941CAF342500FCBE4A /* AELog.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BE817861CAF341300FCBE4A /* AELog.framework */; };
-		8BE817951CAF342500FCBE4A /* AELog.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8BE817861CAF341300FCBE4A /* AELog.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8BE817981CAF343200FCBE4A /* AEConsole.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BE817931CAF341C00FCBE4A /* AEConsole.framework */; };
-		8BE817991CAF343200FCBE4A /* AEConsole.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8BE817931CAF341C00FCBE4A /* AEConsole.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		8BE817851CAF341300FCBE4A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8BE8177E1CAF341300FCBE4A /* AELog.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8B5894651CA89F27005F0B9D;
-			remoteInfo = "AELog iOS";
-		};
-		8BE817871CAF341300FCBE4A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8BE8177E1CAF341300FCBE4A /* AELog.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8B8464CE1CAB492D0027AA52;
-			remoteInfo = "AELog OSX";
-		};
-		8BE817891CAF341300FCBE4A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8BE8177E1CAF341300FCBE4A /* AELog.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8B8464DE1CAB4B310027AA52;
-			remoteInfo = "AELog watchOS";
-		};
-		8BE8178B1CAF341300FCBE4A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8BE8177E1CAF341300FCBE4A /* AELog.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8B8464ED1CAB4B870027AA52;
-			remoteInfo = "AELog tvOS";
-		};
-		8BE817921CAF341C00FCBE4A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8BE8178D1CAF341C00FCBE4A /* AEConsole.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8B5894D01CA9D857005F0B9D;
-			remoteInfo = AEConsole;
-		};
-		8BE817961CAF342500FCBE4A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8BE8177E1CAF341300FCBE4A /* AELog.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8B5894641CA89F27005F0B9D;
-			remoteInfo = "AELog iOS";
-		};
-		8BE8179A1CAF343200FCBE4A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8BE8178D1CAF341C00FCBE4A /* AEConsole.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8B5894CF1CA9D857005F0B9D;
-			remoteInfo = AEConsole;
-		};
-		8BFBE77B1DB287C600BB4B05 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8BE8177E1CAF341300FCBE4A /* AELog.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8B04F5631CB009DD0002F869;
-			remoteInfo = "AELog iOS Tests";
-		};
-		8BFBE77D1DB287C600BB4B05 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8BE8177E1CAF341300FCBE4A /* AELog.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8B04F5721CB00AA60002F869;
-			remoteInfo = "AELog tvOS Tests";
-		};
-		8BFBE77F1DB287C600BB4B05 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8BE8177E1CAF341300FCBE4A /* AELog.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8B04F5821CB00B420002F869;
-			remoteInfo = "AELog OSX Tests";
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		8B8D77741CAF21AF00171F92 /* Embed Frameworks */ = {
@@ -98,8 +22,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				8BE817991CAF343200FCBE4A /* AEConsole.framework in Embed Frameworks */,
-				8BE817951CAF342500FCBE4A /* AELog.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -107,6 +29,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0EF645E27F411562D8753BDD /* Pods-AEConsoleDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEConsoleDemo.release.xcconfig"; path = "Target Support Files/Pods-AEConsoleDemo/Pods-AEConsoleDemo.release.xcconfig"; sourceTree = "<group>"; };
 		8B01E90F1CAF15230049F98E /* AEConsoleDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AEConsoleDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B01E9121CAF15230049F98E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8B01E9141CAF15230049F98E /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -114,8 +37,8 @@
 		8B01E9191CAF15230049F98E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8B01E91C1CAF15230049F98E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8B01E91E1CAF15230049F98E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8BE8177E1CAF341300FCBE4A /* AELog.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AELog.xcodeproj; path = ../AELog/AELog.xcodeproj; sourceTree = "<group>"; };
-		8BE8178D1CAF341C00FCBE4A /* AEConsole.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AEConsole.xcodeproj; path = ../AEConsole.xcodeproj; sourceTree = "<group>"; };
+		B6021A50B5E8EEAD8DF06CA9 /* Pods-AEConsoleDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AEConsoleDemo.debug.xcconfig"; path = "Target Support Files/Pods-AEConsoleDemo/Pods-AEConsoleDemo.debug.xcconfig"; sourceTree = "<group>"; };
+		C4333162D2C1105BCDFBF8AE /* Pods_AEConsoleDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AEConsoleDemo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -123,8 +46,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8BE817981CAF343200FCBE4A /* AEConsole.framework in Frameworks */,
-				8BE817941CAF342500FCBE4A /* AELog.framework in Frameworks */,
+				52F95064E71A4E05206A7036 /* Pods_AEConsoleDemo.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -134,10 +56,10 @@
 		8B01E9061CAF15230049F98E = {
 			isa = PBXGroup;
 			children = (
-				8BE8177E1CAF341300FCBE4A /* AELog.xcodeproj */,
-				8BE8178D1CAF341C00FCBE4A /* AEConsole.xcodeproj */,
 				8B01E9111CAF15230049F98E /* AEConsoleDemo */,
 				8B01E9101CAF15230049F98E /* Products */,
+				E836A293B1E5A04B3FFF3E80 /* Pods */,
+				F84DC888AFB45191F83B86C1 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -170,26 +92,21 @@
 			name = "Supporting FIles";
 			sourceTree = "<group>";
 		};
-		8BE8177F1CAF341300FCBE4A /* Products */ = {
+		E836A293B1E5A04B3FFF3E80 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				8BE817861CAF341300FCBE4A /* AELog.framework */,
-				8BE8178A1CAF341300FCBE4A /* AELog.framework */,
-				8BFBE77C1DB287C600BB4B05 /* AELog iOS Tests.xctest */,
-				8BE8178C1CAF341300FCBE4A /* AELog.framework */,
-				8BFBE77E1DB287C600BB4B05 /* AELog tvOS Tests.xctest */,
-				8BE817881CAF341300FCBE4A /* AELog.framework */,
-				8BFBE7801DB287C600BB4B05 /* AELog macOS Tests.xctest */,
+				B6021A50B5E8EEAD8DF06CA9 /* Pods-AEConsoleDemo.debug.xcconfig */,
+				0EF645E27F411562D8753BDD /* Pods-AEConsoleDemo.release.xcconfig */,
 			);
-			name = Products;
+			path = Pods;
 			sourceTree = "<group>";
 		};
-		8BE8178E1CAF341C00FCBE4A /* Products */ = {
+		F84DC888AFB45191F83B86C1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				8BE817931CAF341C00FCBE4A /* AEConsole.framework */,
+				C4333162D2C1105BCDFBF8AE /* Pods_AEConsoleDemo.framework */,
 			);
-			name = Products;
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -199,16 +116,16 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8B01E9211CAF15230049F98E /* Build configuration list for PBXNativeTarget "AEConsoleDemo" */;
 			buildPhases = (
+				1495CC7C25C3D1633056ECD3 /* [CP] Check Pods Manifest.lock */,
 				8B01E90B1CAF15230049F98E /* Sources */,
 				8B01E90C1CAF15230049F98E /* Frameworks */,
 				8B01E90D1CAF15230049F98E /* Resources */,
 				8B8D77741CAF21AF00171F92 /* Embed Frameworks */,
+				AC75E821967C797F26A12799 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				8BE817971CAF342500FCBE4A /* PBXTargetDependency */,
-				8BE8179B1CAF343200FCBE4A /* PBXTargetDependency */,
 			);
 			name = AEConsoleDemo;
 			productName = AEConsoleDemo;
@@ -222,7 +139,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 1000;
+				LastUpgradeCheck = 1100;
 				ORGANIZATIONNAME = AE;
 				TargetAttributes = {
 					8B01E90E1CAF15230049F98E = {
@@ -233,7 +150,7 @@
 			};
 			buildConfigurationList = 8B01E90A1CAF15230049F98E /* Build configuration list for PBXProject "AEConsoleDemo" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
@@ -242,81 +159,12 @@
 			mainGroup = 8B01E9061CAF15230049F98E;
 			productRefGroup = 8B01E9101CAF15230049F98E /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 8BE8178E1CAF341C00FCBE4A /* Products */;
-					ProjectRef = 8BE8178D1CAF341C00FCBE4A /* AEConsole.xcodeproj */;
-				},
-				{
-					ProductGroup = 8BE8177F1CAF341300FCBE4A /* Products */;
-					ProjectRef = 8BE8177E1CAF341300FCBE4A /* AELog.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				8B01E90E1CAF15230049F98E /* AEConsoleDemo */,
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		8BE817861CAF341300FCBE4A /* AELog.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = AELog.framework;
-			remoteRef = 8BE817851CAF341300FCBE4A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		8BE817881CAF341300FCBE4A /* AELog.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = AELog.framework;
-			remoteRef = 8BE817871CAF341300FCBE4A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		8BE8178A1CAF341300FCBE4A /* AELog.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = AELog.framework;
-			remoteRef = 8BE817891CAF341300FCBE4A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		8BE8178C1CAF341300FCBE4A /* AELog.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = AELog.framework;
-			remoteRef = 8BE8178B1CAF341300FCBE4A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		8BE817931CAF341C00FCBE4A /* AEConsole.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = AEConsole.framework;
-			remoteRef = 8BE817921CAF341C00FCBE4A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		8BFBE77C1DB287C600BB4B05 /* AELog iOS Tests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = "AELog iOS Tests.xctest";
-			remoteRef = 8BFBE77B1DB287C600BB4B05 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		8BFBE77E1DB287C600BB4B05 /* AELog tvOS Tests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = "AELog tvOS Tests.xctest";
-			remoteRef = 8BFBE77D1DB287C600BB4B05 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		8BFBE7801DB287C600BB4B05 /* AELog macOS Tests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = "AELog macOS Tests.xctest";
-			remoteRef = 8BFBE77F1DB287C600BB4B05 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		8B01E90D1CAF15230049F98E /* Resources */ = {
@@ -331,6 +179,49 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		1495CC7C25C3D1633056ECD3 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-AEConsoleDemo-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		AC75E821967C797F26A12799 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-AEConsoleDemo/Pods-AEConsoleDemo-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/AELog/AELog.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AELog.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-AEConsoleDemo/Pods-AEConsoleDemo-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		8B01E90B1CAF15230049F98E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -342,19 +233,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		8BE817971CAF342500FCBE4A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "AELog iOS";
-			targetProxy = 8BE817961CAF342500FCBE4A /* PBXContainerItemProxy */;
-		};
-		8BE8179B1CAF343200FCBE4A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = AEConsole;
-			targetProxy = 8BE8179A1CAF343200FCBE4A /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		8B01E9161CAF15230049F98E /* Main.storyboard */ = {
@@ -379,7 +257,9 @@
 		8B01E91F1CAF15230049F98E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -423,12 +303,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -436,7 +316,9 @@
 		8B01E9201CAF15230049F98E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -474,11 +356,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -486,9 +368,14 @@
 		};
 		8B01E9221CAF15230049F98E /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B6021A50B5E8EEAD8DF06CA9 /* Pods-AEConsoleDemo.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/AELog\"/**",
+				);
 				INFOPLIST_FILE = AEConsoleDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = net.tadija.AEConsoleDemo;
@@ -498,9 +385,14 @@
 		};
 		8B01E9231CAF15230049F98E /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0EF645E27F411562D8753BDD /* Pods-AEConsoleDemo.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/AELog\"/**",
+				);
 				INFOPLIST_FILE = AEConsoleDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = net.tadija.AEConsoleDemo;
