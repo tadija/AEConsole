@@ -1,13 +1,13 @@
-# AEConsole
-**Customizable Console UI overlay with debug log on top of your iOS App**
-
-[![Language Swift 4.2](https://img.shields.io/badge/Language-Swift%204.2-orange.svg?style=flat)](https://swift.org)
+[![Swift 5.1](https://img.shields.io/badge/Swift-5.1-orange.svg?style=flat)](https://swift.org)
 [![Platforms iOS](https://img.shields.io/badge/Platforms-iOS-lightgray.svg?style=flat)](http://www.apple.com)
+[![CocoaPods](https://img.shields.io/cocoapods/v/AEConsole.svg?style=flat)](https://cocoapods.org/pods/AEConsole)
+[Carthage](https://img.shields.io/badge/Carthage-compatible-brightgreen.svg?style=flat)](https://github.com/Carthage/Carthage)
+[![Swift Package Manager](https://img.shields.io/badge/SPM-compatible-brightgreen.svg)](https://github.com/apple/swift-package-manager)
 [![License MIT](https://img.shields.io/badge/License-MIT-lightgrey.svg?style=flat)](https://github.com/tadija/AELog/blob/master/LICENSE)
 
-[![CocoaPods Version](https://img.shields.io/cocoapods/v/AEConsole.svg?style=flat)](https://cocoapods.org/pods/AEConsole)
-[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-brightgreen.svg?style=flat)](https://github.com/Carthage/Carthage)
-[![Swift Package Manager compatible](https://img.shields.io/badge/Swift%20Package%20Manager-compatible-brightgreen.svg)](https://github.com/apple/swift-package-manager)
+# AEConsole
+
+**Customizable Console UI overlay with debug log on top of your iOS App**
 
 **AEConsole** is built on top of [AELog](https://github.com/tadija/AELog), so you should probably see that first.
 > I wanted to see what's happening 'under the hood' while testing some app AFK (ex. outside).
@@ -110,9 +110,9 @@ Pan Gesture over Menu Toolbar | left is more transparent, right is more opaque.
 ## Installation
 
 - [Swift Package Manager](https://swift.org/package-manager/):
-
-    ```
-    .Package(url: "https://github.com/tadija/AEConsole.git", majorVersion: 0)
+    
+    ```swift
+    .package(url: "https://github.com/tadija/AEConsole.git", from: "0.7.0")
     ```
   
 - [Carthage](https://github.com/Carthage/Carthage):
