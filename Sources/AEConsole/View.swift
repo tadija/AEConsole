@@ -1,7 +1,7 @@
 /**
  *  https://github.com/tadija/AEConsole
- *  Copyright (c) Marko Tadić 2016-2019
- *  Licensed under the MIT license. See LICENSE file.
+ *  Copyright © 2016-2020 Marko Tadić
+ *  Licensed under the MIT license
  */
 
 import UIKit
@@ -140,9 +140,13 @@ internal final class View: UIView {
     internal func toggleUI() {
         textField.resignFirstResponder()
         
-        UIView.transition(with: self, duration: 0.3, options: .transitionCrossDissolve, animations: { () -> Void in
-            self.isOnScreen = !self.isOnScreen
-        }, completion:nil)
+        UIView.transition(
+            with: self, duration: 0.3,
+            options: .transitionCrossDissolve,
+            animations: { () -> Void in
+                self.isOnScreen = !self.isOnScreen
+        }, completion:nil
+        )
     }
     
     internal func updateUI() {
@@ -176,7 +180,12 @@ extension View {
         tableView.frame = newFrame
 
         let inset = Layout.magicNumber
-        let newInset = UIEdgeInsets(top: self.currentTopInset, left: inset, bottom: inset, right: maxWidth)
+        let newInset = UIEdgeInsets(
+            top: self.currentTopInset,
+            left: inset,
+            bottom: inset,
+            right: maxWidth
+        )
         self.tableView.contentInset = newInset
 
         updateContentOffset()
@@ -295,18 +304,26 @@ extension View {
         textField.tintColor = textColor
         textField.font = settings.consoleFont.withSize(16)
         textField.textColor = textColor
-        let attributes = [NSAttributedString.Key.foregroundColor : textColor.withAlphaComponent(0.5)]
-        let placeholderText = NSAttributedString(string: "Type filter here...", attributes: attributes)
+        let attributes = [
+            NSAttributedString.Key.foregroundColor : textColor.withAlphaComponent(0.5)
+        ]
+        let placeholderText = NSAttributedString(
+            string: "Type filter here...", attributes: attributes
+        )
         textField.attributedPlaceholder = placeholderText
         textField.layer.sublayerTransform = CATransform3DMakeTranslation(Layout.magicNumber, 0, 0)
     }
     
     private func configureFilterButtons() {
         exportLogButton.setTitle("🌙", for: .normal)
-        exportLogButton.addTarget(self, action: #selector(didTapExportButton(_:)), for: .touchUpInside)
+        exportLogButton.addTarget(
+            self, action: #selector(didTapExportButton(_:)), for: .touchUpInside
+        )
         
         clearFilterButton.setTitle("🔥", for: .normal)
-        clearFilterButton.addTarget(self, action: #selector(didTapFilterClearButton(_:)), for: .touchUpInside)
+        clearFilterButton.addTarget(
+            self, action: #selector(didTapFilterClearButton(_:)), for: .touchUpInside
+        )
     }
     
     private func configureMenuView() {
@@ -333,10 +350,18 @@ extension View {
         
         autoFollowButton.isSelected = true
         
-        toggleToolbarButton.addTarget(self, action: #selector(didTapToggleToolbarButton(_:)), for: .touchUpInside)
-        forwardTouchesButton.addTarget(self, action: #selector(didTapForwardTouchesButton(_:)), for: .touchUpInside)
-        autoFollowButton.addTarget(self, action: #selector(didTapAutoFollowButton(_:)), for: .touchUpInside)
-        clearLogButton.addTarget(self, action: #selector(didTapClearLogButton(_:)), for: .touchUpInside)
+        toggleToolbarButton.addTarget(
+            self, action: #selector(didTapToggleToolbarButton(_:)), for: .touchUpInside
+        )
+        forwardTouchesButton.addTarget(
+            self, action: #selector(didTapForwardTouchesButton(_:)), for: .touchUpInside
+        )
+        autoFollowButton.addTarget(
+            self, action: #selector(didTapAutoFollowButton(_:)), for: .touchUpInside
+        )
+        clearLogButton.addTarget(
+            self, action: #selector(didTapClearLogButton(_:)), for: .touchUpInside
+        )
     }
     
     private func configureGestures() {
@@ -345,14 +370,18 @@ extension View {
     }
     
     private func configureUpdateOpacityGesture() {
-        updateOpacityGesture.addTarget(self, action: #selector(didRecognizeUpdateOpacityGesture(_:)))
+        updateOpacityGesture.addTarget(
+            self, action: #selector(didRecognizeUpdateOpacityGesture(_:))
+        )
         menuView.addGestureRecognizer(updateOpacityGesture)
     }
     
     private func configureHideConsoleGesture() {
         hideConsoleGesture.numberOfTouchesRequired = 2
         hideConsoleGesture.numberOfTapsRequired = 2
-        hideConsoleGesture.addTarget(self, action: #selector(didRecognizeHideConsoleGesture(_:)))
+        hideConsoleGesture.addTarget(
+            self, action: #selector(didRecognizeHideConsoleGesture(_:))
+        )
         addGestureRecognizer(hideConsoleGesture)
     }
     
@@ -418,7 +447,9 @@ extension View {
     private func configureFilterViewConstraints() {
         let leading = filterView.leadingAnchor.constraint(equalTo: leadingAnchor)
         let trailing = filterView.trailingAnchor.constraint(equalTo: trailingAnchor)
-        filterViewTop = filterView.topAnchor.constraint(equalTo: topAnchor, constant: -Layout.filterHeight)
+        filterViewTop = filterView.topAnchor.constraint(
+            equalTo: topAnchor, constant: -Layout.filterHeight
+        )
         filterViewBottom = filterView.bottomAnchor.constraint(equalTo: topAnchor)
         NSLayoutConstraint.activate([leading, trailing, filterViewTop, filterViewBottom])
     }
@@ -434,14 +465,22 @@ extension View {
     private func configureFilterStackSubviewConstraints() {
         let exportButtonWidth = exportLogButton.widthAnchor.constraint(equalToConstant: 75)
         let exportSpinnerWidth = exportLogSpinner.widthAnchor.constraint(equalToConstant: 75)
-        let linesCountWidth = linesCountStack.widthAnchor.constraint(greaterThanOrEqualToConstant: 50)
+        let linesCountWidth = linesCountStack.widthAnchor.constraint(
+            greaterThanOrEqualToConstant: 50
+        )
         let clearFilterButtonWidth = clearFilterButton.widthAnchor.constraint(equalToConstant: 75)
-        NSLayoutConstraint.activate([exportButtonWidth, exportSpinnerWidth, linesCountWidth, clearFilterButtonWidth])
+        NSLayoutConstraint.activate(
+            [exportButtonWidth, exportSpinnerWidth, linesCountWidth, clearFilterButtonWidth]
+        )
     }
     
     private func configureMenuViewConstraints() {
-        menuViewLeading = menuView.leadingAnchor.constraint(equalTo: trailingAnchor, constant: -Layout.collapsedMenuWidth)
-        menuViewTrailing = menuView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: Layout.collapsedMenuHiddenWidth)
+        menuViewLeading = menuView.leadingAnchor.constraint(
+            equalTo: trailingAnchor, constant: -Layout.collapsedMenuWidth
+        )
+        menuViewTrailing = menuView.trailingAnchor.constraint(
+            equalTo: trailingAnchor, constant: Layout.collapsedMenuHiddenWidth
+        )
         let centerY = menuView.centerYAnchor.constraint(equalTo: centerYAnchor)
         let height = menuView.heightAnchor.constraint(equalToConstant: Layout.menuHeight)
         NSLayoutConstraint.activate([menuViewLeading, menuViewTrailing, centerY, height])
@@ -449,7 +488,9 @@ extension View {
     
     private func configureMenuStackConstraints() {
         let leading = menuStack.leadingAnchor.constraint(equalTo: menuView.leadingAnchor)
-        let trailing = menuStack.trailingAnchor.constraint(equalTo: menuView.trailingAnchor, constant: -Layout.magicNumber)
+        let trailing = menuStack.trailingAnchor.constraint(
+            equalTo: menuView.trailingAnchor, constant: -Layout.magicNumber
+        )
         let top = menuStack.topAnchor.constraint(equalTo: menuView.topAnchor)
         let bottom = menuStack.bottomAnchor.constraint(equalTo: menuView.bottomAnchor)
         NSLayoutConstraint.activate([leading, trailing, top, bottom])
@@ -543,11 +584,16 @@ extension View {
         exportLogSpinner.stopAnimating()
     }
     
-    private func shareLogFile(at url: URL, completion: UIActivityViewController.CompletionWithItemsHandler? = nil) {
-        let sharingSheet = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+    private func shareLogFile(
+        at url: URL,
+        completion: UIActivityViewController.CompletionWithItemsHandler? = nil)
+    {
+        let sharingSheet = UIActivityViewController(
+            activityItems: [url], applicationActivities: nil
+        )
         /// - Note: Support for iPad
         sharingSheet.popoverPresentationController?.sourceView = exportLogButton
-        sharingSheet.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.any
+        sharingSheet.popoverPresentationController?.permittedArrowDirections = .any
         sharingSheet.popoverPresentationController?.sourceRect = exportLogButton.bounds
         sharingSheet.completionWithItemsHandler = completion
         
@@ -607,7 +653,8 @@ extension View {
         } else {
             menuViewTrailing.constant = Layout.collapsedMenuHiddenWidth
             if UIDevice.current.orientation == .landscapeRight {
-                menuViewLeading.constant = -(Layout.collapsedMenuWidth + menuTrailingPadding + Layout.magicNumber)
+                let value = Layout.collapsedMenuWidth + menuTrailingPadding + Layout.magicNumber
+                menuViewLeading.constant = -value
             } else {
                 menuViewLeading.constant = -Layout.collapsedMenuWidth
             }

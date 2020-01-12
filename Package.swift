@@ -1,9 +1,9 @@
-// swift-tools-version:5.0
+// swift-tools-version:5.1
 
 /**
  *  https://github.com/tadija/AEConsole
- *  Copyright (c) Marko Tadić 2016-2019
- *  Licensed under the MIT license. See LICENSE file.
+ *  Copyright © 2016-2020 Marko Tadić
+ *  Licensed under the MIT license
  */
 
 import PackageDescription
@@ -11,7 +11,7 @@ import PackageDescription
 let package = Package(
     name: "AEConsole",
     platforms: [
-        .iOS(.v8)
+        .iOS(.v9)
     ],
     products: [
         .library(
@@ -20,7 +20,7 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/tadija/AELog.git", from: "0.6.0")
+        .package(url: "https://github.com/tadija/AELog.git", from: "0.6.1")
     ],
     targets: [
         .target(

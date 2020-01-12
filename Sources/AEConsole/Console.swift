@@ -1,7 +1,7 @@
 /**
  *  https://github.com/tadija/AEConsole
- *  Copyright (c) Marko Tadić 2016-2019
- *  Licensed under the MIT license. See LICENSE file.
+ *  Copyright © 2016-2020 Marko Tadić
+ *  Licensed under the MIT license
  */
 
 import UIKit
@@ -25,7 +25,7 @@ open class Console: LogDelegate {
     
     // MARK: - API
 
-    /// Enable Console UI by calling this method in your AppDelegate's `didFinishLaunchingWithOptions:`
+    /// Enable Console UI by calling this method in AppDelegate's `didFinishLaunchingWithOptions:`
     ///
     /// - Parameter window: Main window for the app (AppDelegate's window).
     open func configure(in window: UIWindow?) {
@@ -56,7 +56,7 @@ open class Console: LogDelegate {
         }
     }
 
-    /// This will export all log lines to AELog_{timestamp}.txt file inside of Application Documents directory.
+    /// Export all log lines to AELog_{timestamp}.txt file inside of App Documents directory.
     open func exportLogFile(completion: @escaping (() throws -> URL) -> Void) {
         brain.exportLogFile(completion: completion)
     }
@@ -64,8 +64,10 @@ open class Console: LogDelegate {
     // MARK: - Init
     
     fileprivate init() {
-        NotificationCenter.default.addObserver(self, selector: #selector(activateConsoleUI),
-                                               name: UIApplication.didBecomeActiveNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(activateConsoleUI),
+            name: UIApplication.didBecomeActiveNotification, object: nil
+        )
     }
     
     deinit {
