@@ -1,7 +1,7 @@
 /**
  *  https://github.com/tadija/AEConsole
- *  Copyright (c) Marko Tadić 2016-2019
- *  Licensed under the MIT license. See LICENSE file.
+ *  Copyright © 2016-2020 Marko Tadić
+ *  Licensed under the MIT license
  */
 
 import UIKit
@@ -103,7 +103,8 @@ internal final class Brain: NSObject {
 
     private var logFileURL: URL {
         let filename = "AELog_\(Date().timeIntervalSince1970).txt"
-        let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+        let documentsPath = NSSearchPathForDirectoriesInDomains(
+            .documentDirectory, .userDomainMask, true)[0]
         let documentsURL = URL(fileURLWithPath: documentsPath)
         let fileURL = documentsURL.appendingPathComponent(filename)
         return fileURL
@@ -126,7 +127,9 @@ extension Brain {
     private func applyFilter() {
         guard let filter = filterText else { return }
         aelog("Filter Lines [\(isFilterActive)] - <\(filter)>")
-        let filtered = lines.filter({ $0.description.localizedCaseInsensitiveContains(filter) })
+        let filtered = lines.filter {
+            $0.description.localizedCaseInsensitiveContains(filter)
+        }
         filteredLines = filtered
     }
     
@@ -170,11 +173,19 @@ extension Brain {
     
     private func getWidth(for line: CustomStringConvertible) -> CGFloat {
         let text = line.description
-        let maxSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: settings.estimatedRowHeight)
+        let maxSize = CGSize(
+            width: CGFloat.greatestFiniteMagnitude,
+            height: settings.estimatedRowHeight
+        )
         let options = NSStringDrawingOptions.usesLineFragmentOrigin
         let attributes = [NSAttributedString.Key.font : settings.consoleFont]
         let nsText = text as NSString
-        let size = nsText.boundingRect(with: maxSize, options: options, attributes: attributes, context: nil)
+        let size = nsText.boundingRect(
+            with: maxSize,
+            options: options,
+            attributes: attributes,
+            context: nil
+        )
         let width = size.width
         return width
     }
@@ -185,12 +196,14 @@ extension Brain: UITableViewDataSource, UITableViewDelegate {
     
     // MARK: - UITableViewDataSource
     
-    internal func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    internal func tableView(_ tableView: UITableView,
+                            numberOfRowsInSection section: Int) -> Int {
         let rows = isFilterActive ? filteredLines : lines
         return rows.count
     }
     
-    internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    internal func tableView(_ tableView: UITableView,
+                            cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: Cell.identifier) as! Cell
 
         let rows = isFilterActive ? filteredLines : lines
@@ -202,7 +215,8 @@ extension Brain: UITableViewDataSource, UITableViewDelegate {
 
     // MARK: - UIScrollViewDelegate
     
-    internal func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+    internal func scrollViewDidEndDragging(_ scrollView: UIScrollView,
+                                           willDecelerate decelerate: Bool) {
         if !decelerate {
             console.currentOffsetX = scrollView.contentOffset.x
         }

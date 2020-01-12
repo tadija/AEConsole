@@ -112,7 +112,7 @@ Pan Gesture over Menu Toolbar | left is more transparent, right is more opaque.
 - [Swift Package Manager](https://swift.org/package-manager/):
     
     ```swift
-    .package(url: "https://github.com/tadija/AEConsole.git", from: "0.7.0")
+    .package(url: "https://github.com/tadija/AEConsole.git", from: "0.7.1")
     ```
   
 - [Carthage](https://github.com/Carthage/Carthage):

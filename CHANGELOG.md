@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.7.1
+
+- Minor changes
+
 ## Version 0.7.0
 
 - Migrate to Swift 5 with Xcode 11 (11A420a)
