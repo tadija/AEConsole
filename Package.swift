@@ -1,4 +1,4 @@
-// swift-tools-version:5.1
+// swift-tools-version:5.5
 
 /**
  *  https://github.com/tadija/AEConsole
@@ -11,7 +11,7 @@ import PackageDescription
 let package = Package(
     name: "AEConsole",
     platforms: [
-        .iOS(.v9)
+        .iOS(.v12)
     ],
     products: [
         .library(
@@ -20,7 +20,7 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/tadija/AELog.git", from: "0.6.1")
+        .package(url: "https://github.com/tadija/AELog.git", from: "0.6.3")
     ],
     targets: [
         .target(
