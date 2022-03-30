@@ -1,4 +1,4 @@
-[![Swift 5.1](https://img.shields.io/badge/Swift-5.1-orange.svg?style=flat)](https://swift.org)
+[![Swift 5.5](https://img.shields.io/badge/Swift-5.5-orange.svg?style=flat)](https://swift.org)
 [![Platforms iOS](https://img.shields.io/badge/Platforms-iOS-lightgray.svg?style=flat)](http://www.apple.com)
 [![CocoaPods](https://img.shields.io/cocoapods/v/AEConsole.svg?style=flat)](https://cocoapods.org/pods/AEConsole)
 [![Carthage](https://img.shields.io/badge/Carthage-compatible-brightgreen.svg?style=flat)](https://github.com/Carthage/Carthage)
@@ -112,7 +112,7 @@ Pan Gesture over Menu Toolbar | left is more transparent, right is more opaque.
 - [Swift Package Manager](https://swift.org/package-manager/):
     
     ```swift
-    .package(url: "https://github.com/tadija/AEConsole.git", from: "0.7.1")
+    .package(url: "https://github.com/tadija/AEConsole.git", from: "0.7.2")
     ```
   
 - [Carthage](https://github.com/Carthage/Carthage):
