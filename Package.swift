@@ -2,7 +2,7 @@
 
 /**
  *  https://github.com/tadija/AEConsole
- *  Copyright © 2016-2020 Marko Tadić
+ *  Copyright © 2016-2022 Marko Tadić
  *  Licensed under the MIT license
  */
 
